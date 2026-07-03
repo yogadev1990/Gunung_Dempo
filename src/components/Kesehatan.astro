@@ -1,0 +1,221 @@
+---
+// Kesehatan.astro
+---
+
+<section class="section section-sehat" id="sehat" aria-labelledby="sehat-title">
+  <div class="container">
+
+    <header class="section-header">
+      <span class="eyebrow reveal">🏥 Desa Sehat</span>
+      <h2 class="section-title reveal" id="sehat-title">
+        Data <span>Kesehatan</span> Masyarakat
+      </h2>
+      <p class="section-desc reveal">
+        Hasil survei dan pendataan lapangan program KKNT 103 Kelompok 25 menggambarkan kondisi
+        kesehatan warga Kelurahan Gunung Dempo yang semakin baik.
+      </p>
+    </header>
+
+    <div class="health-grid">
+
+      <!-- Card 1: Kesehatan Gigi & Mulut -->
+      <article
+        class="health-card reveal reveal-delay-1"
+        id="card-gigi"
+        style="--card-accent: linear-gradient(90deg, #059669, #34d399);"
+      >
+        <div class="health-card-icon" style="--icon-bg: #d1fae5;" aria-hidden="true">🦷</div>
+        <p class="health-card-eyebrow">Kesehatan Gigi &amp; Mulut</p>
+        <h3 class="health-card-title">Kebiasaan Sikat Gigi Warga</h3>
+
+        <div class="pictogram-row" role="img" aria-label="8 dari 10 warga sudah sikat gigi 2 kali sehari">
+          <!-- 8 aktif, 2 abu-abu -->
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" title="Sikat gigi rutin">😁</span>
+          <span class="pictogram-item" style="opacity:0.25;" title="Belum rutin">😶</span>
+          <span class="pictogram-item" style="opacity:0.25;" title="Belum rutin">😶</span>
+        </div>
+
+        <p class="pictogram-label">
+          <strong>8 dari 10</strong> warga sudah sikat gigi 2× sehari (pagi &amp; malam).
+        </p>
+
+        <!-- Progress Bar -->
+        <div style="margin-top:1rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--clr-gray-400);margin-bottom:0.35rem;">
+            <span>Rutin Sikat Gigi</span><span>80%</span>
+          </div>
+          <div class="rw-progress-bar">
+            <div class="rw-progress-fill" data-width="80%"></div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 2: Sanitasi -->
+      <article
+        class="health-card reveal reveal-delay-2"
+        id="card-sanitasi"
+        style="--card-accent: linear-gradient(90deg, #0284c7, #38bdf8);"
+      >
+        <div class="health-card-icon" style="--icon-bg: #e0f2fe;" aria-hidden="true">🚿</div>
+        <p class="health-card-eyebrow">Sanitasi &amp; Lingkungan</p>
+        <h3 class="health-card-title">Fasilitas Jamban &amp; Sanitasi Bersih</h3>
+
+        <div class="pct-ring-wrap">
+          <!-- SVG Ring Chart -->
+          <svg class="pct-ring" viewBox="0 0 90 90" role="img" aria-label="90% rumah memiliki jamban sehat">
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#e0f2fe" stroke-width="9"/>
+            <circle
+              cx="45" cy="45" r="36" fill="none" stroke="#0284c7" stroke-width="9"
+              stroke-dasharray="226.2" stroke-dashoffset="22.6"
+              stroke-linecap="round"
+              transform="rotate(-90 45 45)"
+              style="transition: stroke-dashoffset 1.5s ease;"
+            />
+            <text x="45" y="50" text-anchor="middle" font-size="14" font-weight="800" fill="#0369a1">90%</text>
+          </svg>
+          <div class="pct-ring-text">
+            <div class="pct-ring-value" style="color:#0284c7;">90%</div>
+            <div class="pct-ring-desc">Rumah tangga memiliki jamban sehat &amp; akses air bersih yang layak.</div>
+          </div>
+        </div>
+
+        <!-- Pictogram houses -->
+        <div class="pictogram-row" role="img" aria-label="9 dari 10 rumah memiliki sanitasi baik" style="margin-top:0.75rem;">
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item">🏠</span>
+          <span class="pictogram-item" style="opacity:0.25;">🏚️</span>
+        </div>
+      </article>
+
+      <!-- Card 3: Tindakan Medis (Flowchart) -->
+      <article
+        class="health-card reveal reveal-delay-3"
+        id="card-medis"
+        style="--card-accent: linear-gradient(90deg, #a0622a, #d4975a);"
+      >
+        <div class="health-card-icon" style="--icon-bg: #f5e6d0;" aria-hidden="true">🏥</div>
+        <p class="health-card-eyebrow">Tindakan Medis</p>
+        <h3 class="health-card-title">Ke Mana Warga Saat Sakit?</h3>
+
+        <div class="flow-chart" role="img" aria-label="Alur tindakan medis warga">
+          <div class="flow-start">😷 Warga Merasa Sakit</div>
+          <div class="flow-arrow">↓</div>
+          <div class="flow-branches">
+            <div class="flow-node flow-node-primary">
+              <span class="node-icon">🏥</span>
+              Ke Puskesmas / Klinik
+              <span class="flow-pct">62%</span>
+            </div>
+            <div class="flow-node flow-node-secondary">
+              <span class="node-icon">💊</span>
+              Obat Mandiri / Warung
+              <span class="flow-pct">38%</span>
+            </div>
+          </div>
+          <div class="flow-arrow" style="font-size:0.75rem;color:var(--clr-emerald-600);font-weight:700;margin-top:0.5rem;">
+            ✅ Target: Tingkatkan kunjungan ke fasilitas kesehatan
+          </div>
+        </div>
+      </article>
+
+      <!-- Card 4: Posyandu / KIA -->
+      <article
+        class="health-card reveal reveal-delay-4"
+        id="card-posyandu"
+        style="--card-accent: linear-gradient(90deg, #7c3aed, #a78bfa);"
+      >
+        <div class="health-card-icon" style="--icon-bg: #ede9fe;" aria-hidden="true">👶</div>
+        <p class="health-card-eyebrow">Posyandu &amp; KIA</p>
+        <h3 class="health-card-title">Kesehatan Ibu dan Anak (KIA)</h3>
+
+        <div class="kia-highlight">
+          <div class="kia-big-num" aria-hidden="true">100%</div>
+          <div class="kia-text">
+            <strong>Seluruh Anak di Atas Garis Merah</strong>
+            <span>Tidak ada balita yang berada di bawah atau di garis merah KIA / KMS</span>
+          </div>
+        </div>
+
+        <div class="kia-children-row" role="img" aria-label="Semua balita sehat">
+          <span class="pictogram-item">👶</span>
+          <span class="pictogram-item">👧</span>
+          <span class="pictogram-item">👦</span>
+          <span class="pictogram-item">👶</span>
+          <span class="pictogram-item">👧</span>
+          <span class="pictogram-item">👦</span>
+          <span class="pictogram-item">👶</span>
+          <span class="pictogram-item">👧</span>
+        </div>
+        <p style="font-size:0.8rem;color:var(--clr-gray-500);margin-top:0.5rem;">
+          🛡️ <strong style="color:var(--clr-emerald-700);">Zero Stunting</strong> – Prestasi Luar Biasa Kelurahan!
+        </p>
+
+        <!-- Progress bar for posyandu attendance -->
+        <div style="margin-top:0.75rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.75rem;color:var(--clr-gray-400);margin-bottom:0.35rem;">
+            <span>Kehadiran Posyandu Rutin</span><span>95%</span>
+          </div>
+          <div class="rw-progress-bar">
+            <div class="rw-progress-fill" data-width="95%" style="background: linear-gradient(90deg, #7c3aed, #a78bfa);"></div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- Wave Divider -->
+<div class="wave-divider" aria-hidden="true" style="background:white;">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C360,0 720,60 1080,30 C1260,15 1380,45 1440,30 L1440,60 L0,60 Z" fill="var(--clr-mist)"/>
+  </svg>
+</div>
+
+<script>
+  /* ---------- Scroll Reveal ---------- */
+  const revealEls = document.querySelectorAll('.reveal');
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  /* ---------- Progress Bar Animation ---------- */
+  const progressFills = document.querySelectorAll('.rw-progress-fill');
+
+  const progressObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const fill = entry.target as HTMLElement;
+        const targetWidth = fill.getAttribute('data-width');
+        if (targetWidth) {
+          setTimeout(() => { fill.style.width = targetWidth; }, 200);
+        }
+        progressObserver.unobserve(fill);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  progressFills.forEach(fill => progressObserver.observe(fill));
+</script>

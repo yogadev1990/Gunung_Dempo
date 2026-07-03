@@ -1,0 +1,229 @@
+---
+// Toga.astro
+---
+
+<section class="section section-toga" id="toga" aria-labelledby="toga-title">
+  <div class="container">
+
+    <header class="section-header">
+      <span class="eyebrow eyebrow-coffee reveal">🌿 Pertanian &amp; Potensi Lokal</span>
+      <h2 class="section-title reveal" id="toga-title">
+        Peta Potensi &amp; <span>Tanaman Toga</span>
+      </h2>
+      <p class="section-desc reveal">
+        Tanaman Obat Keluarga (TOGA) tersebar di seluruh RW, menjadi bagian dari kearifan lokal
+        dan ketahanan kesehatan warga Kelurahan Gunung Dempo.
+      </p>
+    </header>
+
+    <div class="toga-layout">
+
+      <!-- Left: Image + Plant list -->
+      <div>
+        <div class="toga-image-wrap reveal">
+          <img
+            src="/images/toga_plants.png"
+            alt="Koleksi tanaman obat keluarga (TOGA) khas Gunung Dempo: jahe, kunyit, serai, dan daun kelor"
+            width="600"
+            height="480"
+            loading="lazy"
+          />
+          <div class="toga-image-overlay">
+            <div class="toga-image-label">🌿 Tanaman TOGA Kelurahan</div>
+            <div class="toga-image-sub">Keanekaragaman hayati lokal yang terjaga</div>
+          </div>
+        </div>
+
+        <div class="toga-plant-list" role="list" aria-label="Daftar tanaman TOGA">
+          <div class="toga-plant-item reveal reveal-delay-1" role="listitem">
+            <span class="plant-emoji">🫚</span> Jahe (Zingiber officinale)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-2" role="listitem">
+            <span class="plant-emoji">🟡</span> Kunyit (Curcuma longa)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-1" role="listitem">
+            <span class="plant-emoji">🌾</span> Serai (Cymbopogon citratus)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-2" role="listitem">
+            <span class="plant-emoji">🍃</span> Daun Kelor (Moringa oleifera)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-3" role="listitem">
+            <span class="plant-emoji">🌿</span> Lengkuas (Alpinia galanga)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-4" role="listitem">
+            <span class="plant-emoji">🥬</span> Sambiloto (Andrographis paniculata)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-3" role="listitem">
+            <span class="plant-emoji">🌱</span> Daun Sirih (Piper betle)
+          </div>
+          <div class="toga-plant-item reveal reveal-delay-4" role="listitem">
+            <span class="plant-emoji">💚</span> Lidah Buaya (Aloe vera)
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: RW Cards Grid (6 RW) -->
+      <div>
+        <div class="rw-grid" role="list" aria-label="Peta TOGA per RW">
+
+          <!-- RW 01 -->
+          <article class="rw-card reveal reveal-delay-1" id="rw-01" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 01</span>
+              <span class="rw-icon" aria-hidden="true">🌿</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Bukit Asri</h3>
+            <p class="rw-card-desc">Pusat kebun TOGA terlengkap. Jahe, kunyit, dan serai tumbuh subur di pekarangan warga.</p>
+            <div class="rw-tags">
+              <span class="rw-tag">Jahe</span>
+              <span class="rw-tag">Kunyit</span>
+              <span class="rw-tag">Serai</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>85%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="85%"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- RW 02 -->
+          <article class="rw-card reveal reveal-delay-2" id="rw-02" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 02</span>
+              <span class="rw-icon" aria-hidden="true">☕</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Lembah Dempo</h3>
+            <p class="rw-card-desc">Zona perkebunan kopi robusta berdampingan dengan tanaman obat daun kelor dan sambiloto.</p>
+            <div class="rw-tags">
+              <span class="rw-tag coffee">Kopi</span>
+              <span class="rw-tag">Kelor</span>
+              <span class="rw-tag">Sambiloto</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>70%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="70%"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- RW 03 -->
+          <article class="rw-card reveal reveal-delay-3" id="rw-03" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 03</span>
+              <span class="rw-icon" aria-hidden="true">🍵</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Puncak Teh</h3>
+            <p class="rw-card-desc">Perkebunan teh mendominasi. Lengkuas dan sirih tumbuh di halaman rumah sebagai tanaman warisan.</p>
+            <div class="rw-tags">
+              <span class="rw-tag">Teh</span>
+              <span class="rw-tag">Lengkuas</span>
+              <span class="rw-tag">Sirih</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>78%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="78%"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- RW 04 -->
+          <article class="rw-card reveal reveal-delay-4" id="rw-04" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 04</span>
+              <span class="rw-icon" aria-hidden="true">🌱</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Sumber Bening</h3>
+            <p class="rw-card-desc">Area dengan sumber air alami terbaik. Lidah buaya dan aloe vera tumbuh segar di sini.</p>
+            <div class="rw-tags">
+              <span class="rw-tag">Lidah Buaya</span>
+              <span class="rw-tag">Aloe Vera</span>
+              <span class="rw-tag">Jahe Merah</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>65%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="65%"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- RW 05 -->
+          <article class="rw-card reveal reveal-delay-5" id="rw-05" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 05</span>
+              <span class="rw-icon" aria-hidden="true">🌺</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Talang Hijau</h3>
+            <p class="rw-card-desc">Kawasan dengan kepadatan rumah tinggi namun aktif mengembangkan kebun TOGA di pot dan lahan sempit.</p>
+            <div class="rw-tags">
+              <span class="rw-tag">Kunyit</span>
+              <span class="rw-tag coffee">Jahe Emprit</span>
+              <span class="rw-tag">Temulawak</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>72%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="72%"></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- RW 06 -->
+          <article class="rw-card reveal reveal-delay-5" id="rw-06" role="listitem">
+            <div class="rw-card-header">
+              <span class="rw-number">RW 06</span>
+              <span class="rw-icon" aria-hidden="true">🍀</span>
+            </div>
+            <h3 class="rw-card-name">RT/RW Lereng Sejuk</h3>
+            <p class="rw-card-desc">Wilayah paling tinggi dan paling sejuk. Tanaman pegagan dan daun mint tumbuh alami di perbatasan hutan.</p>
+            <div class="rw-tags">
+              <span class="rw-tag">Pegagan</span>
+              <span class="rw-tag">Mint</span>
+              <span class="rw-tag">Stevia</span>
+            </div>
+            <div class="rw-progress">
+              <div class="rw-progress-label">
+                <span>Kepadatan TOGA</span><span>60%</span>
+              </div>
+              <div class="rw-progress-bar">
+                <div class="rw-progress-fill" data-width="60%"></div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- CTA note -->
+        <div
+          class="reveal"
+          style="margin-top:1.5rem;padding:1rem 1.25rem;background:var(--clr-emerald-50);border:1px solid var(--clr-emerald-100);border-radius:var(--radius-md);display:flex;align-items:flex-start;gap:0.75rem;"
+        >
+          <span style="font-size:1.4rem;flex-shrink:0;" aria-hidden="true">💡</span>
+          <div>
+            <p style="font-size:0.88rem;font-weight:700;color:var(--clr-emerald-800);margin-bottom:0.2rem;">
+              Program Pengembangan TOGA 2025
+            </p>
+            <p style="font-size:0.82rem;color:var(--clr-sage-600);line-height:1.6;">
+              Tim KKNT 103 Kelompok 25 mendampingi warga dalam pembibitan, perawatan, dan
+              pengolahan tanaman obat menjadi produk bernilai jual tinggi.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>

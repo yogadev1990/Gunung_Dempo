@@ -1,0 +1,98 @@
+---
+// Footer.astro
+---
+
+<footer class="footer" id="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-main">
+
+      <!-- Brand -->
+      <div class="footer-brand">
+        <div class="nav-logo">
+          <div class="nav-logo-icon" aria-hidden="true">🏔️</div>
+          <div class="nav-logo-text">
+            Kelurahan Gunung Dempo
+            <small>Lereng Gunung Dempo</small>
+          </div>
+        </div>
+        <p class="footer-brand-desc">
+          Website profil kelurahan ini dibuat sebagai bagian dari program pengabdian masyarakat
+          (KKNT) untuk mendokumentasikan potensi dan kondisi kesehatan kelurahan.
+        </p>
+        <div style="margin-top:1rem;">
+          <span class="kkn-badge">🎓 KKNT 103 Kelompok 25 Universitas Sriwijaya</span>
+        </div>
+      </div>
+
+      <!-- Navigasi -->
+      <div>
+        <p class="footer-heading">Navigasi</p>
+        <ul class="footer-links" role="list">
+          <li><a href="#hero">🏠 Beranda</a></li>
+          <li><a href="#sehat">🏥 Desa Sehat</a></li>
+          <li><a href="#toga">🌿 Peta TOGA</a></li>
+          <li><a href="#komoditas">☕ Komoditas</a></li>
+        </ul>
+      </div>
+
+      <!-- Program KKNT -->
+      <div>
+        <p class="footer-heading">Program KKNT</p>
+        <ul class="footer-links" role="list">
+          <li><a href="#">📋 Laporan Kegiatan</a></li>
+          <li><a href="#">📸 Galeri Foto</a></li>
+          <li><a href="#">📊 Data Survei</a></li>
+          <li><a href="#">🤝 Mitra Desa</a></li>
+        </ul>
+      </div>
+
+      <!-- Kontak -->
+      <div>
+        <p class="footer-heading">Kontak</p>
+        <div class="footer-contact-item" role="listitem">
+          <div class="footer-contact-icon" aria-hidden="true">📍</div>
+          <span>
+            Kelurahan Gunung Dempo, Kecamatan Pagar Alam Selatan,
+            Kota Pagar Alam, Sumatera Selatan
+          </span>
+        </div>
+        <div class="footer-contact-item" role="listitem">
+          <div class="footer-contact-icon" aria-hidden="true">📧</div>
+          <span>kknt103.kelompok25@unsri.ac.id</span>
+        </div>
+        <div class="footer-contact-item" role="listitem">
+          <div class="footer-contact-icon" aria-hidden="true">📞</div>
+          <span>+62 812-3456-7890</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-bottom-left">
+        <span>© 2026 KKNT 103 Kelompok 25 Universitas Sriwijaya – Kelurahan Gunung Dempo.</span>
+        <span style="color:rgba(255,255,255,0.3);">|</span>
+        <span>Dibuat dengan ❤️ untuk warga kelurahan.</span>
+      </div>
+      <span style="color:rgba(255,255,255,0.3);font-size:0.75rem;">
+        Gunung Dempo, Sumatera Selatan 🏔️
+      </span>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to Top Button -->
+<button class="scroll-top" id="scrollTop" aria-label="Kembali ke atas">↑</button>
+
+<script>
+  /* ---------- Scroll-to-Top Button ---------- */
+  const scrollTopBtn = document.getElementById('scrollTop')!;
+
+  window.addEventListener('scroll', () => {
+    scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+  }, { passive: true });
+
+  scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>

@@ -1,0 +1,150 @@
+---
+// Hero.astro
+---
+
+<section class="hero" id="hero" aria-label="Selamat Datang">
+
+  <!-- Background -->
+  <div class="hero-bg" aria-hidden="true">
+    <img
+      src="/images/hero_bg.png"
+      alt="Perkebunan teh dan pemandangan Gunung Dempo yang megah"
+      width="1920"
+      height="1080"
+    />
+  </div>
+  <div class="hero-overlay" aria-hidden="true"></div>
+
+  <!-- Floating Particles -->
+  <div class="hero-particles" aria-hidden="true">
+    <div class="particle" style="width:80px;height:80px;top:20%;left:10%;--dur:9s;--delay:0s;"></div>
+    <div class="particle" style="width:50px;height:50px;top:60%;left:80%;--dur:7s;--delay:2s;"></div>
+    <div class="particle" style="width:120px;height:120px;top:35%;left:55%;--dur:11s;--delay:1s;opacity:.5"></div>
+    <div class="particle" style="width:40px;height:40px;top:75%;left:25%;--dur:8s;--delay:3s;"></div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="hero-content container">
+    <div class="hero-inner">
+
+      <!-- Text Column -->
+      <div class="hero-text-col">
+        <div class="hero-badge-top" aria-label="Program KKNT">
+          <span>🎓</span> Program KKNT 103 Kelompok 25 Universitas Sriwijaya
+        </div>
+
+        <h1 class="hero-title">
+          Selamat Datang di<br/>
+          <span class="desa-name">Kelurahan Gunung Dempo</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Harmoni Alam, Kopi, dan Teh di Kaki Gunung Dempo.<br/>
+          Mengabdi bersama, tumbuh bersama, menuju desa sehat dan berdaya.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#sehat" class="btn btn-primary" id="btn-explore-sehat">
+            🌿 Jelajahi Desa
+          </a>
+          <a href="#toga" class="btn btn-outline" id="btn-explore-toga">
+            🗺️ Peta Potensi
+          </a>
+        </div>
+      </div>
+
+      <!-- Floating Achievement Badge Card -->
+      <div class="hero-badge-card" role="complementary" aria-label="Prestasi kelurahan: Zero Stunting">
+        <div class="badge-icon-wrap" aria-hidden="true">🛡️</div>
+        <p class="badge-prestasi">Prestasi Kelurahan</p>
+        <p class="badge-title">100% Bebas Stunting</p>
+        <span class="badge-pill">Zero Stunting ✓</span>
+        <p style="font-size:0.72rem;color:rgba(255,255,255,0.6);margin-top:0.75rem;line-height:1.5;">
+          Seluruh balita terpantau<br/>dan tumbuh sehat
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Stats Bar -->
+  <div class="hero-stats-bar" role="region" aria-label="Statistik Kelurahan">
+    <div class="hero-stats-inner container">
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-penduduk">2.428</span>
+        <span class="hero-stat-label">Jiwa Penduduk</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-rw">6 RW</span>
+        <span class="hero-stat-label">Rukun Warga</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-stunting">0%</span>
+        <span class="hero-stat-label">Angka Stunting</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-value" id="stat-komoditas">2</span>
+        <span class="hero-stat-label">Komoditas Unggulan</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- Wave Divider -->
+<div class="wave-divider" aria-hidden="true">
+  <svg viewBox="0 0 1440 60" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="#ffffff"/>
+  </svg>
+</div>
+
+<script>
+  /* ---------- Animated Counter (Hero Stats) ---------- */
+  function animateCounter(
+    element: HTMLElement,
+    start: number,
+    end: number,
+    duration: number,
+    suffix: string
+  ) {
+    let startTime: number | null = null;
+    const isFloat = String(end).includes('.');
+
+    function step(currentTime: number) {
+      if (!startTime) startTime = currentTime;
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      const current = start + (end - start) * eased;
+
+      if (isFloat) {
+        element.textContent = current.toFixed(1) + suffix;
+      } else {
+        element.textContent = Math.round(current).toLocaleString('id-ID') + suffix;
+      }
+
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  // Observe hero stats
+  const heroSection = document.getElementById('hero');
+  let statsAnimated = false;
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !statsAnimated) {
+      statsAnimated = true;
+      const elPenduduk = document.getElementById('stat-penduduk');
+      const elStunting = document.getElementById('stat-stunting');
+      const elKomoditas = document.getElementById('stat-komoditas');
+
+      if (elPenduduk) setTimeout(() => animateCounter(elPenduduk, 0, 2428, 1800, ''), 100);
+      if (elStunting) setTimeout(() => animateCounter(elStunting, 100, 0, 1200, '%'), 300);
+      if (elKomoditas) setTimeout(() => animateCounter(elKomoditas, 0, 2, 800, ''), 500);
+    }
+  }, { threshold: 0.3 });
+
+  if (heroSection) statsObserver.observe(heroSection);
+</script>

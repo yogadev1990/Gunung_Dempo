@@ -1,0 +1,15 @@
+{
+  "name": "profil-kelurahan-gunung-dempo",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Profil Kelurahan Gunung Dempo – Program KKNT 103 Kelompok 25 Universitas Sriwijaya",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^4.16.18"
+  }
+}
