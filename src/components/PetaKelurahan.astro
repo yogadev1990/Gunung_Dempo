@@ -1,5 +1,5 @@
 ---
-// PetaKelurahan.astro
+// PetaKelurahan.astro — Leaflet.js + GeoJSON Interactive Map
 ---
 
 <section class="section section-peta" id="peta" aria-labelledby="peta-title">
@@ -8,10 +8,11 @@
     <header class="section-header">
       <span class="eyebrow reveal">🗺️ Tata Ruang Kelurahan</span>
       <h2 class="section-title reveal" id="peta-title">
-        Peta <span>Batas Kelurahan</span>
+        Peta <span>Batas Wilayah</span>
       </h2>
       <p class="section-desc reveal">
-        Peta batas wilayah Kelurahan Gunung Dempo yang telah di survei oleh Mahasiswa KKNT 103 kelompok 25. Klik peta untuk menjelajahi setiap wilayah RW dan batas kelurahan secara interaktif.
+        Peta batas wilayah Kelurahan Gunung Dempo yang telah di survei oleh Mahasiswa KKNT 103 kelompok 25.
+        Klik setiap poligon RW untuk melihat data detail wilayah secara interaktif.
       </p>
     </header>
 
@@ -29,7 +30,7 @@
         </div>
         <div class="peta-info-divider" aria-hidden="true"></div>
         <div class="peta-info-item">
-          <span class="peta-info-icon" aria-hidden="true">🏛️</span>
+          <span class="peta-info-icon" aria-hidden="true">🎓</span>
           <div>
             <div class="peta-info-label">Sumber Data</div>
             <div class="peta-info-value">Mahasiswa KKNT 103 Kelompok 25</div>
@@ -40,73 +41,57 @@
           <span class="peta-info-icon" aria-hidden="true">🏘️</span>
           <div>
             <div class="peta-info-label">Rukun Warga</div>
-            <div class="peta-info-value">6 RW · Batas Wilayah Terverifikasi</div>
+            <div class="peta-info-value">6 RW · Batas Wilayah Tersurvei</div>
           </div>
         </div>
-        <!-- Open in Maps Button -->
-        <a
-          href="https://www.google.com/maps/d/viewer?mid=1qz_pBCJ2iL9_IV9BW37LyN8p4LgZZls"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="peta-open-btn"
-          id="btn-open-map"
-          aria-label="Buka peta di Google Maps"
-        >
-          <span aria-hidden="true">↗</span> Buka di Maps
-        </a>
+        <!-- Basemap Toggle -->
+        <div class="basemap-toggle-wrap">
+          <span class="basemap-label">Basemap:</span>
+          <div class="basemap-btn-group" role="group" aria-label="Pilih basemap">
+            <button class="basemap-btn active" id="btn-carto" data-layer="carto" aria-pressed="true">
+              🗺️ Minimal
+            </button>
+            <button class="basemap-btn" id="btn-satellite" data-layer="satellite" aria-pressed="false">
+              🛰️ Satelit
+            </button>
+            <button class="basemap-btn" id="btn-osm" data-layer="osm" aria-pressed="false">
+              🌍 Street
+            </button>
+          </div>
+        </div>
       </div>
 
-      <!-- Map Embed Container -->
-      <div class="peta-map-wrap" id="peta-map-wrap">
+      <!-- Map Container -->
+      <div class="peta-map-wrap">
         <div class="peta-map-overlay-loading" id="peta-loading" aria-live="polite">
           <div class="peta-spinner" aria-hidden="true"></div>
           <p>Memuat peta wilayah…</p>
         </div>
-        <iframe
-          id="peta-iframe"
-          src="https://www.google.com/maps/d/embed?mid=1qz_pBCJ2iL9_IV9BW37LyN8p4LgZZls&ehbc=2E312F"
-          title="Peta Batas Wilayah Kelurahan Gunung Dempo"
-          allow="fullscreen"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          aria-label="Peta interaktif batas wilayah Kelurahan Gunung Dempo"
-        ></iframe>
+        <div id="leaflet-map" aria-label="Peta interaktif batas wilayah Kelurahan Gunung Dempo"></div>
       </div>
 
       <!-- Bottom Legend -->
       <div class="peta-legend">
-        <div class="peta-legend-title">
-          <span aria-hidden="true">🗂️</span> Keterangan Peta
-        </div>
-        <div class="peta-legend-items">
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #eab308;"></span>
-            <span>RW 1 : 103,1919545°E 4,0253011°S</span>
+        <div class="peta-legend-left">
+          <div class="peta-legend-title">
+            <span aria-hidden="true">🗂️</span> Legenda RW
           </div>
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #d97706;"></span>
-            <span>RW 2 : 103,1806522°E 4,0330292°S</span>
-          </div>
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #15803d;"></span>
-            <span>RW 3 : 103,1907260°E 4,0385264°S</span>
-          </div>
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #4ade80;"></span>
-            <span>RW 4 : 103,1569263°E 4,0262073°S</span>
-          </div>
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #dc2626;"></span>
-            <span>RW 5 : 103,1585554°E 4,0412606°S</span>
-          </div>
-          <div class="peta-legend-item">
-            <span class="legend-dot" style="background: #9333ea;"></span>
-            <span>RW 6 : 103,1512287°E 4,0603674°S</span>
+          <div class="peta-legend-items" id="legend-items">
+            <!-- Injected by JS -->
           </div>
         </div>
-        <p class="peta-legend-note">
-          * Peta bersumber dari Google Maps MyMaps.
-        </p>
+        <div class="peta-legend-right">
+          <p class="peta-legend-note">
+            <strong>💡 Tips:</strong> Klik poligon RW untuk melihat info detail.
+            Scroll/pinch untuk zoom. Gunakan tombol basemap untuk mengganti tampilan peta dasar.
+          </p>
+          <div class="peta-tech-badge">
+            <span>⚡ Powered by</span>
+            <strong>Leaflet.js</strong>
+            <span>+</span>
+            <strong>GeoJSON</strong>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -122,6 +107,13 @@
   </svg>
 </div>
 
+<!-- Leaflet CSS (CDN) -->
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  crossorigin=""
+/>
+
 <style>
   /* ===== Section ===== */
   .section-peta {
@@ -129,7 +121,7 @@
     background: var(--clr-mist, #f0fdf4);
   }
 
-  /* ===== Card Container ===== */
+  /* ===== Card ===== */
   .peta-card {
     background: #ffffff;
     border-radius: 1.5rem;
@@ -152,7 +144,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: 0;
-    padding: 1rem 1.5rem;
+    padding: 0.875rem 1.25rem;
     background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
     border-bottom: 1px solid rgba(5, 150, 105, 0.15);
   }
@@ -160,72 +152,80 @@
     display: flex;
     align-items: center;
     gap: 0.625rem;
-    padding: 0.5rem 1.25rem;
+    padding: 0.4rem 1rem;
     flex: 1;
     min-width: 160px;
   }
-  .peta-info-icon {
-    font-size: 1.25rem;
-    flex-shrink: 0;
-  }
+  .peta-info-icon { font-size: 1.2rem; flex-shrink: 0; }
   .peta-info-label {
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: #6b7280;
     margin-bottom: 0.1rem;
   }
-  .peta-info-value {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #111827;
-  }
+  .peta-info-value { font-size: 0.76rem; font-weight: 600; color: #111827; }
   .peta-info-divider {
-    width: 1px;
-    height: 2.5rem;
+    width: 1px; height: 2.25rem;
     background: rgba(5, 150, 105, 0.2);
     flex-shrink: 0;
   }
 
-  /* Open Maps Button */
-  .peta-open-btn {
-    display: inline-flex;
+  /* ===== Basemap Toggle ===== */
+  .basemap-toggle-wrap {
+    display: flex;
     align-items: center;
-    gap: 0.35rem;
+    gap: 0.5rem;
     margin-left: auto;
-    padding: 0.5rem 1.1rem;
-    background: linear-gradient(135deg, #059669, #10b981);
-    color: #ffffff;
-    border-radius: 0.625rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    padding-left: 1rem;
     flex-shrink: 0;
   }
-  .peta-open-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.45);
-    background: linear-gradient(135deg, #047857, #059669);
+  .basemap-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
+    white-space: nowrap;
+  }
+  .basemap-btn-group {
+    display: flex;
+    gap: 0.25rem;
+  }
+  .basemap-btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border: 1.5px solid rgba(5, 150, 105, 0.3);
+    border-radius: 0.5rem;
+    background: white;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .basemap-btn:hover {
+    border-color: #059669;
+    color: #059669;
+    background: #f0fdf4;
+  }
+  .basemap-btn.active {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
   }
 
-  /* ===== Map Embed ===== */
+  /* ===== Map Container ===== */
   .peta-map-wrap {
     position: relative;
     width: 100%;
-    padding-bottom: 56.25%; /* 16:9 */
+    height: 520px;
     background: #e8f5e9;
-    overflow: hidden;
   }
-  .peta-map-wrap iframe {
-    position: absolute;
-    inset: 0;
+  #leaflet-map {
     width: 100%;
     height: 100%;
-    border: none;
+    z-index: 1;
   }
 
   /* Loading Overlay */
@@ -236,38 +236,37 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: #f0fdf4;
-    z-index: 2;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    z-index: 10;
     gap: 1rem;
     color: #059669;
     font-weight: 600;
     font-size: 0.9rem;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.5s ease;
   }
-  .peta-map-overlay-loading.hidden {
-    opacity: 0;
-    pointer-events: none;
-  }
+  .peta-map-overlay-loading.hidden { opacity: 0; pointer-events: none; }
   .peta-spinner {
-    width: 40px;
-    height: 40px;
+    width: 44px; height: 44px;
     border: 4px solid rgba(5, 150, 105, 0.2);
     border-top-color: #059669;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ===== Legend ===== */
   .peta-legend {
+    display: flex;
+    gap: 1.5rem;
     padding: 1rem 1.5rem 1.25rem;
     background: #fafafa;
     border-top: 1px solid #f0f0f0;
+    flex-wrap: wrap;
   }
+  .peta-legend-left { flex: 1; min-width: 220px; }
+  .peta-legend-right { flex: 1; min-width: 200px; }
   .peta-legend-title {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -280,81 +279,486 @@
   .peta-legend-items {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1.25rem;
-    margin-bottom: 0.6rem;
+    gap: 0.4rem 1.25rem;
   }
   .peta-legend-item {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.75rem;
-    color: #4b5563;
+    font-size: 0.73rem;
+    color: #374151;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.35rem;
+    transition: background 0.15s ease;
   }
+  .peta-legend-item:hover { background: #f3f4f6; }
   .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    width: 12px; height: 12px;
+    border-radius: 3px;
     flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
   }
   .peta-legend-note {
+    font-size: 0.7rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0 0 0.6rem;
+  }
+  .peta-tech-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
     font-size: 0.68rem;
     color: #9ca3af;
-    margin: 0;
-    line-height: 1.5;
+    background: #f3f4f6;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.4rem;
+    border: 1px solid #e5e7eb;
+  }
+  .peta-tech-badge strong { color: #374151; }
+
+  /* ===== Leaflet Custom Popup ===== */
+  :global(.rw-popup) {
+    font-family: 'Inter', 'Segoe UI', sans-serif !important;
+    min-width: 220px;
+  }
+  :global(.rw-popup .leaflet-popup-content-wrapper) {
+    border-radius: 0.875rem !important;
+    padding: 0 !important;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18) !important;
+    border: none !important;
+  }
+  :global(.rw-popup .leaflet-popup-content) {
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  :global(.rw-popup .leaflet-popup-tip-container) {
+    margin-top: -1px;
+  }
+  :global(.popup-header) {
+    padding: 0.875rem 1rem 0.625rem;
+    color: white;
+    border-radius: 0;
+  }
+  :global(.popup-rw-label) {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+    margin-bottom: 0.15rem;
+  }
+  :global(.popup-rw-name) {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+  :global(.popup-body) {
+    padding: 0.75rem 1rem 0.875rem;
+    background: white;
+  }
+  :global(.popup-stat-grid) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+  }
+  :global(.popup-stat) {
+    background: #f9fafb;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    border: 1px solid #f0f0f0;
+  }
+  :global(.popup-stat-val) {
+    font-size: 0.85rem;
+    font-weight: 800;
+    color: #111827;
+    line-height: 1.2;
+  }
+  :global(.popup-stat-lbl) {
+    font-size: 0.6rem;
+    color: #9ca3af;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  :global(.popup-bar-wrap) {
+    margin-top: 0.5rem;
+  }
+  :global(.popup-bar-label) {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    color: #6b7280;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+  }
+  :global(.popup-bar-track) {
+    height: 6px;
+    background: #f3f4f6;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  :global(.popup-bar-fill) {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
   }
 
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
-    .peta-info-bar {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-    .peta-info-divider {
-      display: none;
-    }
-    .peta-info-item {
-      padding: 0.35rem 0.25rem;
-      min-width: unset;
-    }
-    .peta-open-btn {
-      margin-left: 0;
-      width: 100%;
-      justify-content: center;
-      margin-top: 0.35rem;
-    }
-    .peta-map-wrap {
-      padding-bottom: 75%; /* taller on mobile */
-    }
-    .peta-legend-items {
-      gap: 0.4rem 0.75rem;
-    }
+    .peta-info-bar { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .peta-info-divider { display: none; }
+    .peta-info-item { padding: 0.3rem 0; min-width: unset; }
+    .basemap-toggle-wrap { margin-left: 0; padding-left: 0; width: 100%; }
+    .basemap-btn-group { flex-wrap: wrap; }
+    .peta-map-wrap { height: 380px; }
+    .peta-legend { flex-direction: column; }
   }
 </style>
 
-<script>
-  /* Hide loading overlay once iframe has loaded */
-  const iframe = document.getElementById('peta-iframe') as HTMLIFrameElement | null;
-  const loading = document.getElementById('peta-loading');
+<!-- Leaflet JS (CDN) -->
+<script
+  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  crossorigin=""
+  is:inline
+></script>
 
-  if (iframe && loading) {
-    iframe.addEventListener('load', () => {
-      loading.classList.add('hidden');
-    });
-    /* Fallback: hide after 8 seconds in case load event doesn't fire */
-    setTimeout(() => loading.classList.add('hidden'), 8000);
+<script>
+/* ============================================================
+   Peta Kelurahan Gunung Dempo — Leaflet.js + GeoJSON
+   ============================================================ */
+(function () {
+
+  /* ── 1. Data per RW ──────────────────────────────────────── */
+  const RW_DATA: Record<string, {
+    color: string;
+    fillColor: string;
+    icon: string;
+    penduduk: string;
+    luasHa: string;
+    kepadatan: string;
+    sanitasi: string;
+    toga: string;
+    catatan: string;
+  }> = {
+    'RW 1': {
+      color: '#b45309',
+      fillColor: '#f59e0b',
+      icon: '🏘️',
+      penduduk: '~450 jiwa',
+      luasHa: '~85 Ha',
+      kepadatan: 'Sedang',
+      sanitasi: '88%',
+      toga: '12 titik',
+      catatan: 'Wilayah timur berbatasan dengan lahan perkebunan teh.',
+    },
+    'RW 2': {
+      color: '#92400e',
+      fillColor: '#d97706',
+      icon: '🌿',
+      penduduk: '~380 jiwa',
+      luasHa: '~62 Ha',
+      kepadatan: 'Rendah',
+      sanitasi: '90%',
+      toga: '9 titik',
+      catatan: 'Area permukiman dekat aliran sungai kecil.',
+    },
+    'RW 3': {
+      color: '#065f46',
+      fillColor: '#10b981',
+      icon: '🏡',
+      penduduk: '~520 jiwa',
+      luasHa: '~78 Ha',
+      kepadatan: 'Sedang',
+      sanitasi: '92%',
+      toga: '15 titik',
+      catatan: 'Pusat kegiatan posyandu aktif, zero stunting terverifikasi.',
+    },
+    'RW 4': {
+      color: '#1e40af',
+      fillColor: '#3b82f6',
+      icon: '🌄',
+      penduduk: '~610 jiwa',
+      luasHa: '~310 Ha',
+      kepadatan: 'Sangat Rendah',
+      sanitasi: '84%',
+      toga: '7 titik',
+      catatan: 'Wilayah terluas, sebagian besar area perkebunan kopi & teh.',
+    },
+    'RW 5': {
+      color: '#7c3aed',
+      fillColor: '#8b5cf6',
+      icon: '🏔️',
+      penduduk: '~280 jiwa',
+      luasHa: '~225 Ha',
+      kepadatan: 'Sangat Rendah',
+      sanitasi: '80%',
+      toga: '5 titik',
+      catatan: 'Berbatasan langsung dengan kawasan hutan Gunung Dempo.',
+    },
+    'RW 6': {
+      color: '#be185d',
+      fillColor: '#ec4899',
+      icon: '🌲',
+      penduduk: '~188 jiwa',
+      luasHa: '~180 Ha',
+      kepadatan: 'Sangat Rendah',
+      sanitasi: '82%',
+      toga: '4 titik',
+      catatan: 'Wilayah selatan dengan potensi ekowisata lereng gunung.',
+    },
+  };
+
+  /* ── 2. Basemap Tile Layers ──────────────────────────────── */
+  const TILE_LAYERS = {
+    carto: {
+      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OSM</a> &copy; <a href="https://carto.com/">CartoDB</a>',
+      maxZoom: 19,
+    },
+    satellite: {
+      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      attribution: '&copy; Esri, Maxar, Earthstar Geographics',
+      maxZoom: 19,
+    },
+    osm: {
+      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    },
+  };
+
+  /* ── 3. Build Popup HTML ─────────────────────────────────── */
+  function buildPopup(name: string): string {
+    const d = RW_DATA[name];
+    if (!d) return `<div style="padding:1rem"><strong>${name}</strong></div>`;
+
+    const sanitasiNum = parseInt(d.sanitasi);
+
+    return `
+      <div class="rw-popup-inner">
+        <div class="popup-header" style="background: linear-gradient(135deg, ${d.color}, ${d.fillColor});">
+          <div class="popup-rw-label">Rukun Warga · Kelurahan Gunung Dempo</div>
+          <div class="popup-rw-name">${d.icon} ${name}</div>
+        </div>
+        <div class="popup-body">
+          <div class="popup-stat-grid">
+            <div class="popup-stat">
+              <div class="popup-stat-val">👥 ${d.penduduk}</div>
+              <div class="popup-stat-lbl">Penduduk</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val">📐 ${d.luasHa}</div>
+              <div class="popup-stat-lbl">Luas Wilayah</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val">📊 ${d.kepadatan}</div>
+              <div class="popup-stat-lbl">Kepadatan</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val">🌿 ${d.toga}</div>
+              <div class="popup-stat-lbl">Tanaman TOGA</div>
+            </div>
+          </div>
+          <div class="popup-bar-wrap">
+            <div class="popup-bar-label">
+              <span>Sanitasi Layak</span>
+              <span style="color: ${d.color}; font-weight: 800;">${d.sanitasi}</span>
+            </div>
+            <div class="popup-bar-track">
+              <div class="popup-bar-fill" style="width: ${d.sanitasi}; background: linear-gradient(90deg, ${d.color}, ${d.fillColor});"></div>
+            </div>
+          </div>
+          <p style="font-size:0.68rem;color:#6b7280;margin:0.6rem 0 0;line-height:1.5;">
+            ℹ️ ${d.catatan}
+          </p>
+        </div>
+      </div>
+    `;
   }
 
-  /* Scroll Reveal (reuse pattern from other sections) */
+  /* ── 4. Build Legend HTML ────────────────────────────────── */
+  function buildLegend(): void {
+    const container = document.getElementById('legend-items');
+    if (!container) return;
+    container.innerHTML = Object.entries(RW_DATA).map(([name, d]) => `
+      <div class="peta-legend-item" data-rw="${name}" title="Klik untuk zoom ke ${name}">
+        <span class="legend-dot" style="background: ${d.fillColor};"></span>
+        <span>${d.icon} ${name}</span>
+      </div>
+    `).join('');
+  }
+
+  /* ── 5. Initialise Map ───────────────────────────────────── */
+  function initMap(): void {
+    const loading = document.getElementById('peta-loading');
+    const mapEl = document.getElementById('leaflet-map');
+    if (!mapEl) return;
+
+    // Centre on kelurahan — weighted average of all RW centroids
+    const map = (window as any).L.map('leaflet-map', {
+      center: [-4.038, 103.17],
+      zoom: 12,
+      zoomControl: true,
+      scrollWheelZoom: true,
+      attributionControl: true,
+    });
+
+    /* Active tile layer */
+    let activeTile = (window as any).L.tileLayer(TILE_LAYERS.carto.url, {
+      attribution: TILE_LAYERS.carto.attribution,
+      maxZoom: TILE_LAYERS.carto.maxZoom,
+      subdomains: 'abcd',
+    }).addTo(map);
+
+    /* GeoJSON layer */
+    let geojsonLayer: any = null;
+    let selectedLayer: any = null;
+
+    fetch('/kelurahan-gunung-dempo.geojson')
+      .then(r => r.json())
+      .then((data) => {
+        geojsonLayer = (window as any).L.geoJSON(data, {
+          style: (feature: any) => {
+            const rw = feature?.properties?.Name ?? '';
+            const d = RW_DATA[rw] ?? {};
+            return {
+              color: d.color ?? '#059669',
+              weight: 2.5,
+              opacity: 1,
+              fillColor: d.fillColor ?? '#10b981',
+              fillOpacity: 0.35,
+            };
+          },
+          onEachFeature: (feature: any, layer: any) => {
+            const name: string = feature?.properties?.Name ?? '';
+            const d = RW_DATA[name];
+
+            /* Popup */
+            layer.bindPopup(buildPopup(name), {
+              className: 'rw-popup',
+              maxWidth: 280,
+              autoPan: true,
+            });
+
+            /* Hover effects */
+            layer.on('mouseover', () => {
+              layer.setStyle({ fillOpacity: 0.65, weight: 3.5 });
+              layer.bringToFront();
+            });
+            layer.on('mouseout', () => {
+              if (layer !== selectedLayer) {
+                layer.setStyle({
+                  fillOpacity: 0.35,
+                  weight: 2.5,
+                  color: d?.color ?? '#059669',
+                });
+              }
+            });
+            layer.on('click', () => {
+              /* Reset previously selected */
+              if (selectedLayer && selectedLayer !== layer) {
+                const prevName: string = selectedLayer.feature?.properties?.Name ?? '';
+                const pd = RW_DATA[prevName];
+                selectedLayer.setStyle({
+                  fillOpacity: 0.35,
+                  weight: 2.5,
+                  color: pd?.color ?? '#059669',
+                });
+              }
+              selectedLayer = layer;
+              layer.setStyle({ fillOpacity: 0.7, weight: 4 });
+            });
+          },
+        }).addTo(map);
+
+        /* Fit bounds to all features */
+        map.fitBounds(geojsonLayer.getBounds(), { padding: [30, 30] });
+
+        /* Legend item click → zoom + popup */
+        document.querySelectorAll('.peta-legend-item[data-rw]').forEach((el) => {
+          el.addEventListener('click', () => {
+            const rw = el.getAttribute('data-rw') ?? '';
+            geojsonLayer.eachLayer((layer: any) => {
+              if (layer.feature?.properties?.Name === rw) {
+                map.fitBounds(layer.getBounds(), { padding: [40, 40] });
+                layer.openPopup();
+              }
+            });
+          });
+        });
+
+        /* Hide loading */
+        if (loading) {
+          setTimeout(() => loading.classList.add('hidden'), 300);
+        }
+      })
+      .catch((err) => {
+        console.error('GeoJSON load error:', err);
+        if (loading) {
+          loading.innerHTML = '<p style="color:#dc2626;font-size:0.85rem;">⚠️ Gagal memuat data peta.</p>';
+        }
+      });
+
+    /* ── 6. Basemap toggle ──────────────────────────────────── */
+    document.querySelectorAll('.basemap-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const layerKey = btn.getAttribute('data-layer') as keyof typeof TILE_LAYERS;
+        const cfg = TILE_LAYERS[layerKey];
+        if (!cfg) return;
+
+        map.removeLayer(activeTile);
+        activeTile = (window as any).L.tileLayer(cfg.url, {
+          attribution: cfg.attribution,
+          maxZoom: cfg.maxZoom,
+          subdomains: layerKey === 'carto' ? 'abcd' : 'abc',
+        }).addTo(map);
+
+        /* Bring GeoJSON on top */
+        if (geojsonLayer) geojsonLayer.bringToFront();
+
+        document.querySelectorAll('.basemap-btn').forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+      });
+    });
+  }
+
+  /* ── 7. Boot ─────────────────────────────────────────────── */
+  buildLegend();
+
+  function waitForLeaflet(): void {
+    if (typeof (window as any).L !== 'undefined') {
+      initMap();
+    } else {
+      setTimeout(waitForLeaflet, 80);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', waitForLeaflet);
+  } else {
+    waitForLeaflet();
+  }
+
+  /* ── 8. Scroll Reveal ─────────────────────────────────────── */
   const revealEls = document.querySelectorAll('#peta .reveal');
-  const observer = new IntersectionObserver((entries) => {
+  const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+        revealObserver.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
 
-  revealEls.forEach(el => observer.observe(el));
+})();
 </script>
