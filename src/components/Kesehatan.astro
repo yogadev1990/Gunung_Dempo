@@ -16,6 +16,27 @@
       </p>
     </header>
 
+    <!-- ===== LIVE DATA SURVEI LAPANGAN ===== -->
+    <div class="live-survey-wrap reveal">
+      <div class="live-survey-header">
+        <div class="live-survey-title">
+          <span class="live-dot" aria-hidden="true"></span>
+          <strong>Data Survei Real-Time</strong>
+          <span class="live-survey-sub">Door-to-Door · KKNT 103 Kelompok 25</span>
+        </div>
+        <span class="live-survey-status" id="kes-api-status">⏳ Menghubungkan…</span>
+      </div>
+      <div class="live-survey-grid" id="kes-stats-grid">
+        <!-- Skeleton loading -->
+        <div class="kes-stat-skeleton"></div>
+        <div class="kes-stat-skeleton"></div>
+        <div class="kes-stat-skeleton"></div>
+        <div class="kes-stat-skeleton"></div>
+        <div class="kes-stat-skeleton"></div>
+        <div class="kes-stat-skeleton"></div>
+      </div>
+    </div>
+
     <div class="health-grid">
 
       <!-- Card 1: Kesehatan Gigi & Mulut -->
@@ -262,4 +283,202 @@
   }, { threshold: 0.5 });
 
   progressFills.forEach(fill => progressObserver.observe(fill));
+</script>
+
+<style>
+  /* ===== Live Survey Stats Widget ===== */
+  .live-survey-wrap {
+    background: #fff;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(5,150,105,.15);
+    box-shadow: 0 4px 24px rgba(5,150,105,.08);
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+  .live-survey-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: .75rem 1.25rem;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border-bottom: 1px solid rgba(5,150,105,.12);
+    flex-wrap: wrap;
+    gap: .5rem;
+  }
+  .live-survey-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .85rem;
+    color: #111827;
+  }
+  .live-survey-sub {
+    font-size: .72rem;
+    color: #6b7280;
+    font-weight: 400;
+  }
+  .live-dot {
+    width: 8px; height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 3px rgba(16,185,129,.25);
+    animation: livePulse 1.8s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes livePulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(16,185,129,.25); }
+    50%       { box-shadow: 0 0 0 6px rgba(16,185,129,.08); }
+  }
+  .live-survey-status {
+    font-size: .7rem;
+    font-weight: 700;
+    color: #6b7280;
+    background: #f3f4f6;
+    padding: .2rem .6rem;
+    border-radius: .4rem;
+    border: 1px solid #e5e7eb;
+  }
+  .live-survey-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0;
+  }
+  .kes-stat-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.1rem .75rem;
+    border-right: 1px solid #f0f0f0;
+    text-align: center;
+    transition: background .2s;
+  }
+  .kes-stat-card:last-child { border-right: none; }
+  .kes-stat-card:hover { background: #f9fafb; }
+  .kes-stat-icon { font-size: 1.4rem; margin-bottom: .25rem; }
+  .kes-stat-val {
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+  }
+  .kes-stat-lbl {
+    font-size: .62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #9ca3af;
+    margin: .2rem 0 .3rem;
+  }
+  .kes-stat-badge {
+    font-size: .6rem;
+    font-weight: 700;
+    padding: .15rem .4rem;
+    border-radius: .25rem;
+  }
+  .ks-green  { background: #d1fae5; color: #065f46; }
+  .ks-red    { background: #fee2e2; color: #991b1b; }
+  .ks-yellow { background: #fef3c7; color: #92400e; }
+  .ks-blue   { background: #dbeafe; color: #1e40af; }
+
+  /* Skeleton */
+  .kes-stat-skeleton {
+    height: 90px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.4s ease-in-out infinite;
+  }
+  @keyframes skeletonShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  @media (max-width: 600px) {
+    .live-survey-grid { grid-template-columns: repeat(2, 1fr); }
+    .kes-stat-card:nth-child(even) { border-right: none; }
+    .kes-stat-card { border-bottom: 1px solid #f0f0f0; }
+  }
+</style>
+
+<script>
+/* ── Live Stats Widget: Kesehatan Section ── */
+(function () {
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTCV_rOINifo-eMc4SrWQ4ihhSv8as4Zolw8_dv-S9tFT1Xbz5g4r7Pp0h0YDIGDLiJBxUNnj6V1dFFpDjXgDKvpOR56WUBYIf--6blufGgCUeyAXkVs80vjtEPPGgBxebHY0_6bgKGhWVEr4LFAxcX0igCDzl0O7_xs-2QaA6yRpGT3bixoH1sI5Nt9xHlPopxhA76fHeoljx2cMpvknGNea21r5yZA5CwLo3mvX8LYrOnvjapqZJJdmPviYToU9b34RiUPpiDKOcDbfk_0EWbEGJAVQ&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
+
+  function renderKesStats(rawData: any[]): void {
+    const grid   = document.getElementById('kes-stats-grid');
+    const status = document.getElementById('kes-api-status');
+    if (!grid) return;
+
+    // Agregasi
+    let totalKK = 0, totalJiwa = 0, jamban = 0, nyeri = 0, dokter = 0, obat = 0;
+    rawData.forEach((kk: any) => {
+      totalKK++;
+      totalJiwa += Number(kk.anggota_keluarga) || 0;
+      if (kk.kondisi_jamban === 'Baik/Layak')               jamban++;
+      if (kk.keluhan_nyeri_gigi === 'Ya')                   nyeri++;
+      if (kk.tindakan_medis_gigi === 'Pernah ke Dokter Gigi') dokter++;
+      if (kk.tindakan_medis_gigi === 'Membeli Obat Saja')   obat++;
+    });
+
+    const pSanitasi = totalKK ? Math.round(jamban  / totalKK * 100) : 0;
+    const pNyeri    = totalKK ? Math.round(nyeri   / totalKK * 100) : 0;
+    const pDokter   = totalKK ? Math.round(dokter  / totalKK * 100) : 0;
+    const pObat     = totalKK ? Math.round(obat    / totalKK * 100) : 0;
+
+    if (status) status.innerHTML = `🟢 Live · ${totalKK} KK`;
+
+    grid.innerHTML = `
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">🏠</div>
+        <div class="kes-stat-val" style="color:#059669">${totalKK}</div>
+        <div class="kes-stat-lbl">KK Tersurvei</div>
+        <span class="kes-stat-badge ks-green">Data Lapangan</span>
+      </div>
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">👥</div>
+        <div class="kes-stat-val" style="color:#1d4ed8">${totalJiwa}</div>
+        <div class="kes-stat-lbl">Jiwa Terdata</div>
+        <span class="kes-stat-badge ks-blue">Akumulatif</span>
+      </div>
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">💧</div>
+        <div class="kes-stat-val" style="color:${pSanitasi >= 90 ? '#059669' : '#f97316'}">${pSanitasi}%</div>
+        <div class="kes-stat-lbl">Sanitasi Layak</div>
+        <span class="kes-stat-badge ${pSanitasi >= 90 ? 'ks-green' : 'ks-yellow'}">${pSanitasi >= 90 ? '✅ Sangat Baik' : '⚠️ Perlu Perhatian'}</span>
+      </div>
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">🦷</div>
+        <div class="kes-stat-val" style="color:#dc2626">${pNyeri}%</div>
+        <div class="kes-stat-lbl">Keluhan Nyeri Gigi</div>
+        <span class="kes-stat-badge ks-red">⚠️ Ironi Klinis</span>
+      </div>
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">🏥</div>
+        <div class="kes-stat-val" style="color:${pDokter >= 30 ? '#059669' : '#dc2626'}">${pDokter}%</div>
+        <div class="kes-stat-lbl">Akses ke Dokter</div>
+        <span class="kes-stat-badge ${pDokter >= 30 ? 'ks-green' : 'ks-red'}">${pDokter >= 30 ? '✅ Cukup' : '🆘 Kritis'}</span>
+      </div>
+      <div class="kes-stat-card">
+        <div class="kes-stat-icon">💊</div>
+        <div class="kes-stat-val" style="color:#f97316">${pObat}%</div>
+        <div class="kes-stat-lbl">Obat Warung</div>
+        <span class="kes-stat-badge ks-yellow">💊 Swamedikasi</span>
+      </div>
+    `;
+  }
+
+  fetch(API_URL)
+    .then(r => r.json())
+    .then((payload: any) => {
+      const raw = Array.isArray(payload) ? payload : (payload.survei ?? []);
+      renderKesStats(raw);
+    })
+    .catch(() => {
+      const status = document.getElementById('kes-api-status');
+      const grid   = document.getElementById('kes-stats-grid');
+      if (status) status.innerHTML = '🟡 Offline';
+      if (grid)   grid.innerHTML = '<p style="padding:1rem;color:#9ca3af;font-size:.8rem;text-align:center;">Data tidak tersedia saat ini.</p>';
+    });
+})();
 </script>

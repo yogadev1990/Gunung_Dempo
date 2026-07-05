@@ -1,5 +1,5 @@
 ---
-// PetaKelurahan.astro — Leaflet.js + GeoJSON Interactive Map
+// PetaKelurahan.astro — Leaflet.js + GeoJSON + Live Google Sheets API
 ---
 
 <section class="section section-peta" id="peta" aria-labelledby="peta-title">
@@ -11,8 +11,9 @@
         Peta <span>Batas Wilayah</span>
       </h2>
       <p class="section-desc reveal">
-        Peta batas wilayah Kelurahan Gunung Dempo yang telah di survei oleh Mahasiswa KKNT 103 kelompok 25.
-        Klik setiap poligon RW untuk melihat data detail wilayah secara interaktif.
+        Peta batas wilayah Kelurahan Gunung Dempo yang telah disurvei oleh Mahasiswa KKNT 103 Kelompok 25.
+        Data kesehatan ditarik secara <strong>real-time</strong> dari laporan survei lapangan.
+        Klik poligon RW untuk melihat insight data mendalam.
       </p>
     </header>
 
@@ -33,70 +34,76 @@
           <span class="peta-info-icon" aria-hidden="true">🎓</span>
           <div>
             <div class="peta-info-label">Sumber Data</div>
-            <div class="peta-info-value">Mahasiswa KKNT 103 Kelompok 25</div>
+            <div class="peta-info-value">KKNT 103 Kelompok 25 · Survei Door-to-Door</div>
           </div>
         </div>
         <div class="peta-info-divider" aria-hidden="true"></div>
         <div class="peta-info-item">
-          <span class="peta-info-icon" aria-hidden="true">🏘️</span>
+          <span class="peta-info-icon" aria-hidden="true">🔴</span>
           <div>
-            <div class="peta-info-label">Rukun Warga</div>
-            <div class="peta-info-value">6 RW · Batas Wilayah Tersurvei</div>
+            <div class="peta-info-label">Status Data</div>
+            <div class="peta-info-value" id="api-status-text">Menghubungkan…</div>
           </div>
         </div>
-        <!-- Basemap Toggle -->
-        <div class="basemap-toggle-wrap">
-          <span class="basemap-label">Basemap:</span>
+        <!-- Controls -->
+        <div class="map-controls-wrap">
+          <!-- Layer mode toggle -->
+          <div class="layer-toggle-group" role="group" aria-label="Mode tampilan choropleth">
+            <button class="layer-btn active" data-mode="sanitasi" id="btn-mode-sanitasi" aria-pressed="true">
+              🚿 Sanitasi
+            </button>
+            <button class="layer-btn" data-mode="medis" id="btn-mode-medis" aria-pressed="false">
+              🦷 Akses Medis
+            </button>
+          </div>
+          <!-- Basemap toggle -->
           <div class="basemap-btn-group" role="group" aria-label="Pilih basemap">
-            <button class="basemap-btn active" id="btn-carto" data-layer="carto" aria-pressed="true">
-              🗺️ Minimal
-            </button>
-            <button class="basemap-btn" id="btn-satellite" data-layer="satellite" aria-pressed="false">
-              🛰️ Satelit
-            </button>
-            <button class="basemap-btn" id="btn-osm" data-layer="osm" aria-pressed="false">
-              🌍 Street
-            </button>
+            <button class="basemap-btn" data-layer="carto" aria-pressed="false">🗺️ Minimal</button>
+            <button class="basemap-btn active" data-layer="satellite" aria-pressed="true">🛰️ Satelit</button>
           </div>
         </div>
       </div>
+
 
       <!-- Map Container -->
       <div class="peta-map-wrap">
         <div class="peta-map-overlay-loading" id="peta-loading" aria-live="polite">
           <div class="peta-spinner" aria-hidden="true"></div>
-          <p>Memuat peta wilayah…</p>
+          <p id="loading-text">Memuat data survei & peta wilayah…</p>
         </div>
-        <div id="leaflet-map" aria-label="Peta interaktif batas wilayah Kelurahan Gunung Dempo"></div>
+        <div id="leaflet-map" aria-label="Peta interaktif choropleth batas wilayah Kelurahan Gunung Dempo"></div>
       </div>
 
-      <!-- Bottom Legend -->
+      <!-- Choropleth Scale Legend -->
+      <div class="choropleth-legend" id="choropleth-legend">
+        <span class="choro-label">Rendah</span>
+        <div class="choro-scale" id="choro-scale">
+          <div class="choro-bar" style="background: linear-gradient(90deg, #10b981, #fbbf24, #ef4444);"></div>
+        </div>
+        <span class="choro-label">Tinggi</span>
+        <span class="choro-title" id="choro-title">% Sanitasi Layak</span>
+      </div>
+
+      <!-- Bottom: Legend + Info -->
       <div class="peta-legend">
         <div class="peta-legend-left">
-          <div class="peta-legend-title">
-            <span aria-hidden="true">🗂️</span> Legenda RW
-          </div>
-          <div class="peta-legend-items" id="legend-items">
-            <!-- Injected by JS -->
-          </div>
+          <div class="peta-legend-title"><span>🗂️</span> RW Kelurahan</div>
+          <div class="peta-legend-items" id="legend-items"><!-- JS injected --></div>
         </div>
         <div class="peta-legend-right">
           <p class="peta-legend-note">
-            <strong>💡 Tips:</strong> Klik poligon RW untuk melihat info detail.
-            Scroll/pinch untuk zoom. Gunakan tombol basemap untuk mengganti tampilan peta dasar.
+            <strong>💡 Tips:</strong> Klik poligon RW untuk insight survei. Toggle mode peta untuk
+            melihat <em>Sanitasi</em> vs <em>Akses Medis Gigi</em>. Data di-update otomatis dari Google Sheets.
           </p>
           <div class="peta-tech-badge">
-            <span>⚡ Powered by</span>
-            <strong>Leaflet.js</strong>
-            <span>+</span>
-            <strong>GeoJSON</strong>
+            <span>⚡</span><strong>Leaflet.js</strong>
+            <span>+</span><strong>GeoJSON</strong>
+            <span>+</span><strong>Apps Script API</strong>
           </div>
         </div>
       </div>
 
-    </div>
-    <!-- /peta-card -->
-
+    </div><!-- /peta-card -->
   </div>
 </section>
 
@@ -107,12 +114,35 @@
   </svg>
 </div>
 
-<!-- Leaflet CSS (CDN) -->
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  crossorigin=""
-/>
+<!-- ===== LIGHTBOX MODAL ===== -->
+<div id="lb-overlay" class="lb-overlay" role="dialog" aria-modal="true" aria-label="Galeri dokumentasi" style="display:none;">
+  <button class="lb-close" id="lb-close" aria-label="Tutup galeri">✕</button>
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Foto sebelumnya">‹</button>
+  <button class="lb-nav lb-next" id="lb-next" aria-label="Foto berikutnya">›</button>
+
+  <div class="lb-content">
+    <div class="lb-img-wrap">
+      <img id="lb-img" src="" alt="" class="lb-img" loading="lazy"/>
+      <div class="lb-img-loader" id="lb-img-loader" aria-hidden="true">
+        <div class="lb-spinner"></div>
+      </div>
+    </div>
+    <div class="lb-meta">
+      <div class="lb-meta-top">
+        <span class="lb-rw-badge" id="lb-rw-badge"></span>
+        <span class="lb-activity" id="lb-activity"></span>
+        <span class="lb-counter" id="lb-counter"></span>
+      </div>
+      <p class="lb-caption" id="lb-caption"></p>
+      <p class="lb-date" id="lb-date"></p>
+    </div>
+    <!-- Thumbnail strip -->
+    <div class="lb-strip" id="lb-strip" role="list" aria-label="Semua foto"></div>
+  </div>
+</div>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
 <style>
   /* ===== Section ===== */
@@ -123,19 +153,15 @@
 
   /* ===== Card ===== */
   .peta-card {
-    background: #ffffff;
+    background: #fff;
     border-radius: 1.5rem;
-    box-shadow:
-      0 4px 6px -1px rgba(0,0,0,0.07),
-      0 20px 60px -10px rgba(5, 150, 105, 0.12);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,.07), 0 20px 60px -10px rgba(5,150,105,.12);
     overflow: hidden;
-    border: 1px solid rgba(5, 150, 105, 0.1);
-    transition: box-shadow 0.3s ease;
+    border: 1px solid rgba(5,150,105,.1);
+    transition: box-shadow .3s ease;
   }
   .peta-card:hover {
-    box-shadow:
-      0 8px 12px -2px rgba(0,0,0,0.1),
-      0 30px 80px -10px rgba(5, 150, 105, 0.2);
+    box-shadow: 0 8px 12px -2px rgba(0,0,0,.1), 0 30px 80px -10px rgba(5,150,105,.2);
   }
 
   /* ===== Info Bar ===== */
@@ -143,121 +169,149 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
+    padding: .875rem 1.25rem;
     gap: 0;
-    padding: 0.875rem 1.25rem;
-    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-    border-bottom: 1px solid rgba(5, 150, 105, 0.15);
+    background: linear-gradient(135deg,#f0fdf4,#ecfdf5);
+    border-bottom: 1px solid rgba(5,150,105,.15);
   }
   .peta-info-item {
     display: flex;
     align-items: center;
-    gap: 0.625rem;
-    padding: 0.4rem 1rem;
+    gap: .625rem;
+    padding: .4rem 1rem;
     flex: 1;
     min-width: 160px;
   }
   .peta-info-icon { font-size: 1.2rem; flex-shrink: 0; }
   .peta-info-label {
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #6b7280;
-    margin-bottom: 0.1rem;
+    font-size: .62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: #6b7280; margin-bottom: .1rem;
   }
-  .peta-info-value { font-size: 0.76rem; font-weight: 600; color: #111827; }
-  .peta-info-divider {
-    width: 1px; height: 2.25rem;
-    background: rgba(5, 150, 105, 0.2);
-    flex-shrink: 0;
-  }
+  .peta-info-value { font-size: .76rem; font-weight: 600; color: #111827; }
+  .peta-info-divider { width: 1px; height: 2.25rem; background: rgba(5,150,105,.2); flex-shrink: 0; }
 
-  /* ===== Basemap Toggle ===== */
-  .basemap-toggle-wrap {
+  /* ===== Controls ===== */
+  .map-controls-wrap {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: .5rem;
     margin-left: auto;
     padding-left: 1rem;
     flex-shrink: 0;
+    flex-wrap: wrap;
   }
-  .basemap-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: #6b7280;
-    white-space: nowrap;
-  }
-  .basemap-btn-group {
-    display: flex;
-    gap: 0.25rem;
-  }
-  .basemap-btn {
-    padding: 0.35rem 0.7rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    border: 1.5px solid rgba(5, 150, 105, 0.3);
-    border-radius: 0.5rem;
-    background: white;
-    color: #374151;
+  .layer-toggle-group, .basemap-btn-group { display: flex; gap: .25rem; }
+
+  .layer-btn, .basemap-btn {
+    padding: .35rem .7rem;
+    font-size: .72rem; font-weight: 600;
+    border: 1.5px solid rgba(5,150,105,.3);
+    border-radius: .5rem;
+    background: white; color: #374151;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all .2s ease;
     white-space: nowrap;
   }
-  .basemap-btn:hover {
-    border-color: #059669;
-    color: #059669;
-    background: #f0fdf4;
+  .layer-btn:hover, .basemap-btn:hover {
+    border-color: #059669; color: #059669; background: #f0fdf4;
+  }
+  .layer-btn.active {
+    background: linear-gradient(135deg,#059669,#10b981);
+    color: white; border-color: transparent;
+    box-shadow: 0 2px 8px rgba(5,150,105,.35);
   }
   .basemap-btn.active {
-    background: linear-gradient(135deg, #059669, #10b981);
-    color: white;
-    border-color: transparent;
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
+    background: linear-gradient(135deg,#1e40af,#3b82f6);
+    color: white; border-color: transparent;
+    box-shadow: 0 2px 8px rgba(30,64,175,.35);
   }
 
-  /* ===== Map Container ===== */
-  .peta-map-wrap {
-    position: relative;
-    width: 100%;
-    height: 520px;
-    background: #e8f5e9;
+  /* ===== Live Stats Bar ===== */
+  .live-stats-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0;
+    border-bottom: 1px solid rgba(5,150,105,.12);
+    background: #fff;
   }
-  #leaflet-map {
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-  }
-
-  /* Loading Overlay */
-  .peta-map-overlay-loading {
-    position: absolute;
-    inset: 0;
+  .live-stat {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
-    z-index: 10;
-    gap: 1rem;
-    color: #059669;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: opacity 0.5s ease;
+    padding: .7rem .5rem;
+    border-right: 1px solid #f0f0f0;
+    text-align: center;
+    transition: background .2s ease;
+  }
+  .live-stat:last-child { border-right: none; }
+  .live-stat:hover { background: #f9fafb; }
+  .live-stat-val {
+    font-size: 1.25rem; font-weight: 900;
+    line-height: 1.1; letter-spacing: -.02em;
+  }
+  .live-stat-lbl {
+    font-size: .6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: #9ca3af; margin-top: .2rem;
+  }
+  .live-stat-badge {
+    font-size: .58rem; font-weight: 700;
+    padding: .1rem .35rem;
+    border-radius: .25rem;
+    margin-top: .2rem;
+    display: inline-block;
+  }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-red   { background: #fee2e2; color: #991b1b; }
+  .badge-yellow { background: #fef3c7; color: #92400e; }
+  .badge-blue  { background: #dbeafe; color: #1e40af; }
+
+  /* ===== Map Container ===== */
+  .peta-map-wrap {
+    position: relative; width: 100%; height: 520px; background: #e8f5e9;
+  }
+  #leaflet-map { width: 100%; height: 100%; z-index: 1; }
+  .peta-map-overlay-loading {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: linear-gradient(135deg,#f0fdf4,#ecfdf5);
+    z-index: 10; gap: 1rem; color: #059669;
+    font-weight: 600; font-size: .9rem;
+    transition: opacity .5s ease;
   }
   .peta-map-overlay-loading.hidden { opacity: 0; pointer-events: none; }
   .peta-spinner {
     width: 44px; height: 44px;
-    border: 4px solid rgba(5, 150, 105, 0.2);
+    border: 4px solid rgba(5,150,105,.2);
     border-top-color: #059669;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+    border-radius: 50%; animation: spin .8s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ===== Choropleth Legend ===== */
+  .choropleth-legend {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .5rem 1.5rem;
+    background: #f9fafb;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .choro-label { font-size: .65rem; font-weight: 700; color: #6b7280; white-space: nowrap; }
+  .choro-scale { flex: 1; }
+  .choro-bar { height: 10px; border-radius: 999px; }
+  .choro-title {
+    font-size: .65rem; font-weight: 800;
+    color: #374151; text-transform: uppercase;
+    letter-spacing: .05em; white-space: nowrap; margin-left: auto;
+  }
+
   /* ===== Legend ===== */
   .peta-legend {
-    display: flex;
-    gap: 1.5rem;
+    display: flex; gap: 1.5rem;
     padding: 1rem 1.5rem 1.25rem;
     background: #fafafa;
     border-top: 1px solid #f0f0f0;
@@ -266,425 +320,812 @@
   .peta-legend-left { flex: 1; min-width: 220px; }
   .peta-legend-right { flex: 1; min-width: 200px; }
   .peta-legend-title {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: #374151;
-    margin-bottom: 0.6rem;
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
+    font-size: .72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .06em;
+    color: #374151; margin-bottom: .6rem;
+    display: flex; align-items: center; gap: .35rem;
   }
-  .peta-legend-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem 1.25rem;
-  }
+  .peta-legend-items { display: flex; flex-wrap: wrap; gap: .4rem 1.25rem; }
   .peta-legend-item {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.73rem;
-    color: #374151;
-    font-weight: 500;
-    cursor: pointer;
-    padding: 0.2rem 0.4rem;
-    border-radius: 0.35rem;
-    transition: background 0.15s ease;
+    display: flex; align-items: center; gap: .4rem;
+    font-size: .73rem; color: #374151; font-weight: 500;
+    cursor: pointer; padding: .2rem .4rem;
+    border-radius: .35rem; transition: background .15s ease;
   }
   .peta-legend-item:hover { background: #f3f4f6; }
   .legend-dot {
-    width: 12px; height: 12px;
-    border-radius: 3px;
-    flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    width: 12px; height: 12px; border-radius: 3px;
+    flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,.15);
   }
-  .peta-legend-note {
-    font-size: 0.7rem;
-    color: #6b7280;
-    line-height: 1.6;
-    margin: 0 0 0.6rem;
-  }
+  .peta-legend-note { font-size: .7rem; color: #6b7280; line-height: 1.6; margin: 0 0 .6rem; }
   .peta-tech-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.68rem;
-    color: #9ca3af;
-    background: #f3f4f6;
-    padding: 0.25rem 0.6rem;
-    border-radius: 0.4rem;
-    border: 1px solid #e5e7eb;
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .68rem; color: #9ca3af;
+    background: #f3f4f6; padding: .25rem .6rem;
+    border-radius: .4rem; border: 1px solid #e5e7eb;
   }
   .peta-tech-badge strong { color: #374151; }
 
   /* ===== Leaflet Custom Popup ===== */
-  :global(.rw-popup) {
-    font-family: 'Inter', 'Segoe UI', sans-serif !important;
-    min-width: 220px;
-  }
   :global(.rw-popup .leaflet-popup-content-wrapper) {
-    border-radius: 0.875rem !important;
-    padding: 0 !important;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.18) !important;
-    border: none !important;
+    border-radius: .875rem !important;
+    padding: 0 !important; overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,.18) !important;
+    border: none !important; min-width: 260px;
   }
-  :global(.rw-popup .leaflet-popup-content) {
-    margin: 0 !important;
-    width: 100% !important;
-  }
-  :global(.rw-popup .leaflet-popup-tip-container) {
-    margin-top: -1px;
-  }
-  :global(.popup-header) {
-    padding: 0.875rem 1rem 0.625rem;
-    color: white;
-    border-radius: 0;
-  }
+  :global(.rw-popup .leaflet-popup-content) { margin: 0 !important; width: 100% !important; }
+  :global(.popup-header) { padding: .875rem 1rem .625rem; color: white; }
   :global(.popup-rw-label) {
-    font-size: 0.65rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    opacity: 0.85;
-    margin-bottom: 0.15rem;
+    font-size: .62rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .08em; opacity: .85; margin-bottom: .15rem;
   }
-  :global(.popup-rw-name) {
-    font-size: 1.15rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
+  :global(.popup-rw-name) { font-size: 1.1rem; font-weight: 800; }
+  :global(.popup-data-tag) {
+    display: inline-flex; align-items: center; gap: .25rem;
+    font-size: .6rem; font-weight: 700; padding: .15rem .4rem;
+    border-radius: .25rem; background: rgba(255,255,255,.2);
+    margin-top: .35rem; backdrop-filter: blur(4px);
   }
-  :global(.popup-body) {
-    padding: 0.75rem 1rem 0.875rem;
-    background: white;
-  }
+  :global(.popup-body) { padding: .75rem 1rem .875rem; background: white; }
   :global(.popup-stat-grid) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.4rem;
-    margin-bottom: 0.6rem;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: .4rem; margin-bottom: .6rem;
   }
   :global(.popup-stat) {
-    background: #f9fafb;
-    border-radius: 0.5rem;
-    padding: 0.4rem 0.5rem;
-    border: 1px solid #f0f0f0;
+    background: #f9fafb; border-radius: .5rem;
+    padding: .4rem .5rem; border: 1px solid #f0f0f0;
   }
-  :global(.popup-stat-val) {
-    font-size: 0.85rem;
-    font-weight: 800;
-    color: #111827;
-    line-height: 1.2;
-  }
+  :global(.popup-stat-val) { font-size: .88rem; font-weight: 800; color: #111827; line-height: 1.2; }
   :global(.popup-stat-lbl) {
-    font-size: 0.6rem;
-    color: #9ca3af;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    font-size: .58rem; color: #9ca3af; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em;
   }
-  :global(.popup-bar-wrap) {
-    margin-top: 0.5rem;
+  :global(.popup-bar-wrap) { margin-top: .5rem; }
+  :global(.popup-bar-row) {
+    display: flex; justify-content: space-between;
+    font-size: .63rem; color: #6b7280;
+    margin-bottom: .2rem; font-weight: 600;
   }
-  :global(.popup-bar-label) {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.65rem;
-    color: #6b7280;
-    margin-bottom: 0.2rem;
-    font-weight: 600;
+  :global(.popup-bar-track) { height: 7px; background: #f3f4f6; border-radius: 999px; overflow: hidden; margin-bottom: .35rem; }
+  :global(.popup-bar-fill) { height: 100%; border-radius: 999px; }
+  :global(.popup-insight) {
+    font-size: .68rem; color: #374151; line-height: 1.55;
+    margin: .5rem 0 0; padding: .45rem .55rem;
+    background: #fef3c7; border-left: 3px solid #f59e0b;
+    border-radius: 0 .35rem .35rem 0;
   }
-  :global(.popup-bar-track) {
-    height: 6px;
-    background: #f3f4f6;
-    border-radius: 999px;
-    overflow: hidden;
-  }
-  :global(.popup-bar-fill) {
-    height: 100%;
-    border-radius: 999px;
-    transition: width 0.6s ease;
+  :global(.popup-no-data) {
+    font-size: .72rem; color: #9ca3af; text-align: center;
+    padding: .75rem; font-style: italic;
   }
 
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
-    .peta-info-bar { flex-direction: column; align-items: flex-start; gap: 0.4rem; }
+    .peta-info-bar { flex-direction: column; align-items: flex-start; gap: .4rem; }
     .peta-info-divider { display: none; }
-    .peta-info-item { padding: 0.3rem 0; min-width: unset; }
-    .basemap-toggle-wrap { margin-left: 0; padding-left: 0; width: 100%; }
-    .basemap-btn-group { flex-wrap: wrap; }
+    .peta-info-item { padding: .3rem 0; min-width: unset; }
+    .map-controls-wrap { margin-left: 0; padding-left: 0; width: 100%; }
     .peta-map-wrap { height: 380px; }
     .peta-legend { flex-direction: column; }
+    .choropleth-legend { flex-wrap: wrap; gap: .4rem; }
+  }
+
+  /* ===== LIGHTBOX MODAL ===== */
+  .lb-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: rgba(0,0,0,.92);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+    animation: lbFadeIn .25s ease;
+  }
+  @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .lb-content {
+    display: flex; flex-direction: column;
+    max-width: 860px; width: 100%; max-height: 92vh;
+    gap: .75rem;
+  }
+  .lb-img-wrap {
+    position: relative;
+    flex: 1; min-height: 0;
+    background: #111;
+    border-radius: .875rem;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-img {
+    max-width: 100%; max-height: 58vh;
+    object-fit: contain;
+    border-radius: .875rem;
+    transition: opacity .3s ease;
+  }
+  .lb-img.loading { opacity: 0; }
+  .lb-img-loader {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .lb-img-loader.hidden { display: none; }
+  .lb-spinner {
+    width: 36px; height: 36px;
+    border: 3px solid rgba(255,255,255,.2);
+    border-top-color: #fff;
+    border-radius: 50%; animation: spin .7s linear infinite;
+  }
+
+  .lb-meta {
+    color: #fff; padding: 0 .25rem;
+  }
+  .lb-meta-top {
+    display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+    margin-bottom: .35rem;
+  }
+  .lb-rw-badge {
+    font-size: .68rem; font-weight: 800; padding: .2rem .55rem;
+    background: rgba(255,255,255,.15); border-radius: .35rem;
+    backdrop-filter: blur(4px);
+  }
+  .lb-activity {
+    font-size: .68rem; font-weight: 700; padding: .2rem .55rem;
+    background: rgba(16,185,129,.25); color: #6ee7b7;
+    border-radius: .35rem;
+  }
+  .lb-counter {
+    margin-left: auto;
+    font-size: .7rem; color: rgba(255,255,255,.5); font-weight: 600;
+  }
+  .lb-caption { font-size: .85rem; font-weight: 600; margin: 0 0 .15rem; line-height: 1.4; }
+  .lb-date { font-size: .7rem; color: rgba(255,255,255,.45); margin: 0; }
+
+  /* Thumbnail strip */
+  .lb-strip {
+    display: flex; gap: .4rem; overflow-x: auto;
+    padding: .35rem 0; scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,.2) transparent;
+  }
+  .lb-thumb {
+    width: 56px; height: 56px; flex-shrink: 0;
+    border-radius: .4rem; overflow: hidden;
+    cursor: pointer; border: 2.5px solid transparent;
+    transition: border-color .2s, transform .2s;
+    background: #222;
+  }
+  .lb-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .lb-thumb.active { border-color: #10b981; transform: scale(1.08); }
+  .lb-thumb:hover { border-color: rgba(255,255,255,.5); }
+
+  /* Nav buttons */
+  .lb-close {
+    position: fixed; top: 1rem; right: 1rem;
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,.12); backdrop-filter: blur(8px);
+    border: none; border-radius: 50%;
+    color: white; font-size: 1.1rem;
+    cursor: pointer; z-index: 10000;
+    transition: background .2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-close:hover { background: rgba(255,255,255,.25); }
+  .lb-nav {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,.12); backdrop-filter: blur(8px);
+    border: none; border-radius: 50%;
+    color: white; font-size: 1.6rem;
+    cursor: pointer; z-index: 10000;
+    transition: background .2s ease;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lb-nav:hover { background: rgba(255,255,255,.25); }
+  .lb-prev { left: 1rem; }
+  .lb-next { right: 1rem; }
+  .lb-nav:disabled { opacity: .3; cursor: default; }
+
+  /* Popup gallery strip */
+  :global(.popup-gallery-wrap) {
+    margin-top: .6rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: .6rem;
+  }
+  :global(.popup-gallery-label) {
+    font-size: .62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em;
+    color: #6b7280; margin-bottom: .4rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  :global(.popup-gallery-label span) { color: #9ca3af; font-weight: 500; }
+  :global(.popup-gallery-strip) {
+    display: flex; gap: .35rem; overflow-x: auto;
+    scrollbar-width: thin; scrollbar-color: #e5e7eb transparent;
+  }
+  :global(.popup-gallery-thumb) {
+    width: 62px; height: 52px; flex-shrink: 0;
+    border-radius: .4rem; overflow: hidden;
+    cursor: pointer; border: 2px solid #f0f0f0;
+    transition: border-color .2s, transform .15s;
+    background: #f3f4f6;
+    position: relative;
+  }
+  :global(.popup-gallery-thumb img) {
+    width: 100%; height: 100%; object-fit: cover;
+    display: block;
+  }
+  :global(.popup-gallery-thumb:hover) {
+    border-color: #10b981; transform: scale(1.06);
+  }
+  :global(.popup-gallery-thumb .thumb-overlay) {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .65rem; color: white; font-weight: 700;
+    opacity: 0; transition: opacity .2s;
+  }
+  :global(.popup-gallery-thumb:hover .thumb-overlay) { opacity: 1; }
+  :global(.popup-gallery-empty) {
+    font-size: .68rem; color: #9ca3af; font-style: italic; padding: .25rem 0;
+  }
+  :global(.popup-gallery-btn) {
+    display: inline-flex; align-items: center; gap: .3rem;
+    font-size: .65rem; font-weight: 700; color: #059669;
+    text-decoration: none; background: #f0fdf4;
+    border: 1px solid #a7f3d0; border-radius: .35rem;
+    padding: .2rem .5rem; margin-top: .4rem;
+    transition: background .2s;
+  }
+  :global(.popup-gallery-btn:hover) { background: #d1fae5; }
+
+  @media (max-width: 600px) {
+    .lb-img { max-height: 45vh; }
+    .lb-prev { left: .25rem; } .lb-next { right: .25rem; }
   }
 </style>
 
-<!-- Leaflet JS (CDN) -->
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  crossorigin=""
-  is:inline
-></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" is:inline></script>
 
 <script>
 /* ============================================================
-   Peta Kelurahan Gunung Dempo — Leaflet.js + GeoJSON
+   Peta Kelurahan Gunung Dempo
+   Live Data: Google Apps Script API → Agregasi → Choropleth
    ============================================================ */
 (function () {
 
-  /* ── 1. Data per RW ──────────────────────────────────────── */
-  const RW_DATA: Record<string, {
-    color: string;
-    fillColor: string;
-    icon: string;
-    penduduk: string;
-    luasHa: string;
-    kepadatan: string;
-    sanitasi: string;
-    toga: string;
-    catatan: string;
-  }> = {
-    'RW 1': {
-      color: '#b45309',
-      fillColor: '#f59e0b',
-      icon: '🏘️',
-      penduduk: '~450 jiwa',
-      luasHa: '~85 Ha',
-      kepadatan: 'Sedang',
-      sanitasi: '88%',
-      toga: '12 titik',
-      catatan: 'Wilayah timur berbatasan dengan lahan perkebunan teh.',
-    },
-    'RW 2': {
-      color: '#92400e',
-      fillColor: '#d97706',
-      icon: '🌿',
-      penduduk: '~380 jiwa',
-      luasHa: '~62 Ha',
-      kepadatan: 'Rendah',
-      sanitasi: '90%',
-      toga: '9 titik',
-      catatan: 'Area permukiman dekat aliran sungai kecil.',
-    },
-    'RW 3': {
-      color: '#065f46',
-      fillColor: '#10b981',
-      icon: '🏡',
-      penduduk: '~520 jiwa',
-      luasHa: '~78 Ha',
-      kepadatan: 'Sedang',
-      sanitasi: '92%',
-      toga: '15 titik',
-      catatan: 'Pusat kegiatan posyandu aktif, zero stunting terverifikasi.',
-    },
-    'RW 4': {
-      color: '#1e40af',
-      fillColor: '#3b82f6',
-      icon: '🌄',
-      penduduk: '~610 jiwa',
-      luasHa: '~310 Ha',
-      kepadatan: 'Sangat Rendah',
-      sanitasi: '84%',
-      toga: '7 titik',
-      catatan: 'Wilayah terluas, sebagian besar area perkebunan kopi & teh.',
-    },
-    'RW 5': {
-      color: '#7c3aed',
-      fillColor: '#8b5cf6',
-      icon: '🏔️',
-      penduduk: '~280 jiwa',
-      luasHa: '~225 Ha',
-      kepadatan: 'Sangat Rendah',
-      sanitasi: '80%',
-      toga: '5 titik',
-      catatan: 'Berbatasan langsung dengan kawasan hutan Gunung Dempo.',
-    },
-    'RW 6': {
-      color: '#be185d',
-      fillColor: '#ec4899',
-      icon: '🌲',
-      penduduk: '~188 jiwa',
-      luasHa: '~180 Ha',
-      kepadatan: 'Sangat Rendah',
-      sanitasi: '82%',
-      toga: '4 titik',
-      catatan: 'Wilayah selatan dengan potensi ekowisata lereng gunung.',
-    },
+  /* ─────────────────────────────────────────────────────────
+     KONFIGURASI
+  ───────────────────────────────────────────────────────── */
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTCV_rOINifo-eMc4SrWQ4ihhSv8as4Zolw8_dv-S9tFT1Xbz5g4r7Pp0h0YDIGDLiJBxUNnj6V1dFFpDjXgDKvpOR56WUBYIf--6blufGgCUeyAXkVs80vjtEPPGgBxebHY0_6bgKGhWVEr4LFAxcX0igCDzl0O7_xs-2QaA6yRpGT3bixoH1sI5Nt9xHlPopxhA76fHeoljx2cMpvknGNea21r5yZA5CwLo3mvX8LYrOnvjapqZJJdmPviYToU9b34RiUPpiDKOcDbfk_0EWbEGJAVQ&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
+
+  /* ── GALERI PLACEHOLDER (diisi tim via Google Sheets GALERI sheet) ── */
+  const GALERI_PLACEHOLDER: Record<string, GaleriItem[]> = {
+    'RW 3': [
+      { rw: '3', url_foto: 'https://placehold.co/400x280/10b981/ffffff?text=📋+Survei+Sanitasi', keterangan: 'Survei kondisi jamban warga RW 3', kegiatan: 'Survei Sanitasi', tanggal: '2026-07-01' },
+      { rw: '3', url_foto: 'https://placehold.co/400x280/059669/ffffff?text=🦷+Penyuluhan+Gigi', keterangan: 'Edukasi kesehatan gigi & mulut door-to-door', kegiatan: 'Edukasi Kesgi', tanggal: '2026-07-02' },
+      { rw: '3', url_foto: 'https://placehold.co/400x280/0284c7/ffffff?text=👶+Posyandu', keterangan: 'Pendampingan posyandu balita bersama kader', kegiatan: 'Posyandu', tanggal: '2026-07-03' },
+    ],
   };
 
-  /* ── 2. Basemap Tile Layers ──────────────────────────────── */
+  /* ── TIPE DATA GALERI ── */
+  interface GaleriItem {
+    rw: string;
+    url_foto: string;
+    keterangan: string;
+    kegiatan: string;
+    tanggal: string;
+  }
+
+  /* Global galeri store (diisi saat API berhasil) */
+  let galeriStore: Record<string, GaleriItem[]> = {};
+
+  /* Warna & identitas tiap RW (statis) */
+  const RW_META: Record<string, { color: string; fillBase: string; icon: string; luasHa: string }> = {
+    'RW 1': { color: '#92400e', fillBase: '#f59e0b', icon: '🏘️', luasHa: '~85 Ha' },
+    'RW 2': { color: '#92400e', fillBase: '#d97706', icon: '🌿', luasHa: '~62 Ha' },
+    'RW 3': { color: '#065f46', fillBase: '#10b981', icon: '🏡', luasHa: '~78 Ha' },
+    'RW 4': { color: '#1e40af', fillBase: '#3b82f6', icon: '🌄', luasHa: '~310 Ha' },
+    'RW 5': { color: '#7c3aed', fillBase: '#8b5cf6', icon: '🏔️', luasHa: '~225 Ha' },
+    'RW 6': { color: '#be185d', fillBase: '#ec4899', icon: '🌲', luasHa: '~180 Ha' },
+  };
+
   const TILE_LAYERS = {
-    carto: {
-      url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OSM</a> &copy; <a href="https://carto.com/">CartoDB</a>',
-      maxZoom: 19,
-    },
-    satellite: {
-      url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      attribution: '&copy; Esri, Maxar, Earthstar Geographics',
-      maxZoom: 19,
-    },
-    osm: {
-      url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-      maxZoom: 19,
-    },
+    carto:     { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',         sub: 'abcd', attr: '&copy; <a href="https://www.openstreetmap.org/">OSM</a> &copy; <a href="https://carto.com/">CartoDB</a>' },
+    satellite: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', sub: 'abc',  attr: '&copy; Esri World Imagery' },
   };
 
-  /* ── 3. Build Popup HTML ─────────────────────────────────── */
-  function buildPopup(name: string): string {
-    const d = RW_DATA[name];
-    if (!d) return `<div style="padding:1rem"><strong>${name}</strong></div>`;
+  /* ─────────────────────────────────────────────────────────
+     GALERI: Build thumbnail strip untuk popup
+  ───────────────────────────────────────────────────────── */
 
-    const sanitasiNum = parseInt(d.sanitasi);
+  /** Bersihkan URL Google Drive — pastikan format uc?id= yang benar */
+  /** Bersihkan URL Google Drive → pakai thumbnail API agar bisa di-embed langsung */
+  function sanitizeDriveUrl(raw: string): string {
+    if (!raw) return '';
+    // Coba ekstrak File ID dari berbagai format URL Drive
+    let fileId = '';
+    // Format: uc?id=FILE_ID  atau  ?id=FILE_ID
+    const ucMatch = raw.match(/[?&]id=([^&?\s]+)/);
+    if (ucMatch) fileId = ucMatch[1];
+    // Format: /file/d/FILE_ID/
+    if (!fileId) {
+      const fileMatch = raw.match(/\/file\/d\/([^/?]+)/);
+      if (fileMatch) fileId = fileMatch[1];
+    }
+    // Format: /d/FILE_ID/
+    if (!fileId) {
+      const dMatch = raw.match(/\/d\/([^/?]+)/);
+      if (dMatch) fileId = dMatch[1];
+    }
+    if (fileId) {
+      // Pakai Google Drive thumbnail API — works for embedded images, no CORS issue
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+    }
+    return raw;
+  }
+
+  /** Format ISO datetime → "2 Jul 2026" */
+  function formatTanggal(raw: string): string {
+    if (!raw) return '';
+    try {
+      return new Date(raw).toLocaleDateString('id-ID', {
+        day: 'numeric', month: 'short', year: 'numeric',
+      });
+    } catch { return raw; }
+  }
+
+  function buildGalleryStrip(rwKey: string): string {
+    const items = galeriStore[rwKey] ?? [];
+    if (items.length === 0) {
+      return `
+        <div class="popup-gallery-wrap">
+          <div class="popup-gallery-label">📸 Dokumentasi Kegiatan</div>
+          <p class="popup-gallery-empty">Belum ada foto. Tim KKNT sedang mendokumentasikan kegiatan di ${rwKey}.</p>
+        </div>`;
+    }
+    const preview = items.slice(0, 4);
+    const more   = items.length > 4 ? items.length - 4 : 0;
+    const thumbsHtml = preview.map((item, i) => `
+      <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" title="${item.keterangan}" role="button" tabindex="0">
+        <img src="${item.url_foto}" alt="${item.keterangan}" loading="lazy" onerror="this.src='https://placehold.co/62x52/f3f4f6/9ca3af?text=📷'">
+        <div class="thumb-overlay">🔍</div>
+      </div>`).join('');
 
     return `
-      <div class="rw-popup-inner">
-        <div class="popup-header" style="background: linear-gradient(135deg, ${d.color}, ${d.fillColor});">
-          <div class="popup-rw-label">Rukun Warga · Kelurahan Gunung Dempo</div>
-          <div class="popup-rw-name">${d.icon} ${name}</div>
+      <div class="popup-gallery-wrap">
+        <div class="popup-gallery-label">
+          📸 Dokumentasi Kegiatan
+          <span>${items.length} foto</span>
+        </div>
+        <div class="popup-gallery-strip">
+          ${thumbsHtml}
+          ${more > 0 ? `<div class="popup-gallery-thumb" style="display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-size:.7rem;font-weight:800;color:#6b7280;cursor:pointer;" data-galeri-rw="${rwKey}" data-galeri-idx="4">+${more}</div>` : ''}
+        </div>
+      </div>`;
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     LIGHTBOX ENGINE
+  ───────────────────────────────────────────────────────── */
+  let lbItems: GaleriItem[] = [];
+  let lbIndex = 0;
+
+  function lbShow(items: GaleriItem[], idx: number): void {
+    lbItems = items;
+    lbIndex = idx;
+    const overlay = document.getElementById('lb-overlay')!;
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    lbRender();
+    lbBuildStrip();
+  }
+
+  function lbHide(): void {
+    const overlay = document.getElementById('lb-overlay')!;
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function lbRender(): void {
+    const item = lbItems[lbIndex];
+    if (!item) return;
+    const img    = document.getElementById('lb-img')    as HTMLImageElement;
+    const loader = document.getElementById('lb-img-loader')!;
+    const cap    = document.getElementById('lb-caption')!;
+    const date   = document.getElementById('lb-date')!;
+    const act    = document.getElementById('lb-activity')!;
+    const badge  = document.getElementById('lb-rw-badge')!;
+    const ctr    = document.getElementById('lb-counter')!;
+    const prev   = document.getElementById('lb-prev')   as HTMLButtonElement;
+    const next   = document.getElementById('lb-next')   as HTMLButtonElement;
+
+    img.classList.add('loading');
+    loader.classList.remove('hidden');
+    img.onload = () => { img.classList.remove('loading'); loader.classList.add('hidden'); };
+    img.onerror = () => { img.src = 'https://placehold.co/800x500/f3f4f6/9ca3af?text=Foto+tidak+tersedia'; loader.classList.add('hidden'); };
+    img.src    = item.url_foto;
+    img.alt    = item.keterangan;
+    cap.textContent  = item.keterangan;
+    date.textContent = item.tanggal ? `📅 ${item.tanggal}` : '';
+    act.textContent  = item.kegiatan ? `🏷️ ${item.kegiatan}` : '';
+    badge.textContent = `RW ${item.rw}`;
+    ctr.textContent  = `${lbIndex + 1} / ${lbItems.length}`;
+    prev.disabled = lbIndex === 0;
+    next.disabled = lbIndex === lbItems.length - 1;
+
+    // Active thumb
+    document.querySelectorAll('#lb-strip .lb-thumb').forEach((t, i) => {
+      t.classList.toggle('active', i === lbIndex);
+    });
+    // Scroll active thumb into view
+    const activeThumb = document.querySelector('#lb-strip .lb-thumb.active') as HTMLElement;
+    if (activeThumb) activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center' });
+  }
+
+  function lbBuildStrip(): void {
+    const strip = document.getElementById('lb-strip')!;
+    strip.innerHTML = lbItems.map((item, i) => `
+      <div class="lb-thumb ${i === lbIndex ? 'active' : ''}" data-idx="${i}" role="listitem">
+        <img src="${item.url_foto}" alt="${item.keterangan}" loading="lazy" onerror="this.src='https://placehold.co/56x56/222/555?text=📷'">
+      </div>`).join('');
+    strip.querySelectorAll('.lb-thumb').forEach(el => {
+      el.addEventListener('click', () => { lbIndex = Number(el.getAttribute('data-idx')); lbRender(); lbBuildStrip(); });
+    });
+  }
+
+  function lbInitControls(): void {
+    document.getElementById('lb-close')?.addEventListener('click', lbHide);
+    document.getElementById('lb-prev')?.addEventListener('click', () => { if (lbIndex > 0) { lbIndex--; lbRender(); lbBuildStrip(); } });
+    document.getElementById('lb-next')?.addEventListener('click', () => { if (lbIndex < lbItems.length - 1) { lbIndex++; lbRender(); lbBuildStrip(); } });
+    document.getElementById('lb-overlay')?.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).id === 'lb-overlay') lbHide();
+    });
+    document.addEventListener('keydown', (e) => {
+      const overlay = document.getElementById('lb-overlay');
+      if (!overlay || overlay.style.display === 'none') return;
+      if (e.key === 'Escape')      lbHide();
+      if (e.key === 'ArrowLeft'  && lbIndex > 0)                     { lbIndex--; lbRender(); lbBuildStrip(); }
+      if (e.key === 'ArrowRight' && lbIndex < lbItems.length - 1)    { lbIndex++; lbRender(); lbBuildStrip(); }
+    });
+  }
+
+  /* Delegate click on dynamically created popup thumbnails */
+  document.addEventListener('click', (e) => {
+    const el = (e.target as HTMLElement).closest('[data-galeri-rw]') as HTMLElement | null;
+    if (!el) return;
+    const rw  = el.getAttribute('data-galeri-rw') ?? '';
+    const idx = Number(el.getAttribute('data-galeri-idx') ?? 0);
+    const items = galeriStore[rw] ?? [];
+    if (items.length > 0) lbShow(items, Math.min(idx, items.length - 1));
+  });
+
+  /* ─────────────────────────────────────────────────────────
+     AGREGASI DATA SURVEI
+  ───────────────────────────────────────────────────────── */
+  interface KKRecord {
+    rw: string;
+    anggota_keluarga: number;
+    kelompok_rentan: string;
+    kondisi_jamban: string;
+    pengelolaan_sampah: string;
+    keluhan_nyeri_gigi: string;
+    tindakan_medis_gigi: string;
+    tingkat_pengetahuan: string;
+  }
+
+  interface RWStats {
+    total_kk: number;
+    total_jiwa: number;
+    jamban_layak: number;
+    nyeri_gigi: number;
+    ke_dokter: number;
+    obat_warung: number;
+    sampah_bakar: number;
+    balita_lansia: number;
+    persen_sanitasi: number;
+    persen_nyeri: number;
+    persen_dokter: number;
+    persen_obat_warung: number;
+    persen_sampah_bakar: number;
+  }
+
+  function agregasiData(rawData: KKRecord[]): Record<string, RWStats> {
+    const rekap: Record<string, any> = {};
+
+    rawData.forEach(kk => {
+      const rw = `RW ${kk.rw}`;
+      if (!rekap[rw]) {
+        rekap[rw] = {
+          total_kk: 0, total_jiwa: 0, jamban_layak: 0,
+          nyeri_gigi: 0, ke_dokter: 0, obat_warung: 0,
+          sampah_bakar: 0, balita_lansia: 0,
+        };
+      }
+      const s = rekap[rw];
+      s.total_kk += 1;
+      s.total_jiwa += Number(kk.anggota_keluarga) || 0;
+      if (kk.kondisi_jamban === 'Baik/Layak')                          s.jamban_layak += 1;
+      if (kk.keluhan_nyeri_gigi === 'Ya')                              s.nyeri_gigi += 1;
+      if (kk.tindakan_medis_gigi === 'Pernah ke Dokter Gigi')          s.ke_dokter += 1;
+      if (kk.tindakan_medis_gigi === 'Membeli Obat Saja')              s.obat_warung += 1;
+      if (kk.pengelolaan_sampah === 'Dibakar')                         s.sampah_bakar += 1;
+      if (kk.kelompok_rentan === 'Bayi/Balita' || kk.kelompok_rentan === 'Lansia') s.balita_lansia += 1;
+    });
+
+    for (const rw in rekap) {
+      const s = rekap[rw];
+      const n = s.total_kk;
+      s.persen_sanitasi    = n ? Math.round((s.jamban_layak / n) * 100) : 0;
+      s.persen_nyeri       = n ? Math.round((s.nyeri_gigi / n) * 100)   : 0;
+      s.persen_dokter      = n ? Math.round((s.ke_dokter / n) * 100)    : 0;
+      s.persen_obat_warung = n ? Math.round((s.obat_warung / n) * 100)  : 0;
+      s.persen_sampah_bakar= n ? Math.round((s.sampah_bakar / n) * 100) : 0;
+    }
+
+    return rekap as Record<string, RWStats>;
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     WARNA CHOROPLETH
+  ───────────────────────────────────────────────────────── */
+  function choroplethColor(pct: number, mode: 'sanitasi' | 'medis'): string {
+    // Sanitasi: makin tinggi makin hijau
+    // Medis (obat warung): makin tinggi makin merah (negatif = buruk)
+    if (mode === 'sanitasi') {
+      if (pct >= 90) return '#059669';
+      if (pct >= 70) return '#10b981';
+      if (pct >= 50) return '#fbbf24';
+      return '#ef4444';
+    } else {
+      if (pct >= 70) return '#dc2626'; // Mayoritas obat warung = darurat
+      if (pct >= 50) return '#f97316';
+      if (pct >= 30) return '#fbbf24';
+      return '#22c55e'; // Sedikit yang obat warung = oke
+    }
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     BUILD POPUP
+  ───────────────────────────────────────────────────────── */
+  function buildPopup(
+    rwKey: string,
+    stats: RWStats | undefined,
+    mode: 'sanitasi' | 'medis'
+  ): string {
+    const meta = RW_META[rwKey] ?? { color: '#059669', fillBase: '#10b981', icon: '🏘️', luasHa: '-' };
+
+    if (!stats) {
+      return `
+        <div>
+          <div class="popup-header" style="background: linear-gradient(135deg, ${meta.color}, ${meta.fillBase});">
+            <div class="popup-rw-label">Kelurahan Gunung Dempo · KKNT 103</div>
+            <div class="popup-rw-name">${meta.icon} ${rwKey}</div>
+            <div class="popup-data-tag">⏳ Belum ada data survei</div>
+          </div>
+          <div class="popup-body">
+            <p class="popup-no-data">Data survei untuk ${rwKey} belum tersedia. Tim KKNT sedang melakukan pengumpulan data di lapangan.</p>
+          </div>
+        </div>`;
+    }
+
+    const sanitasiColor = choroplethColor(stats.persen_sanitasi, 'sanitasi');
+    const medisColor    = choroplethColor(stats.persen_obat_warung, 'medis');
+
+    const ironiGigi = stats.persen_nyeri >= 40
+      ? `⚠️ <strong>Ironi klinis:</strong> ${stats.persen_nyeri}% warga mengeluh nyeri gigi, namun ${stats.persen_obat_warung}% hanya membeli obat warung.`
+      : `✅ ${stats.persen_nyeri}% warga mengalami keluhan nyeri gigi.`;
+
+    return `
+      <div>
+        <div class="popup-header" style="background: linear-gradient(135deg, ${meta.color}, ${meta.fillBase});">
+          <div class="popup-rw-label">Kelurahan Gunung Dempo · KKNT 103</div>
+          <div class="popup-rw-name">${meta.icon} ${rwKey}</div>
+          <div class="popup-data-tag">📊 ${stats.total_kk} KK · ${stats.total_jiwa} Jiwa Terdata</div>
         </div>
         <div class="popup-body">
           <div class="popup-stat-grid">
             <div class="popup-stat">
-              <div class="popup-stat-val">👥 ${d.penduduk}</div>
-              <div class="popup-stat-lbl">Penduduk</div>
+              <div class="popup-stat-val">🏠 ${stats.total_kk} KK</div>
+              <div class="popup-stat-lbl">KK Tersurvei</div>
             </div>
             <div class="popup-stat">
-              <div class="popup-stat-val">📐 ${d.luasHa}</div>
-              <div class="popup-stat-lbl">Luas Wilayah</div>
+              <div class="popup-stat-val">👥 ${stats.total_jiwa}</div>
+              <div class="popup-stat-lbl">Jiwa Terdata</div>
             </div>
             <div class="popup-stat">
-              <div class="popup-stat-val">📊 ${d.kepadatan}</div>
-              <div class="popup-stat-lbl">Kepadatan</div>
+              <div class="popup-stat-val" style="color:${sanitasiColor}">💧 ${stats.persen_sanitasi}%</div>
+              <div class="popup-stat-lbl">Sanitasi Layak</div>
             </div>
             <div class="popup-stat">
-              <div class="popup-stat-val">🌿 ${d.toga}</div>
-              <div class="popup-stat-lbl">Tanaman TOGA</div>
+              <div class="popup-stat-val" style="color:${stats.balita_lansia > 0 ? '#f97316' : '#059669'}">
+                👶 ${stats.balita_lansia} KK
+              </div>
+              <div class="popup-stat-lbl">Balita/Lansia</div>
             </div>
           </div>
+
           <div class="popup-bar-wrap">
-            <div class="popup-bar-label">
-              <span>Sanitasi Layak</span>
-              <span style="color: ${d.color}; font-weight: 800;">${d.sanitasi}</span>
+            <div class="popup-bar-row">
+              <span>🚿 Sanitasi Layak</span>
+              <span style="color:${sanitasiColor};font-weight:800">${stats.persen_sanitasi}%</span>
             </div>
             <div class="popup-bar-track">
-              <div class="popup-bar-fill" style="width: ${d.sanitasi}; background: linear-gradient(90deg, ${d.color}, ${d.fillColor});"></div>
+              <div class="popup-bar-fill" style="width:${stats.persen_sanitasi}%;background:${sanitasiColor};"></div>
+            </div>
+
+            <div class="popup-bar-row">
+              <span>🦷 Ke Dokter Gigi</span>
+              <span style="color:${stats.persen_dokter >= 50 ? '#059669' : '#ef4444'};font-weight:800">${stats.persen_dokter}%</span>
+            </div>
+            <div class="popup-bar-track">
+              <div class="popup-bar-fill" style="width:${stats.persen_dokter}%;background:${stats.persen_dokter >= 50 ? '#059669' : '#ef4444'};"></div>
+            </div>
+
+            <div class="popup-bar-row">
+              <span>🔥 Sampah Dibakar</span>
+              <span style="color:${stats.persen_sampah_bakar >= 50 ? '#f97316' : '#059669'};font-weight:800">${stats.persen_sampah_bakar}%</span>
+            </div>
+            <div class="popup-bar-track">
+              <div class="popup-bar-fill" style="width:${stats.persen_sampah_bakar}%;background:${stats.persen_sampah_bakar >= 50 ? '#f97316' : '#6ee7b7'};"></div>
             </div>
           </div>
-          <p style="font-size:0.68rem;color:#6b7280;margin:0.6rem 0 0;line-height:1.5;">
-            ℹ️ ${d.catatan}
-          </p>
+
+          <div class="popup-insight">${ironiGigi}</div>
+          ${buildGalleryStrip(rwKey)}
         </div>
-      </div>
-    `;
+      </div>`;
   }
 
-  /* ── 4. Build Legend HTML ────────────────────────────────── */
+  /* ─────────────────────────────────────────────────────────
+     LIVE STATS BAR
+  ───────────────────────────────────────────────────────── */
+  function renderLiveStats(allStats: Record<string, RWStats>): void {
+    const bar = document.getElementById('live-stats-bar');
+    if (!bar) return;
+
+    const totalKK   = Object.values(allStats).reduce((a, s) => a + s.total_kk, 0);
+    const totalJiwa = Object.values(allStats).reduce((a, s) => a + s.total_jiwa, 0);
+    const avgSanitasi = totalKK ? Math.round(Object.values(allStats).reduce((a, s) => a + s.jamban_layak, 0) / totalKK * 100) : 0;
+    const avgDokter   = totalKK ? Math.round(Object.values(allStats).reduce((a, s) => a + s.ke_dokter, 0) / totalKK * 100) : 0;
+    const avgNyeri    = totalKK ? Math.round(Object.values(allStats).reduce((a, s) => a + s.nyeri_gigi, 0) / totalKK * 100) : 0;
+    const avgObat     = totalKK ? Math.round(Object.values(allStats).reduce((a, s) => a + s.obat_warung, 0) / totalKK * 100) : 0;
+
+    bar.innerHTML = `
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:#059669">${totalKK}</div>
+        <div class="live-stat-lbl">KK Tersurvei</div>
+        <span class="live-stat-badge badge-green">Live 🟢</span>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:#1d4ed8">${totalJiwa}</div>
+        <div class="live-stat-lbl">Jiwa Terdata</div>
+        <span class="live-stat-badge badge-blue">Akumulatif</span>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:${avgSanitasi === 100 ? '#059669' : '#f97316'}">${avgSanitasi}%</div>
+        <div class="live-stat-lbl">Sanitasi Layak</div>
+        <span class="live-stat-badge ${avgSanitasi >= 90 ? 'badge-green' : 'badge-yellow'}">${avgSanitasi >= 90 ? '✅ Sangat Baik' : '⚠️ Perlu Perhatian'}</span>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:#dc2626">${avgNyeri}%</div>
+        <div class="live-stat-lbl">Keluhan Nyeri Gigi</div>
+        <span class="live-stat-badge badge-red">⚠️ Ironi Klinis</span>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:${avgDokter >= 30 ? '#059669' : '#dc2626'}">${avgDokter}%</div>
+        <div class="live-stat-lbl">Akses ke Dokter</div>
+        <span class="live-stat-badge ${avgDokter >= 30 ? 'badge-green' : 'badge-red'}">${avgDokter >= 30 ? '✅ Cukup' : '🆘 Kritis'}</span>
+      </div>
+      <div class="live-stat">
+        <div class="live-stat-val" style="color:#f97316">${avgObat}%</div>
+        <div class="live-stat-lbl">Obat Warung</div>
+        <span class="live-stat-badge badge-yellow">💊 Mandiri</span>
+      </div>
+    `;
+    bar.style.display = 'grid';
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     LEGEND ITEMS
+  ───────────────────────────────────────────────────────── */
   function buildLegend(): void {
     const container = document.getElementById('legend-items');
     if (!container) return;
-    container.innerHTML = Object.entries(RW_DATA).map(([name, d]) => `
+    container.innerHTML = Object.entries(RW_META).map(([name, m]) => `
       <div class="peta-legend-item" data-rw="${name}" title="Klik untuk zoom ke ${name}">
-        <span class="legend-dot" style="background: ${d.fillColor};"></span>
-        <span>${d.icon} ${name}</span>
-      </div>
-    `).join('');
+        <span class="legend-dot" style="background:${m.fillBase};"></span>
+        <span>${m.icon} ${name}</span>
+      </div>`).join('');
   }
 
-  /* ── 5. Initialise Map ───────────────────────────────────── */
-  function initMap(): void {
-    const loading = document.getElementById('peta-loading');
-    const mapEl = document.getElementById('leaflet-map');
+  /* ─────────────────────────────────────────────────────────
+     INISIALISASI MAP
+  ───────────────────────────────────────────────────────── */
+  function initMap(surveyStats: Record<string, RWStats>): void {
+    const loading    = document.getElementById('peta-loading');
+    const statusText = document.getElementById('api-status-text');
+    const mapEl      = document.getElementById('leaflet-map');
     if (!mapEl) return;
 
-    // Centre on kelurahan — weighted average of all RW centroids
+    let currentMode: 'sanitasi' | 'medis' = 'sanitasi';
+
     const map = (window as any).L.map('leaflet-map', {
-      center: [-4.038, 103.17],
-      zoom: 12,
-      zoomControl: true,
-      scrollWheelZoom: true,
-      attributionControl: true,
+      center: [-4.038, 103.17], zoom: 12,
+      zoomControl: true, scrollWheelZoom: true,
     });
 
-    /* Active tile layer */
-    let activeTile = (window as any).L.tileLayer(TILE_LAYERS.carto.url, {
-      attribution: TILE_LAYERS.carto.attribution,
-      maxZoom: TILE_LAYERS.carto.maxZoom,
-      subdomains: 'abcd',
+    /* Default: Satellite tile layer */
+    let activeTile = (window as any).L.tileLayer(TILE_LAYERS.satellite.url, {
+      attribution: TILE_LAYERS.satellite.attr,
+      maxZoom: 19, subdomains: TILE_LAYERS.satellite.sub,
     }).addTo(map);
 
-    /* GeoJSON layer */
     let geojsonLayer: any = null;
     let selectedLayer: any = null;
 
+    /* Compute choropleth fill for a feature */
+    function featureStyle(feature: any, mode: 'sanitasi' | 'medis') {
+      const rwKey  = `RW ${feature?.properties?.Name?.replace('RW ', '') ?? ''}`.trim();
+      // Handle "RW 3" format directly
+      const rwName = feature?.properties?.Name ?? '';
+      const rwNum  = rwName.replace('RW ', '').trim();
+      const key    = `RW ${rwNum}`;
+      const stats  = surveyStats[key];
+      const meta   = RW_META[key] ?? { color: '#6b7280', fillBase: '#9ca3af' };
+
+      let fill: string;
+      if (!stats) {
+        fill = '#d1d5db'; // abu-abu = belum ada data
+      } else {
+        const pct = mode === 'sanitasi' ? stats.persen_sanitasi : stats.persen_obat_warung;
+        fill = choroplethColor(pct, mode);
+      }
+      return { color: meta.color, weight: 2.5, opacity: 1, fillColor: fill, fillOpacity: 0.65 };
+    }
+
+    /* Load GeoJSON */
     fetch('/kelurahan-gunung-dempo.geojson')
       .then(r => r.json())
       .then((data) => {
         geojsonLayer = (window as any).L.geoJSON(data, {
-          style: (feature: any) => {
-            const rw = feature?.properties?.Name ?? '';
-            const d = RW_DATA[rw] ?? {};
-            return {
-              color: d.color ?? '#059669',
-              weight: 2.5,
-              opacity: 1,
-              fillColor: d.fillColor ?? '#10b981',
-              fillOpacity: 0.35,
-            };
-          },
+          style: (f: any) => featureStyle(f, currentMode),
           onEachFeature: (feature: any, layer: any) => {
-            const name: string = feature?.properties?.Name ?? '';
-            const d = RW_DATA[name];
+            const rwName = feature?.properties?.Name ?? '';
+            const rwNum  = rwName.replace('RW ', '').trim();
+            const key    = `RW ${rwNum}`;
+            const meta   = RW_META[key] ?? { color: '#059669', fillBase: '#10b981' };
 
-            /* Popup */
-            layer.bindPopup(buildPopup(name), {
-              className: 'rw-popup',
-              maxWidth: 280,
-              autoPan: true,
+            layer.bindPopup(() => buildPopup(key, surveyStats[key], currentMode), {
+              className: 'rw-popup', maxWidth: 300, autoPan: true,
             });
 
-            /* Hover effects */
             layer.on('mouseover', () => {
-              layer.setStyle({ fillOpacity: 0.65, weight: 3.5 });
+              layer.setStyle({ fillOpacity: 0.85, weight: 4 });
               layer.bringToFront();
             });
             layer.on('mouseout', () => {
               if (layer !== selectedLayer) {
-                layer.setStyle({
-                  fillOpacity: 0.35,
-                  weight: 2.5,
-                  color: d?.color ?? '#059669',
-                });
+                layer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
               }
             });
             layer.on('click', () => {
-              /* Reset previously selected */
               if (selectedLayer && selectedLayer !== layer) {
-                const prevName: string = selectedLayer.feature?.properties?.Name ?? '';
-                const pd = RW_DATA[prevName];
-                selectedLayer.setStyle({
-                  fillOpacity: 0.35,
-                  weight: 2.5,
-                  color: pd?.color ?? '#059669',
-                });
+                selectedLayer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
               }
               selectedLayer = layer;
-              layer.setStyle({ fillOpacity: 0.7, weight: 4 });
+              layer.setStyle({ fillOpacity: 0.85, weight: 4 });
             });
           },
         }).addTo(map);
 
-        /* Fit bounds to all features */
         map.fitBounds(geojsonLayer.getBounds(), { padding: [30, 30] });
+        if (loading) setTimeout(() => loading.classList.add('hidden'), 300);
 
-        /* Legend item click → zoom + popup */
-        document.querySelectorAll('.peta-legend-item[data-rw]').forEach((el) => {
+        /* Legend click → zoom */
+        document.querySelectorAll('.peta-legend-item[data-rw]').forEach(el => {
           el.addEventListener('click', () => {
             const rw = el.getAttribute('data-rw') ?? '';
             geojsonLayer.eachLayer((layer: any) => {
-              if (layer.feature?.properties?.Name === rw) {
+              const rwName = layer.feature?.properties?.Name ?? '';
+              const key = `RW ${rwName.replace('RW ', '').trim()}`;
+              if (key === rw) {
                 map.fitBounds(layer.getBounds(), { padding: [40, 40] });
                 layer.openPopup();
               }
@@ -692,73 +1133,165 @@
           });
         });
 
-        /* Hide loading */
-        if (loading) {
-          setTimeout(() => loading.classList.add('hidden'), 300);
-        }
-      })
-      .catch((err) => {
-        console.error('GeoJSON load error:', err);
-        if (loading) {
-          loading.innerHTML = '<p style="color:#dc2626;font-size:0.85rem;">⚠️ Gagal memuat data peta.</p>';
-        }
-      });
+        /* Mode toggle (sanitasi / medis) */
+        document.querySelectorAll('.layer-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const mode = btn.getAttribute('data-mode') as 'sanitasi' | 'medis';
+            currentMode = mode;
 
-    /* ── 6. Basemap toggle ──────────────────────────────────── */
-    document.querySelectorAll('.basemap-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const layerKey = btn.getAttribute('data-layer') as keyof typeof TILE_LAYERS;
-        const cfg = TILE_LAYERS[layerKey];
-        if (!cfg) return;
+            // Update choropleth
+            geojsonLayer.eachLayer((layer: any) => {
+              layer.setStyle(featureStyle(layer.feature, mode));
+            });
+            if (selectedLayer) selectedLayer.setStyle({ fillOpacity: 0.85, weight: 4 });
 
-        map.removeLayer(activeTile);
-        activeTile = (window as any).L.tileLayer(cfg.url, {
-          attribution: cfg.attribution,
-          maxZoom: cfg.maxZoom,
-          subdomains: layerKey === 'carto' ? 'abcd' : 'abc',
-        }).addTo(map);
+            // Update choropleth legend title
+            const title = document.getElementById('choro-title');
+            if (title) title.textContent = mode === 'sanitasi' ? '% Sanitasi Layak' : '% Warga Obat Warung';
 
-        /* Bring GeoJSON on top */
-        if (geojsonLayer) geojsonLayer.bringToFront();
+            // Update choro bar
+            const bar = document.getElementById('choro-scale');
+            if (bar) {
+              if (mode === 'sanitasi') {
+                bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#ef4444,#fbbf24,#10b981);"></div>';
+              } else {
+                bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#22c55e,#fbbf24,#ef4444);"></div>';
+              }
+            }
 
-        document.querySelectorAll('.basemap-btn').forEach(b => {
-          b.classList.remove('active');
-          b.setAttribute('aria-pressed', 'false');
+            // Active state
+            document.querySelectorAll('.layer-btn').forEach(b => {
+              b.classList.remove('active');
+              b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active');
+            btn.setAttribute('aria-pressed', 'true');
+          });
         });
-        btn.classList.add('active');
-        btn.setAttribute('aria-pressed', 'true');
+
+        /* Basemap toggle */
+        document.querySelectorAll('.basemap-btn').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const key = btn.getAttribute('data-layer') as keyof typeof TILE_LAYERS;
+            const cfg = TILE_LAYERS[key];
+            if (!cfg) return;
+            map.removeLayer(activeTile);
+            activeTile = (window as any).L.tileLayer(cfg.url, {
+              attribution: cfg.attr, maxZoom: 19, subdomains: cfg.sub,
+            }).addTo(map);
+            if (geojsonLayer) geojsonLayer.bringToFront();
+            document.querySelectorAll('.basemap-btn').forEach(b => {
+              b.classList.remove('active'); b.setAttribute('aria-pressed', 'false');
+            });
+            btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true');
+          });
+        });
+
+      })
+      .catch(err => {
+        console.error('GeoJSON error:', err);
+        if (loading) loading.innerHTML = '<p style="color:#dc2626">⚠️ Gagal memuat peta.</p>';
       });
-    });
   }
 
-  /* ── 7. Boot ─────────────────────────────────────────────── */
+  /* ─────────────────────────────────────────────────────────
+     BOOT: Fetch API → Agregasi → Render
+  ───────────────────────────────────────────────────────── */
   buildLegend();
 
-  function waitForLeaflet(): void {
-    if (typeof (window as any).L !== 'undefined') {
-      initMap();
-    } else {
-      setTimeout(waitForLeaflet, 80);
+  const statusText  = document.getElementById('api-status-text');
+  const loadingText = document.getElementById('loading-text');
+
+  function boot(): void {
+    if (typeof (window as any).L === 'undefined') {
+      setTimeout(boot, 80);
+      return;
     }
+
+    // Init lightbox controls once
+    lbInitControls();
+
+    // Fetch live survey data
+    fetch(API_URL)
+      .then(r => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
+      .then((payload: KKRecord[] | { survei: KKRecord[]; galeri: GaleriItem[] }) => {
+        // Support both old format (array) and new format ({ survei, galeri })
+        let rawData: KKRecord[];
+        let galeriRaw: GaleriItem[] = [];
+
+        if (Array.isArray(payload)) {
+          rawData  = payload;
+        } else {
+          rawData  = payload.survei  ?? [];
+          galeriRaw = payload.galeri ?? [];
+        }
+
+        // Populate galeriStore from API — fallback to placeholder if empty
+        if (galeriRaw.length > 0) {
+          galeriRaw.forEach(item => {
+            // Normalisasi: rw bisa datang sebagai angka atau string dari Sheets
+            const rwStr  = String(item.rw).trim();
+            const key    = `RW ${rwStr}`;
+            // Bersihkan URL dan format tanggal
+            const cleaned: GaleriItem = {
+              ...item,
+              rw:       rwStr,
+              url_foto: sanitizeDriveUrl(String(item.url_foto ?? '')),
+              tanggal:  formatTanggal(String(item.tanggal ?? '')),
+            };
+            if (!galeriStore[key]) galeriStore[key] = [];
+            galeriStore[key].push(cleaned);
+          });
+        } else {
+          // Use placeholder data until team uploads real photos
+          galeriStore = { ...GALERI_PLACEHOLDER };
+        }
+
+        const stats = agregasiData(rawData);
+
+        // Update status indicator
+        if (statusText) {
+          const rwCount = Object.keys(stats).length;
+          const kkTotal = Object.values(stats).reduce((a, s) => a + s.total_kk, 0);
+          statusText.innerHTML = `🟢 Live · ${kkTotal} KK dari ${rwCount} RW`;
+        }
+
+        initMap(stats);
+      })
+      .catch(err => {
+        console.warn('API fetch gagal, menggunakan data statis:', err);
+        if (statusText) statusText.innerHTML = '🟡 Offline · Data Statis';
+        if (loadingText) loadingText.textContent = 'Memuat peta (mode offline)…';
+        // Fallback: tetap render peta tanpa data survei
+        initMap({});
+      });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', waitForLeaflet);
+    document.addEventListener('DOMContentLoaded', boot);
   } else {
-    waitForLeaflet();
+    boot();
   }
 
-  /* ── 8. Scroll Reveal ─────────────────────────────────────── */
+  /* Scroll reveal */
   const revealEls = document.querySelectorAll('#peta .reveal');
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
+  new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-  revealEls.forEach(el => revealObserver.observe(el));
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }).observe
+    ? (() => {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) { e.target.classList.add('visible'); }
+          });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+        revealEls.forEach(el => obs.observe(el));
+      })()
+    : revealEls.forEach(el => el.classList.add('visible'));
 
 })();
 </script>
