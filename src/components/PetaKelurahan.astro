@@ -8,7 +8,7 @@
     <header class="section-header">
       <span class="eyebrow reveal">🗺️ Tata Ruang Kelurahan</span>
       <h2 class="section-title reveal" id="peta-title">
-        Peta <span>Batas Wilayah</span>
+        Peta <span>Kelurahan</span>
       </h2>
       <p class="section-desc reveal">
         Peta batas wilayah Kelurahan Gunung Dempo yang telah disurvei oleh Mahasiswa KKNT 103 Kelompok 25.
@@ -34,7 +34,7 @@
           <span class="peta-info-icon" aria-hidden="true">🎓</span>
           <div>
             <div class="peta-info-label">Sumber Data</div>
-            <div class="peta-info-value">KKNT 103 Kelompok 25 · Survei Door-to-Door</div>
+            <div class="peta-info-value">KKNT 103 Kelompok 25 · Survei Door-to-Door & Posyandu</div>
           </div>
         </div>
         <div class="peta-info-divider" aria-hidden="true"></div>
@@ -49,11 +49,11 @@
         <div class="map-controls-wrap">
           <!-- Layer mode toggle -->
           <div class="layer-toggle-group" role="group" aria-label="Mode tampilan choropleth">
-            <button class="layer-btn active" data-mode="sanitasi" id="btn-mode-sanitasi" aria-pressed="true">
-              🚿 Sanitasi
+            <button class="layer-btn active" data-mode="medis" id="btn-mode-sanitasi" aria-pressed="true">
+              🏥 Desa Sehat
             </button>
-            <button class="layer-btn" data-mode="medis" id="btn-mode-medis" aria-pressed="false">
-              🦷 Akses Medis
+            <button class="layer-btn" data-mode="toga" id="btn-mode-medis" aria-pressed="false">
+              🌿 Konservasi TOGA
             </button>
           </div>
           <!-- Basemap toggle -->
@@ -81,7 +81,7 @@
           <div class="choro-bar" style="background: linear-gradient(90deg, #10b981, #fbbf24, #ef4444);"></div>
         </div>
         <span class="choro-label">Tinggi</span>
-        <span class="choro-title" id="choro-title">% Sanitasi Layak</span>
+        <span class="choro-title" id="choro-title">% Desa Sehat</span>
       </div>
 
       <!-- Bottom: Legend + Info -->
@@ -93,7 +93,7 @@
         <div class="peta-legend-right">
           <p class="peta-legend-note">
             <strong>💡 Tips:</strong> Klik poligon RW untuk insight survei. Toggle mode peta untuk
-            melihat <em>Sanitasi</em> vs <em>Akses Medis Gigi</em>. Data di-update otomatis dari Google Sheets.
+            melihat <em>Desa Sehat</em> vs <em>TOGA</em>. Data di-update otomatis dari Google Sheets.
           </p>
           <div class="peta-tech-badge">
             <span>⚡</span><strong>Leaflet.js</strong>
@@ -549,6 +549,30 @@
   :global(.popup-gallery-thumb img) {
     width: 100%; height: 100%; object-fit: cover;
     display: block;
+    position: absolute; inset: 0;
+  }
+  :global(.thumb-img-wrap) {
+    position: absolute; inset: 0;
+    overflow: hidden;
+  }
+  :global(.thumb-shimmer) {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #dcfce7 0%, #86efac 30%, #dcfce7 60%, #bbf7d0 100%);
+    background-size: 200% 200%;
+    animation: thumbShimmer 1.8s ease-in-out infinite;
+    color: #15803d;
+  }
+  @keyframes thumbShimmer {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  :global(.popup-gallery-more) {
+    display: flex; align-items: center; justify-content: center;
+    background: #f0fdf4; font-size: .7rem; font-weight: 800;
+    color: #15803d; cursor: pointer; border: 1.5px dashed #86efac;
   }
   :global(.popup-gallery-thumb:hover) {
     border-color: #10b981; transform: scale(1.06);
@@ -593,7 +617,7 @@
   /* ─────────────────────────────────────────────────────────
      KONFIGURASI
   ───────────────────────────────────────────────────────── */
-  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnTCV_rOINifo-eMc4SrWQ4ihhSv8as4Zolw8_dv-S9tFT1Xbz5g4r7Pp0h0YDIGDLiJBxUNnj6V1dFFpDjXgDKvpOR56WUBYIf--6blufGgCUeyAXkVs80vjtEPPGgBxebHY0_6bgKGhWVEr4LFAxcX0igCDzl0O7_xs-2QaA6yRpGT3bixoH1sI5Nt9xHlPopxhA76fHeoljx2cMpvknGNea21r5yZA5CwLo3mvX8LYrOnvjapqZJJdmPviYToU9b34RiUPpiDKOcDbfk_0EWbEGJAVQ&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQjZyOnFpb-cxOFHqzjoPq_m6f733zhOBiy5EW-5XySDs5NMUo4sSXUTgiDdUPyeP6doL9xmREJvuTJ4mD5AVpDqwIq94KT71syJchqgXv45vhYO_LJ3K55uW91vyV5Q5-Okzng24UyXDz-IZcc82WMgVq91t5EXTBepv1bjvlV2jg4Lc3iaTbTAzbbjXFB688ysePGnE8-ncAHUq8ZdqBV8sKiyMqDvFzMP05fIJXsaq9B_XpdTBNknCCMj1_DNoIXBrfO3vRaM7bA79XoW-8Ia08b3A&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
 
   /* ── GALERI PLACEHOLDER (diisi tim via Google Sheets GALERI sheet) ── */
   const GALERI_PLACEHOLDER: Record<string, GaleriItem[]> = {
@@ -604,26 +628,47 @@
     ],
   };
 
-  /* ── TIPE DATA GALERI ── */
+  /* ── TIPE DATA ── */
   interface GaleriItem {
     rw: string;
     url_foto: string;
     keterangan: string;
     kegiatan: string;
     tanggal: string;
+    tipe?: string; // 'DS' | 'TOGA'
   }
 
-  /* Global galeri store (diisi saat API berhasil) */
+  interface TogaRecord {
+    rw: number;
+    nama_tanaman: string;
+    jumlah: number;
+  }
+
+  /* Global stores (diisi saat API berhasil) */
   let galeriStore: Record<string, GaleriItem[]> = {};
+  let togaStore:   Record<string, TogaRecord[]>  = {}; // keyed by "RW 1", "RW 2", ...
 
   /* Warna & identitas tiap RW (statis) */
-  const RW_META: Record<string, { color: string; fillBase: string; icon: string; luasHa: string }> = {
-    'RW 1': { color: '#92400e', fillBase: '#f59e0b', icon: '🏘️', luasHa: '~85 Ha' },
-    'RW 2': { color: '#92400e', fillBase: '#d97706', icon: '🌿', luasHa: '~62 Ha' },
-    'RW 3': { color: '#065f46', fillBase: '#10b981', icon: '🏡', luasHa: '~78 Ha' },
-    'RW 4': { color: '#1e40af', fillBase: '#3b82f6', icon: '🌄', luasHa: '~310 Ha' },
-    'RW 5': { color: '#7c3aed', fillBase: '#8b5cf6', icon: '🏔️', luasHa: '~225 Ha' },
-    'RW 6': { color: '#be185d', fillBase: '#ec4899', icon: '🌲', luasHa: '~180 Ha' },
+  const RW_META: Record<string, { color: string; fillBase: string; icon: string; luasHa: string; rwName: string }> = {
+    'RW 1': { color: '#92400e', fillBase: '#f59e0b', icon: '🏘️', luasHa: '±85 Ha',  rwName: 'Afd. Pabrik' },
+    'RW 2': { color: '#92400e', fillBase: '#d97706', icon: '🌿', luasHa: '±62 Ha',  rwName: 'Afd. 1 / Talang Darat' },
+    'RW 3': { color: '#065f46', fillBase: '#10b981', icon: '🏡', luasHa: '±78 Ha',  rwName: 'Afd. 2 / Talang Beduk' },
+    'RW 4': { color: '#1e40af', fillBase: '#3b82f6', icon: '🌄', luasHa: '±310 Ha', rwName: 'Afd. 3 / Muara Perikan' },
+    'RW 5': { color: '#7c3aed', fillBase: '#8b5cf6', icon: '🏔️', luasHa: '±225 Ha', rwName: 'Afd. 4 / Muara Abadi' },
+    'RW 6': { color: '#be185d', fillBase: '#ec4899', icon: '🌲', luasHa: '±180 Ha', rwName: 'Afd. 5 / Janang' },
+  };
+
+  const PLANT_EMOJI: Record<string, string> = {
+    'Jahe': '🫚', 'Kunyit': '🟡', 'Lengkuas': '🌱', 'Kencur': '🌿',
+    'Temulawak': '🌾', 'Sirih': '🍃', 'Seledri': '🥬',
+  };
+
+  const LOCAL_IMAGES: Record<string, string> = {
+    '1zgN7jYjf4TlX87decR1sNdKAifaDSqA9': '/images/galeri/posyandu_kader.jpg',
+    '12X6-h_FEgGQx5P4IlCv2c2lLrQm5NsyR': '/images/galeri/posyandu_anak.jpg',
+    '1KqHvoTxVBG1g8Zb0nocjCfzOMSvBZP3r': '/images/galeri/modul_toga.jpg',
+    '1rnnOkHVtnBn6teA1aXELsdU9FIKANSSW': '/images/galeri/olahraga.jpg',
+    '11-uWFl8J9eXZzAaQureuND2c1Ypqpg69': '/images/galeri/gotong_royong.jpg',
   };
 
   const TILE_LAYERS = {
@@ -635,11 +680,9 @@
      GALERI: Build thumbnail strip untuk popup
   ───────────────────────────────────────────────────────── */
 
-  /** Bersihkan URL Google Drive — pastikan format uc?id= yang benar */
   /** Bersihkan URL Google Drive → pakai thumbnail API agar bisa di-embed langsung */
   function sanitizeDriveUrl(raw: string): string {
     if (!raw) return '';
-    // Coba ekstrak File ID dari berbagai format URL Drive
     let fileId = '';
     // Format: uc?id=FILE_ID  atau  ?id=FILE_ID
     const ucMatch = raw.match(/[?&]id=([^&?\s]+)/);
@@ -655,6 +698,10 @@
       if (dMatch) fileId = dMatch[1];
     }
     if (fileId) {
+      // Menggunakan file lokal jika tersedia agar terhindar dari rate limit Google Drive
+      if (LOCAL_IMAGES[fileId]) {
+        return LOCAL_IMAGES[fileId];
+      }
       // Pakai Google Drive thumbnail API — works for embedded images, no CORS issue
       return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
     }
@@ -671,32 +718,47 @@
     } catch { return raw; }
   }
 
-  function buildGalleryStrip(rwKey: string): string {
-    const items = galeriStore[rwKey] ?? [];
+  function buildGalleryStrip(rwKey: string, tipe: 'DS' | 'TOGA' = 'DS'): string {
+    const allItems  = galeriStore[rwKey] ?? [];
+    // Filter berdasarkan tipe mode yang aktif
+    const items = allItems.filter(g => !g.tipe || g.tipe === tipe);
+    const label = tipe === 'TOGA' ? '🌿 Dokumentasi TOGA' : '📸 Dokumentasi Desa Sehat';
+
     if (items.length === 0) {
+      const msg = tipe === 'TOGA'
+        ? `Belum ada foto kegiatan TOGA di ${rwKey}.`
+        : `Belum ada foto. Tim KKNT sedang mendokumentasikan kegiatan di ${rwKey}.`;
       return `
         <div class="popup-gallery-wrap">
-          <div class="popup-gallery-label">📸 Dokumentasi Kegiatan</div>
-          <p class="popup-gallery-empty">Belum ada foto. Tim KKNT sedang mendokumentasikan kegiatan di ${rwKey}.</p>
+          <div class="popup-gallery-label">${label}</div>
+          <p class="popup-gallery-empty">${msg}</p>
         </div>`;
     }
+
     const preview = items.slice(0, 4);
-    const more   = items.length > 4 ? items.length - 4 : 0;
+    const more    = items.length > 4 ? items.length - 4 : 0;
     const thumbsHtml = preview.map((item, i) => `
-      <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" title="${item.keterangan}" role="button" tabindex="0">
-        <img src="${item.url_foto}" alt="${item.keterangan}" loading="lazy" onerror="this.src='https://placehold.co/62x52/f3f4f6/9ca3af?text=📷'">
+      <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" data-galeri-tipe="${tipe}" title="${item.keterangan}" role="button" tabindex="0">
+        <div class="thumb-img-wrap">
+          <div class="thumb-shimmer">📷</div>
+          <img src="${item.url_foto}" alt="${item.keterangan}" loading="lazy"
+            onload="this.previousElementSibling.style.display='none';this.style.opacity='1'"
+            onerror="this.previousElementSibling.textContent='📷';this.remove()"
+            style="opacity:0;transition:opacity .3s;"
+          >
+        </div>
         <div class="thumb-overlay">🔍</div>
       </div>`).join('');
 
     return `
       <div class="popup-gallery-wrap">
         <div class="popup-gallery-label">
-          📸 Dokumentasi Kegiatan
+          ${label}
           <span>${items.length} foto</span>
         </div>
         <div class="popup-gallery-strip">
           ${thumbsHtml}
-          ${more > 0 ? `<div class="popup-gallery-thumb" style="display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-size:.7rem;font-weight:800;color:#6b7280;cursor:pointer;" data-galeri-rw="${rwKey}" data-galeri-idx="4">+${more}</div>` : ''}
+          ${more > 0 ? `<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${rwKey}" data-galeri-idx="4" data-galeri-tipe="${tipe}">+${more}</div>` : ''}
         </div>
       </div>`;
   }
@@ -790,9 +852,12 @@
   document.addEventListener('click', (e) => {
     const el = (e.target as HTMLElement).closest('[data-galeri-rw]') as HTMLElement | null;
     if (!el) return;
-    const rw  = el.getAttribute('data-galeri-rw') ?? '';
-    const idx = Number(el.getAttribute('data-galeri-idx') ?? 0);
-    const items = galeriStore[rw] ?? [];
+    const rw   = el.getAttribute('data-galeri-rw') ?? '';
+    const idx  = Number(el.getAttribute('data-galeri-idx') ?? 0);
+    const tipe = (el.getAttribute('data-galeri-tipe') || '').toUpperCase();
+    // Filter by tipe if specified (DS or TOGA), else show all
+    const allItems  = galeriStore[rw] ?? [];
+    const items = tipe ? allItems.filter(g => !g.tipe || g.tipe === tipe) : allItems;
     if (items.length > 0) lbShow(items, Math.min(idx, items.length - 1));
   });
 
@@ -865,30 +930,100 @@
   /* ─────────────────────────────────────────────────────────
      WARNA CHOROPLETH
   ───────────────────────────────────────────────────────── */
-  function choroplethColor(pct: number, mode: 'sanitasi' | 'medis'): string {
-    // Sanitasi: makin tinggi makin hijau
-    // Medis (obat warung): makin tinggi makin merah (negatif = buruk)
+  function choroplethColor(pct: number, mode: 'sanitasi' | 'medis' | 'toga'): string {
     if (mode === 'sanitasi') {
+      // Makin tinggi = makin hijau (baik)
       if (pct >= 90) return '#059669';
       if (pct >= 70) return '#10b981';
       if (pct >= 50) return '#fbbf24';
       return '#ef4444';
+    } else if (mode === 'toga') {
+      // Makin banyak tanaman = makin hijau
+      if (pct >= 80) return '#15803d';
+      if (pct >= 50) return '#22c55e';
+      if (pct >= 25) return '#86efac';
+      return '#dcfce7';
     } else {
-      if (pct >= 70) return '#dc2626'; // Mayoritas obat warung = darurat
+      // Medis (obat warung): makin tinggi = makin merah (buruk)
+      if (pct >= 70) return '#dc2626';
       if (pct >= 50) return '#f97316';
       if (pct >= 30) return '#fbbf24';
-      return '#22c55e'; // Sedikit yang obat warung = oke
+      return '#22c55e';
     }
   }
 
   /* ─────────────────────────────────────────────────────────
-     BUILD POPUP
+     BUILD POPUP — TOGA MODE
+  ───────────────────────────────────────────────────────── */
+  function buildTogaPopup(rwKey: string): string {
+    const meta    = RW_META[rwKey] ?? { color: '#15803d', fillBase: '#22c55e', icon: '🌿', luasHa: '-', rwName: rwKey };
+    const tanaman = togaStore[rwKey] ?? [];
+    const totalJumlah = tanaman.reduce((s, t) => s + t.jumlah, 0);
+    const maxJumlah   = tanaman.length ? Math.max(...tanaman.map(t => t.jumlah)) : 1;
+
+    const barsHtml = tanaman.length
+      ? tanaman
+          .sort((a, b) => b.jumlah - a.jumlah)
+          .map(t => {
+            const pct = Math.round(t.jumlah / maxJumlah * 100);
+            const em  = PLANT_EMOJI[t.nama_tanaman] || '🌿';
+            return `
+              <div style="margin-bottom:.45rem;">
+                <div style="display:flex;justify-content:space-between;font-size:.65rem;color:#374151;margin-bottom:.2rem;">
+                  <span>${em} ${t.nama_tanaman}</span>
+                  <strong style="color:#15803d">${t.jumlah} btg</strong>
+                </div>
+                <div style="height:7px;background:#dcfce7;border-radius:999px;overflow:hidden;">
+                  <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:999px;"></div>
+                </div>
+              </div>`;
+          }).join('')
+      : `<p style="font-size:.7rem;color:#9ca3af;font-style:italic;">Data tanaman belum tersedia untuk ${rwKey}.</p>`;
+
+    const galeriHtml = buildGalleryStrip(rwKey, 'TOGA');
+
+    return `
+      <div>
+        <div class="popup-header" style="background: linear-gradient(135deg, #15803d, #22c55e);">
+          <div class="popup-rw-label">TOGA · Kelurahan Gunung Dempo</div>
+          <div class="popup-rw-name">${meta.icon} ${rwKey}</div>
+          <div class="popup-data-tag">🌿 ${tanaman.length} Jenis · ${totalJumlah} Tanaman</div>
+        </div>
+        <div class="popup-body">
+          <div class="popup-stat-grid">
+            <div class="popup-stat">
+              <div class="popup-stat-val" style="color:#15803d">🗺️ ${meta.luasHa}</div>
+              <div class="popup-stat-lbl">Luas Wilayah</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val" style="color:#15803d">🌿 ${tanaman.length}</div>
+              <div class="popup-stat-lbl">Jenis TOGA</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val" style="color:#15803d">🪴 ${totalJumlah}</div>
+              <div class="popup-stat-lbl">Total Tanaman</div>
+            </div>
+            <div class="popup-stat">
+              <div class="popup-stat-val" style="color:#15803d">📍 ${meta.rwName.split('/')[0].trim()}</div>
+              <div class="popup-stat-lbl">Area / Afdeling</div>
+            </div>
+          </div>
+          <div style="margin:.5rem 0 .3rem;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#6b7280;">Sebaran Tanaman</div>
+          ${barsHtml}
+          ${galeriHtml}
+        </div>
+      </div>`;
+  }
+
+  /* ─────────────────────────────────────────────────────────
+     BUILD POPUP — DESA SEHAT MODE
   ───────────────────────────────────────────────────────── */
   function buildPopup(
     rwKey: string,
     stats: RWStats | undefined,
-    mode: 'sanitasi' | 'medis'
+    mode: 'sanitasi' | 'medis' | 'toga'
   ): string {
+    if (mode === 'toga') return buildTogaPopup(rwKey);
     const meta = RW_META[rwKey] ?? { color: '#059669', fillBase: '#10b981', icon: '🏘️', luasHa: '-' };
 
     if (!stats) {
@@ -909,7 +1044,7 @@
     const medisColor    = choroplethColor(stats.persen_obat_warung, 'medis');
 
     const ironiGigi = stats.persen_nyeri >= 40
-      ? `⚠️ <strong>Ironi klinis:</strong> ${stats.persen_nyeri}% warga mengeluh nyeri gigi, namun ${stats.persen_obat_warung}% hanya membeli obat warung.`
+      ? `⚠️ <strong>Catatan:</strong> ${stats.persen_nyeri}% warga mengeluh nyeri gigi, namun ${stats.persen_obat_warung}% hanya membeli obat warung.`
       : `✅ ${stats.persen_nyeri}% warga mengalami keluhan nyeri gigi.`;
 
     return `
@@ -968,7 +1103,7 @@
           </div>
 
           <div class="popup-insight">${ironiGigi}</div>
-          ${buildGalleryStrip(rwKey)}
+          ${buildGalleryStrip(rwKey, 'DS')}
         </div>
       </div>`;
   }
@@ -1044,7 +1179,7 @@
     const mapEl      = document.getElementById('leaflet-map');
     if (!mapEl) return;
 
-    let currentMode: 'sanitasi' | 'medis' = 'sanitasi';
+    let currentMode: 'sanitasi' | 'medis' | 'toga' = 'sanitasi';
 
     const map = (window as any).L.map('leaflet-map', {
       center: [-4.038, 103.17], zoom: 12,
@@ -1061,9 +1196,7 @@
     let selectedLayer: any = null;
 
     /* Compute choropleth fill for a feature */
-    function featureStyle(feature: any, mode: 'sanitasi' | 'medis') {
-      const rwKey  = `RW ${feature?.properties?.Name?.replace('RW ', '') ?? ''}`.trim();
-      // Handle "RW 3" format directly
+    function featureStyle(feature: any, mode: 'sanitasi' | 'medis' | 'toga') {
       const rwName = feature?.properties?.Name ?? '';
       const rwNum  = rwName.replace('RW ', '').trim();
       const key    = `RW ${rwNum}`;
@@ -1071,7 +1204,14 @@
       const meta   = RW_META[key] ?? { color: '#6b7280', fillBase: '#9ca3af' };
 
       let fill: string;
-      if (!stats) {
+      if (mode === 'toga') {
+        // Choropleth TOGA: berdasarkan jumlah total tanaman di RW tersebut
+        const rwToga   = togaStore[key] ?? [];
+        const total    = rwToga.reduce((s, t) => s + t.jumlah, 0);
+        const allTotal = Object.values(togaStore).flat().reduce((s, t) => s + t.jumlah, 0);
+        const pct      = allTotal ? Math.round(total / allTotal * 100 * 5) : 0; // scale for color
+        fill = rwToga.length > 0 ? choroplethColor(Math.min(pct, 100), 'toga') : '#d1d5db';
+      } else if (!stats) {
         fill = '#d1d5db'; // abu-abu = belum ada data
       } else {
         const pct = mode === 'sanitasi' ? stats.persen_sanitasi : stats.persen_obat_warung;
@@ -1092,7 +1232,7 @@
             const key    = `RW ${rwNum}`;
             const meta   = RW_META[key] ?? { color: '#059669', fillBase: '#10b981' };
 
-            layer.bindPopup(() => buildPopup(key, surveyStats[key], currentMode), {
+            layer.bindPopup(() => currentMode === 'toga' ? buildTogaPopup(key) : buildPopup(key, surveyStats[key], currentMode), {
               className: 'rw-popup', maxWidth: 300, autoPan: true,
             });
 
@@ -1145,18 +1285,18 @@
             });
             if (selectedLayer) selectedLayer.setStyle({ fillOpacity: 0.85, weight: 4 });
 
-            // Update choropleth legend title
+            // Update choropleth legend title & scale
             const title = document.getElementById('choro-title');
-            if (title) title.textContent = mode === 'sanitasi' ? '% Sanitasi Layak' : '% Warga Obat Warung';
-
-            // Update choro bar
-            const bar = document.getElementById('choro-scale');
-            if (bar) {
-              if (mode === 'sanitasi') {
-                bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#ef4444,#fbbf24,#10b981);"></div>';
-              } else {
-                bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#22c55e,#fbbf24,#ef4444);"></div>';
-              }
+            const bar   = document.getElementById('choro-scale');
+            if (mode === 'toga') {
+              if (title) title.textContent = '🌿 Kepadatan TOGA';
+              if (bar)   bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#dcfce7,#86efac,#15803d);"></div>';
+            } else if (mode === 'sanitasi') {
+              if (title) title.textContent = '% Sanitasi Layak';
+              if (bar)   bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#ef4444,#fbbf24,#10b981);"></div>';
+            } else {
+              if (title) title.textContent = '% Desa Sehat';
+              if (bar)   bar.innerHTML = '<div class="choro-bar" style="background:linear-gradient(90deg,#22c55e,#fbbf24,#ef4444);"></div>';
             }
 
             // Active state
@@ -1211,63 +1351,79 @@
     // Init lightbox controls once
     lbInitControls();
 
-    // Fetch live survey data
-    fetch(API_URL)
-      .then(r => {
-        if (!r.ok) throw new Error(`HTTP ${r.status}`);
-        return r.json();
-      })
-      .then((payload: KKRecord[] | { survei: KKRecord[]; galeri: GaleriItem[] }) => {
-        // Support both old format (array) and new format ({ survei, galeri })
-        let rawData: KKRecord[];
-        let galeriRaw: GaleriItem[] = [];
+    function loadMapData(url: string, isFallback: boolean = false): void {
+      fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.json();
+        })
+        .then((payload: any) => {
+          let rawData: KKRecord[];
+          let galeriRaw: GaleriItem[] = [];
+          let togaRaw:   TogaRecord[] = [];
 
-        if (Array.isArray(payload)) {
-          rawData  = payload;
-        } else {
-          rawData  = payload.survei  ?? [];
-          galeriRaw = payload.galeri ?? [];
-        }
+          if (Array.isArray(payload)) {
+            rawData = payload;
+          } else {
+            rawData   = payload.survei  ?? [];
+            galeriRaw = payload.galeri  ?? [];
+            togaRaw   = payload.toga    ?? [];
+          }
 
-        // Populate galeriStore from API — fallback to placeholder if empty
-        if (galeriRaw.length > 0) {
-          galeriRaw.forEach(item => {
-            // Normalisasi: rw bisa datang sebagai angka atau string dari Sheets
-            const rwStr  = String(item.rw).trim();
-            const key    = `RW ${rwStr}`;
-            // Bersihkan URL dan format tanggal
-            const cleaned: GaleriItem = {
-              ...item,
-              rw:       rwStr,
-              url_foto: sanitizeDriveUrl(String(item.url_foto ?? '')),
-              tanggal:  formatTanggal(String(item.tanggal ?? '')),
-            };
-            if (!galeriStore[key]) galeriStore[key] = [];
-            galeriStore[key].push(cleaned);
+          // Populate galeriStore (keyed by "RW X", filtered by tipe)
+          if (galeriRaw.length > 0) {
+            galeriRaw.forEach(item => {
+              const rwStr  = String(item.rw).trim();
+              const key    = `RW ${rwStr}`;
+              const cleaned: GaleriItem = {
+                ...item,
+                rw:       rwStr,
+                tipe:     String(item.tipe ?? '').toUpperCase() || 'DS',
+                url_foto: sanitizeDriveUrl(String(item.url_foto ?? '')),
+                tanggal:  formatTanggal(String(item.tanggal ?? '')),
+              };
+              if (!galeriStore[key]) galeriStore[key] = [];
+              galeriStore[key].push(cleaned);
+            });
+          } else {
+            galeriStore = { ...GALERI_PLACEHOLDER };
+          }
+
+          // Populate togaStore (keyed by "RW X")
+          togaRaw.forEach(t => {
+            const key = `RW ${t.rw}`;
+            if (!togaStore[key]) togaStore[key] = [];
+            togaStore[key].push(t);
           });
-        } else {
-          // Use placeholder data until team uploads real photos
-          galeriStore = { ...GALERI_PLACEHOLDER };
-        }
 
-        const stats = agregasiData(rawData);
+          const stats = agregasiData(rawData);
 
-        // Update status indicator
-        if (statusText) {
-          const rwCount = Object.keys(stats).length;
-          const kkTotal = Object.values(stats).reduce((a, s) => a + s.total_kk, 0);
-          statusText.innerHTML = `🟢 Live · ${kkTotal} KK dari ${rwCount} RW`;
-        }
+          // Update status indicator
+          if (statusText) {
+            const rwCount = Object.keys(stats).length;
+            const kkTotal = Object.values(stats).reduce((a, s) => a + s.total_kk, 0);
+            statusText.innerHTML = isFallback 
+              ? `🟢 Live · Local Mode` 
+              : `🟢 Live · ${kkTotal} KK dari ${rwCount} RW`;
+          }
 
-        initMap(stats);
-      })
-      .catch(err => {
-        console.warn('API fetch gagal, menggunakan data statis:', err);
-        if (statusText) statusText.innerHTML = '🟡 Offline · Data Statis';
-        if (loadingText) loadingText.textContent = 'Memuat peta (mode offline)…';
-        // Fallback: tetap render peta tanpa data survei
-        initMap({});
-      });
+          initMap(stats);
+        })
+        .catch(err => {
+          console.warn(`Fetch gagal untuk ${url}:`, err);
+          if (!isFallback) {
+            if (statusText) statusText.innerHTML = '⏳ Menghubungkan ke Lokal...';
+            // Silent fallback ke data local
+            loadMapData('/data-kesehatan-fallback.json', true);
+          } else {
+            if (statusText) statusText.innerHTML = '🟡 Offline · Data Statis';
+            if (loadingText) loadingText.textContent = 'Memuat peta (mode offline)…';
+            initMap({});
+          }
+        });
+    }
+
+    loadMapData(API_URL);
   }
 
   if (document.readyState === 'loading') {

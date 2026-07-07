@@ -3,22 +3,26 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
+import MediaDokumenter from '../components/MediaDokumenter.astro';
+import PetaKelurahan from '../components/PetaKelurahan.astro';
 import Kesehatan from '../components/Kesehatan.astro';
 import Toga from '../components/Toga.astro';
+import WisataLokal from '../components/WisataLokal.astro';
 import Komoditas from '../components/Komoditas.astro';
-import PetaKelurahan from '../components/PetaKelurahan.astro';
 import Footer from '../components/Footer.astro';
 ---
 
 <Layout
   title="Profil Kelurahan Gunung Dempo – Lereng Gunung Dempo"
-  description="Profil Kelurahan Gunung Dempo – menampilkan potensi lokal, pertanian kopi & teh, serta data kesehatan masyarakat hasil program KKNT 103 Kelompok 25 Universitas Sriwijaya."
+  description="Profil Kelurahan Gunung Dempo – menampilkan potensi lokal, pertanian kopi & teh, wisata alam, kearifan lokal Besemah, serta data kesehatan masyarakat hasil program KKNT 103 Kelompok 25 Universitas Sriwijaya."
 >
   <Navbar />
   <Hero />
+  <MediaDokumenter />
   <PetaKelurahan />
   <Kesehatan />
   <Toga />
+  <WisataLokal />
   <Komoditas />
   <Footer />
 </Layout>
