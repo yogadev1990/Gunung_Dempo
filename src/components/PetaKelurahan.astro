@@ -735,8 +735,8 @@
         </div>`;
     }
 
-    const preview = items.slice(0, 4);
-    const more    = items.length > 4 ? items.length - 4 : 0;
+    const preview = items.slice(0, 2);
+    const more    = items.length > 2 ? items.length - 2 : 0;
     const thumbsHtml = preview.map((item, i) => `
       <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" data-galeri-tipe="${tipe}" title="${item.keterangan}" role="button" tabindex="0">
         <div class="thumb-img-wrap">
@@ -758,7 +758,7 @@
         </div>
         <div class="popup-gallery-strip">
           ${thumbsHtml}
-          ${more > 0 ? `<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${rwKey}" data-galeri-idx="4" data-galeri-tipe="${tipe}">+${more}</div>` : ''}
+          ${more > 0 ? `<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${rwKey}" data-galeri-idx="2" data-galeri-tipe="${tipe}">+${more}</div>` : ''}
         </div>
       </div>`;
   }

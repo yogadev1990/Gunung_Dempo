@@ -2,7 +2,7 @@ const de=document.getElementById("navbar");window.addEventListener("scroll",()=>
         <div class="popup-gallery-wrap">
           <div class="popup-gallery-label">${i}</div>
           <p class="popup-gallery-empty">${v}</p>
-        </div>`}const S=a.slice(0,4),I=a.length>4?a.length-4:0,m=S.map((v,T)=>`
+        </div>`}const S=a.slice(0,2),I=a.length>2?a.length-2:0,m=S.map((v,T)=>`
       <div class="popup-gallery-thumb" data-galeri-rw="${t}" data-galeri-idx="${T}" data-galeri-tipe="${e}" title="${v.keterangan}" role="button" tabindex="0">
         <div class="thumb-img-wrap">
           <div class="thumb-shimmer">📷</div>
@@ -21,7 +21,7 @@ const de=document.getElementById("navbar");window.addEventListener("scroll",()=>
         </div>
         <div class="popup-gallery-strip">
           ${m}
-          ${I>0?`<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${t}" data-galeri-idx="4" data-galeri-tipe="${e}">+${I}</div>`:""}
+          ${I>0?`<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${t}" data-galeri-idx="2" data-galeri-tipe="${e}">+${I}</div>`:""}
         </div>
       </div>`}let B=[],k=0;function K(t,e){B=t,k=e;const n=document.getElementById("lb-overlay");n.style.display="flex",document.body.style.overflow="hidden",s(),o()}function u(){const t=document.getElementById("lb-overlay");t.style.display="none",document.body.style.overflow=""}function s(){const t=B[k];if(!t)return;const e=document.getElementById("lb-img"),n=document.getElementById("lb-img-loader"),a=document.getElementById("lb-caption"),i=document.getElementById("lb-date"),S=document.getElementById("lb-activity"),I=document.getElementById("lb-rw-badge"),m=document.getElementById("lb-counter"),v=document.getElementById("lb-prev"),T=document.getElementById("lb-next");e.classList.add("loading"),n.classList.remove("hidden"),e.onload=()=>{e.classList.remove("loading"),n.classList.add("hidden")},e.onerror=()=>{e.src="https://placehold.co/800x500/f3f4f6/9ca3af?text=Foto+tidak+tersedia",n.classList.add("hidden")},e.src=t.url_foto,e.alt=t.keterangan,a.textContent=t.keterangan,i.textContent=t.tanggal?`📅 ${t.tanggal}`:"",S.textContent=t.kegiatan?`🏷️ ${t.kegiatan}`:"",I.textContent=`RW ${t.rw}`,m.textContent=`${k+1} / ${B.length}`,v.disabled=k===0,T.disabled=k===B.length-1,document.querySelectorAll("#lb-strip .lb-thumb").forEach((y,M)=>{y.classList.toggle("active",M===k)});const b=document.querySelector("#lb-strip .lb-thumb.active");b&&b.scrollIntoView({behavior:"smooth",inline:"center"})}function o(){const t=document.getElementById("lb-strip");t.innerHTML=B.map((e,n)=>`
       <div class="lb-thumb ${n===k?"active":""}" data-idx="${n}" role="listitem">
