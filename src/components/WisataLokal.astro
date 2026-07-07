@@ -11,6 +11,7 @@ interface WisataItem {
   badge: string;
   color: string;         // accent color for glow
   colorLight: string;    // light tint for bg
+  image: string;         // path to realistic image
   youtubeUrl?: string;   // opsional: link video YouTube destinasi ini
 }
 
@@ -25,6 +26,7 @@ const wisataList: WisataItem[] = [
     badge: "🌋 Alam",
     color: "rgba(16,185,129,0.5)",
     colorLight: "rgba(16,185,129,0.08)",
+    image: "/images/wisata_gunung_dempo.png",
     youtubeUrl: "https://www.youtube.com/results?search_query=pendakian+gunung+dempo",
   },
   {
@@ -37,6 +39,7 @@ const wisataList: WisataItem[] = [
     badge: "🌿 Perkebunan",
     color: "rgba(52,211,153,0.5)",
     colorLight: "rgba(52,211,153,0.08)",
+    image: "/images/wisata_kebun_teh.png",
     youtubeUrl: "https://www.youtube.com/results?search_query=kebun+teh+pagar+alam",
   },
   {
@@ -49,6 +52,7 @@ const wisataList: WisataItem[] = [
     badge: "☕ Kuliner",
     color: "rgba(196,127,62,0.5)",
     colorLight: "rgba(196,127,62,0.08)",
+    image: "/images/wisata_kopi.png",
     youtubeUrl: "https://www.youtube.com/results?search_query=agrowisata+kopi+dempo+pagar+alam",
   },
   {
@@ -61,6 +65,7 @@ const wisataList: WisataItem[] = [
     badge: "💊 Herbal",
     color: "rgba(106,155,120,0.5)",
     colorLight: "rgba(106,155,120,0.08)",
+    image: "/images/wisata_toga.png",
   },
   {
     id: "wisata-paralayang",
@@ -72,6 +77,7 @@ const wisataList: WisataItem[] = [
     badge: "🪂 Alam",
     color: "rgba(56,189,248,0.5)",
     colorLight: "rgba(56,189,248,0.07)",
+    image: "/images/wisata_paralayang.png",
     youtubeUrl: "https://www.youtube.com/results?search_query=paralayang+gunung+dempo",
   },
   {
@@ -84,6 +90,7 @@ const wisataList: WisataItem[] = [
     badge: "🎭 Budaya",
     color: "rgba(251,146,60,0.5)",
     colorLight: "rgba(251,146,60,0.07)",
+    image: "/images/wisata_budaya.png",
   },
 ];
 
@@ -147,7 +154,7 @@ const categoryColors: Record<string, string> = {
 
           <!-- Card image / emoji area -->
           <div class="wisata-card-visual" aria-hidden="true">
-            <span class="wisata-emoji">{item.emoji}</span>
+            <img src={item.image} alt={item.name} class="wisata-img" loading="lazy" />
             <span class="wisata-badge">{item.badge}</span>
           </div>
 
@@ -342,27 +349,23 @@ const categoryColors: Record<string, string> = {
     opacity: 0.8;
   }
 
-  /* Visual emoji area */
+  /* Visual image area */
   .wisata-card-visual {
-    background: var(--card-bg, var(--clr-sage-50));
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: #f1f5f9;
+    height: 180px;
     position: relative;
     overflow: hidden;
-    transition: background var(--transition-base);
   }
-  .wisata-card:hover .wisata-card-visual {
-    background: color-mix(in srgb, var(--card-bg) 100%, white -20%);
-  }
-  .wisata-emoji {
-    font-size: 3.5rem;
-    line-height: 1;
-    transition: transform var(--transition-bounce);
+  .wisata-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-bounce, 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275));
     display: block;
   }
-  .wisata-card:hover .wisata-emoji { transform: scale(1.15) rotate(-5deg); }
+  .wisata-card:hover .wisata-img {
+    transform: scale(1.1);
+  }
 
   .wisata-badge {
     position: absolute;
