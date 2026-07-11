@@ -10,7 +10,8 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies (skip devDependencies later at runtime stage)
-RUN npm ci
+RUN npm install
+RUN npm ci 
 
 # Copy source code
 COPY . .
