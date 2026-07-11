@@ -25,4 +25,4 @@ index.html
 # ── Docker files ────────────────────────────────
 Dockerfile
 docker-compose.yml
-nginx.conf
+
