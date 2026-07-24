@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Dental Simulation: Dokter Gigi vs Tukang Gigi</title>
+    
+    <!-- Google Fonts for premium gaming console HUD aesthetics -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Variables & Theme Setup */
+        :root {
+            --bg-deep: #030712;
+            --drg-theme: #0ea5e9;
+            --drg-glow: rgba(14, 165, 233, 0.4);
+            --tukang-theme: #ef4444;
+            --tukang-glow: rgba(239, 68, 68, 0.4);
+            --success-color: #10b981;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --bg-glass: rgba(15, 23, 42, 0.6);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 16:9 Smart TV Kiosk Container */
+        #game-container {
+            width: 1920px;
+            height: 1080px;
+            position: absolute;
+            background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+            transform-origin: top left;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.95);
+            padding: 24px;
+            gap: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* Scanline Overlay for retro-tech look */
+        #game-container::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.12) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 4px, 6px 100%;
+            z-index: 999;
+            pointer-events: none;
+            opacity: 0.45;
+        }
+
+        /* Top Bar / RPG Status Header */
+        #top-bar {
+            height: 100px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            z-index: 50;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .header-title h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title p {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        .level-tracker {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .lvl-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: #c084fc;
+            text-shadow: 0 0 10px rgba(192, 132, 252, 0.5);
+        }
+
+        .xp-container {
+            width: 180px;
+        }
+
+        .xp-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .xp-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        #xp-fill {
+            width: 0%;
+            height: 100%;
+            background: #a855f7;
+            box-shadow: 0 0 10px #a855f7;
+            transition: width 0.6s ease;
+        }
+
+        /* Quest Tracker Box */
+        .quest-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(16, 185, 129, 0.08);
+            border: 1.5px solid rgba(16, 185, 129, 0.25);
+            padding: 10px 20px;
+            border-radius: 12px;
+        }
+
+        .quest-icon {
+            font-size: 20px;
+            animation: pulse 1s infinite alternate;
+        }
+
+        .quest-info h4 {
+            font-size: 11px;
+            color: #34d399;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .quest-info p {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Health Points Container */
+        .hp-container {
+            width: 380px;
+        }
+
+        .hp-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 15px;
+            font-weight: 900;
+            margin-bottom: 6px;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .hp-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+        }
+
+        #hp-fill {
+            width: 100%;
+            height: 100%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 15px var(--success-color);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.4s;
+        }
+
+        /* Game Middle Area Layout */
+        #play-area {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            height: calc(100% - 300px); /* Subtract top bar and bottom log */
+        }
+
+        /* Left Side: Quest & Patient Stats Panel */
+        #left-panel {
+            width: 420px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .panel-heading {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--text-sub);
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .patient-card {
+            background: rgba(0,0,0,0.25);
+            width: 100%;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: center;
+        }
+
+        /* Styled SVG Character Avatar */
+        .avatar-container {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(0,0,0,0.4) 100%);
+            border: 2.5px solid rgba(56, 189, 248, 0.2);
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-container.damaged {
+            border-color: var(--tukang-theme);
+            box-shadow: 0 0 25px var(--tukang-glow);
+            animation: mini-shake 0.2s infinite;
+        }
+
+        @keyframes mini-shake {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-2px, 1px); }
+            50% { transform: translate(1px, -2px); }
+            75% { transform: translate(-1px, -1px); }
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .patient-desc {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 2px;
+        }
+
+        /* Stats Board */
+        .stats-board {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+
+        .stat-bar-outer {
+            width: 100%;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 99px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .stat-bar-inner {
+            height: 100%;
+            border-radius: 99px;
+            transition: width 0.8s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.4s;
+        }
+
+        .stat-hygiene { background: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
+        .stat-alignment { background: #c084fc; box-shadow: 0 0 10px rgba(192, 132, 252, 0.5); }
+        .stat-brightness { background: #e2e8f0; box-shadow: 0 0 10px rgba(226, 232, 240, 0.5); }
+        .stat-pain { background: #f87171; box-shadow: 0 0 10px rgba(248, 113, 113, 0.5); }
+        .stat-infection { background: #fb923c; box-shadow: 0 0 10px rgba(251, 146, 60, 0.5); }
+
+        /* Center Panel: The Simulation Arena */
+        #center-panel {
+            flex: 1;
+            background: rgba(8, 14, 27, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.04);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 20px;
+            box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Scanner Radar Effect */
+        .radar-circle {
+            position: absolute;
+            width: 800px;
+            height: 600px;
+            border-radius: 30px;
+            border: 1px dashed rgba(56, 189, 248, 0.06);
+            pointer-events: none;
+        }
+
+        #mouth-viewport {
+            position: relative;
+            width: 900px;
+            height: 560px;
+            z-index: 5;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #clinical-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            transition: filter 0.4s ease;
+        }
+
+        #drop-zone {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border-radius: 20px;
+            border: 3.5px dashed rgba(255, 255, 255, 0.12);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        #drop-zone.hovered {
+            background: rgba(56, 189, 248, 0.05);
+            border-color: var(--drg-color);
+            box-shadow: inset 0 0 50px rgba(14, 165, 233, 0.2);
+        }
+
+        #drop-zone span {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.22);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 12px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            transition: all 0.3s ease;
+        }
+
+        #drop-zone.hovered span {
+            color: var(--drg-color);
+            text-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+        }
+
+        #drop-zone svg {
+            width: 44px;
+            height: 44px;
+            fill: rgba(255, 255, 255, 0.22);
+            transition: all 0.3s ease;
+        }
+
+        #drop-zone.hovered svg {
+            fill: var(--drg-color);
+            transform: scale(1.15);
+        }
+
+        /* Floating Damage / Recovery Numbers */
+        .floating-text {
+            position: absolute;
+            pointer-events: none;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 28px;
+            z-index: 999;
+            animation: float-up-fade 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.9);
+        }
+
+        @keyframes float-up-fade {
+            0% { transform: translateY(0) scale(0.7); opacity: 0; }
+            15% { transform: translateY(-20px) scale(1.15); opacity: 1; }
+            100% { transform: translateY(-130px) scale(0.9); opacity: 0; }
+        }
+
+        .floating-text.critical {
+            font-size: 36px;
+            animation: critical-float-up 2.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes critical-float-up {
+            0% { transform: translateY(0) scale(0.5); opacity: 0; }
+            20% { transform: translateY(-25px) scale(1.35) rotate(-6deg); opacity: 1; }
+            35% { transform: translateY(-35px) scale(1.35) rotate(6deg); }
+            100% { transform: translateY(-170px) scale(0.95) rotate(0); opacity: 0; }
+        }
+
+        /* Right Side: Skill Cards / Tools */
+        #right-panel {
+            width: 440px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+
+        /* Custom Scrollbar for skills panel */
+        .skills-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .skills-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 99px;
+        }
+        .skills-container::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 99px;
+        }
+
+        .skills-group-title {
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .skills-group-title.drg { color: var(--drg-color); }
+        .skills-group-title.tukang { color: var(--tukang-theme); }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1.5px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 12px 16px;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            touch-action: pan-y;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .drag-handle {
+            width: 32px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            flex-shrink: 0;
+            touch-action: none;
+            transition: all 0.2s ease;
+        }
+
+        .drag-handle:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .drag-handle svg {
+            width: 20px;
+            height: 20px;
+            fill: rgba(255, 255, 255, 0.25);
+            transition: fill 0.2s ease;
+        }
+
+        .drag-handle:hover svg {
+            fill: rgba(255, 255, 255, 0.65);
+        }
+
+        .skill-card:hover {
+            transform: translateX(-4px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .drg-skill:hover { border-color: rgba(14, 165, 233, 0.4); box-shadow: 0 4px 15px rgba(14, 165, 233, 0.1); }
+        .tukang-skill:hover { border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 4px 15px rgba(239, 68, 68, 0.1); }
+
+        .skill-card.dragging {
+            opacity: 0.35;
+            transform: scale(0.95);
+        }
+
+        .skill-icon {
+            font-size: 32px;
+            width: 58px;
+            height: 58px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .drg-skill .skill-icon { border-color: rgba(14, 165, 233, 0.2); }
+        .tukang-skill .skill-icon { border-color: rgba(239, 68, 68, 0.2); }
+
+        .skill-info {
+            flex: 1;
+        }
+
+        .skill-info h3 {
+            font-size: 15px;
+            font-weight: 800;
+            color: #f1f5f9;
+        }
+
+        .skill-info p {
+            font-size: 12px;
+            color: var(--text-sub);
+            line-height: 1.35;
+            margin-top: 3px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .actor-badge {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+
+        .actor-badge.drg {
+            background: #0ea5e9;
+            color: #ffffff;
+            box-shadow: 0 0 8px rgba(14, 165, 233, 0.4);
+        }
+
+        .actor-badge.tukang {
+            background: #ef4444;
+            color: #ffffff;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
+
+        .effect-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+
+        .effect-badge.drg {
+            background: rgba(14, 165, 233, 0.12);
+            color: #38bdf8;
+            border: 1px solid rgba(14, 165, 233, 0.25);
+        }
+
+        .effect-badge.tukang {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
+
+        /* Drag Floating Clone */
+        .drag-clone {
+            pointer-events: none;
+            position: absolute;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid;
+            padding: 16px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            transform: translate(-50%, -50%);
+        }
+
+        .drag-clone.blue { border-color: var(--drg-color); box-shadow: 0 0 25px rgba(14, 165, 233, 0.4); }
+        .drag-clone.red { border-color: var(--tukang-theme); box-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
+        .drag-clone .skill-icon { font-size: 36px; border: none; background: none; width: auto; height: auto; }
+        .drag-clone h3 { font-size: 16px; font-weight: 800; color: #fff; }
+
+        /* Bottom Section: Combat Battle Log */
+        #bottom-panel {
+            height: 160px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 16px 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .log-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #a855f7;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #log-feed {
+            flex: 1;
+            overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 10px;
+        }
+
+        #log-feed::-webkit-scrollbar {
+            width: 4px;
+        }
+        #log-feed::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 99px;
+        }
+
+        .log-row {
+            animation: fade-slide-in 0.2s ease forwards;
+        }
+
+        @keyframes fade-slide-in {
+            from { opacity: 0; transform: translateX(-5px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .log-row.info { color: #38bdf8; }
+        .log-row.success { color: #34d399; }
+        .log-row.warning { color: #fb7185; }
+        .log-row.quest { color: #c084fc; font-weight: bold; }
+        .log-row.system { color: #94a3b8; font-style: italic; }
+
+        /* Status Panel & Image Description styling */
+        #status-panel {
+            margin-top: 45px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px 20px;
+            text-align: center;
+            z-index: 10;
+        }
+
+        #status-panel h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        #status-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+            line-height: 1.4;
+            transition: color 0.3s ease;
+        }
+
+        /* Modals and Victory overlays */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 50px;
+            border-radius: 20px;
+        }
+
+        .modal-content {
+            background: #0f172a;
+            border: 3.5px solid;
+            border-radius: 32px;
+            width: 1050px;
+            max-height: 900px;
+            padding: 40px 50px;
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: zoom-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow-y: auto;
+        }
+
+        @keyframes zoom-in {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content.success {
+            border-color: var(--success-color);
+            box-shadow: 0 0 50px rgba(16, 185, 129, 0.2);
+        }
+
+        .modal-content.danger {
+            border-color: var(--tukang-theme);
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-badge {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 55px;
+            font-weight: 900;
+            margin-bottom: 12px;
+            letter-spacing: 2px;
+            animation: badge-pulse 1s infinite alternate;
+        }
+
+        @keyframes badge-pulse {
+            from { transform: scale(1); filter: brightness(1); }
+            to { transform: scale(1.05); filter: brightness(1.2); }
+        }
+
+        .success .modal-badge { color: var(--success-color); text-shadow: 0 0 25px rgba(16, 185, 129, 0.5); }
+        .danger .modal-badge { color: var(--tukang-theme); text-shadow: 0 0 25px rgba(239, 68, 68, 0.5); }
+
+        .modal-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 34px;
+            font-weight: 900;
+            text-align: center;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+
+        .success .modal-title { color: var(--success-color); }
+        .danger .modal-title { color: var(--tukang-theme); }
+
+        .modal-desc {
+            font-size: 19px;
+            line-height: 1.55;
+            text-align: center;
+            margin-bottom: 30px;
+            max-width: 900px;
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        /* Educational card layout within modals */
+        .edu-wrapper {
+            display: flex;
+            gap: 24px;
+            width: 100%;
+            margin-bottom: 35px;
+            text-align: left;
+        }
+
+        .edu-card {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
+        }
+
+        .edu-card h5 {
+            font-size: 17px;
+            font-weight: 800;
+            margin-bottom: 12px;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edu-card p {
+            font-size: 14.5px;
+            color: var(--text-sub);
+            line-height: 1.5;
+        }
+
+        .edu-card ul {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .edu-card li {
+            font-size: 14.5px;
+            color: var(--text-sub);
+            margin-bottom: 8px;
+            padding-left: 18px;
+            position: relative;
+            line-height: 1.45;
+        }
+
+        .edu-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: #a855f7;
+            font-size: 10px;
+            top: 2px;
+        }
+
+        .btn-restart {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            padding: 18px 45px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+        }
+
+        .success .btn-restart { background: var(--success-color); color: #fff; }
+        .success .btn-restart:hover { background: #059669; box-shadow: 0 0 25px rgba(16, 185, 129, 0.5); transform: translateY(-3px); }
+
+        .danger .btn-restart { background: var(--tukang-theme); color: #fff; }
+        .danger .btn-restart:hover { background: #dc2626; box-shadow: 0 0 25px rgba(239, 68, 68, 0.5); transform: translateY(-3px); }
+
+        /* Visual Action shakes and flashes */
+        .combat-flash-red {
+            animation: flash-red-effect 0.4s ease-out;
+        }
+        @keyframes flash-red-effect {
+            0% { background-color: rgba(239, 68, 68, 0.4); }
+            100% { background-color: transparent; }
+        }
+
+        .screen-shake {
+            animation: screen-shake-anim 0.15s infinite;
+        }
+        @keyframes screen-shake-anim {
+            0%, 100% { transform: translate(0, 0); }
+            20% { transform: translate(-8px, 6px) rotate(-0.5deg); }
+            40% { transform: translate(8px, -6px) rotate(0.5deg); }
+            60% { transform: translate(-6px, -4px); }
+            80% { transform: translate(6px, 4px); }
+        }
+
+        .sparkle-particle {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+            animation: sparkle-float 1.2s linear forwards;
+            pointer-events: none;
+            z-index: 200;
+        }
+        @keyframes sparkle-float {
+            0% { transform: translate(0, 0) scale(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(1.1) rotate(180deg); opacity: 0; }
+        }
+
+        /* Animated Blood Drips inside SVG overlay */
+        .blood-drip-path {
+            animation: blood-drip-flow 2.5s infinite linear;
+        }
+        @keyframes blood-drip-flow {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(60px); opacity: 0; }
+        }
+
+        .damage-flash {
+            filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Image Preloader to prevent flicker -->
+    <div style="display: none;">
+        <img src="base.png">
+        <img src="scaling-success.png">
+        <img src="ortho-success.png">
+        <img src="bleach-success.png">
+        <img src="veneer-fail.png">
+        <img src="ortho-fail.png">
+        <img src="bleach-fail.png">
+        <img src="extract-fail.png">
+    </div>
+
+    <div id="game-container">
+        <div id="shake-wrapper" style="width: 100%; height: 100%; display: flex; flex-direction: column; gap: 20px;">
+        
+        <!-- TOP HUD STATUS PANEL -->
+        <div id="top-bar">
+            <div class="header-title">
+                <h1>DENTAL RPG: CLINICAL ARENA</h1>
+                <p>Simulasi Latih Keputusan Medis Tepat & Steril</p>
+            </div>
+
+            <div class="level-tracker">
+                <div class="lvl-badge" id="lvl-badge">LV 1</div>
+                <div class="xp-container">
+                    <div class="xp-label">
+                        <span>XP PROGRESS</span>
+                        <span id="xp-text">0 / 1000 XP</span>
+                    </div>
+                    <div class="xp-bar"><div id="xp-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="quest-box">
+                <div class="quest-icon">📌</div>
+                <div class="quest-info">
+                    <h4>QUEST AKTIF</h4>
+                    <p id="quest-text">Quest 1: Bersihkan Karang Gigi</p>
+                </div>
+            </div>
+            
+            <div class="hp-container">
+                <div class="hp-label">
+                    <span>DENTAL HP PASIEN</span>
+                    <span id="hp-text">10,000 / 10,000 HP</span>
+                </div>
+                <div class="hp-bar">
+                    <div id="hp-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MAIN LAYOUT -->
+        <div id="play-area">
+            
+            <!-- LEFT PANEL: PATIENT CARD & RPG METRICS -->
+            <div id="left-panel">
+                <div class="panel-heading">INFORMASI PASIEN</div>
+                
+                <div class="patient-card">
+                    <div class="avatar-container" id="avatar-container">
+                        <!-- Fully Animated Patient SVG Avatar -->
+                        <svg id="patient-avatar" viewBox="0 0 100 100" style="width: 120px; height: 120px;">
+                            <!-- Base Head -->
+                            <circle id="avatar-head" cx="50" cy="50" r="40" fill="#fed7aa" stroke="#ea580c" stroke-width="2.5" style="transition: fill 0.5s;" />
+                            <!-- Emo Hair -->
+                            <path d="M 12 40 C 20 20, 80 20, 88 40 C 80 12, 20 12, 12 40 Z" fill="#1e293b" />
+                            
+                            <!-- Eyes Group (Happy/Neutral) -->
+                            <g id="avatar-eyes-happy">
+                                <path d="M 28 42 Q 35 34 42 42" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" />
+                                <path d="M 58 42 Q 65 34 72 42" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" />
+                            </g>
+                            
+                            <!-- Eyes Group (Agony Pain) -->
+                            <g id="avatar-eyes-pain" style="display: none;">
+                                <line x1="28" y1="36" x2="38" y2="46" stroke="#b91c1c" stroke-width="4.5" stroke-linecap="round" />
+                                <line x1="38" y1="36" x2="28" y2="46" stroke="#b91c1c" stroke-width="4.5" stroke-linecap="round" />
+                                <line x1="62" y1="36" x2="72" y2="46" stroke="#b91c1c" stroke-width="4.5" stroke-linecap="round" />
+                                <line x1="72" y1="36" x2="62" y2="46" stroke="#b91c1c" stroke-width="4.5" stroke-linecap="round" />
+                            </g>
+                            
+                            <!-- Eyes Group (Dead Skull/X Eyes) -->
+                            <g id="avatar-eyes-dead" style="display: none;">
+                                <text x="25" y="47" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#64748b">X</text>
+                                <text x="57" y="47" font-family="Arial, sans-serif" font-size="20" font-weight="900" fill="#64748b">X</text>
+                            </g>
+
+                            <!-- Mouth Lines -->
+                            <path id="avatar-mouth-happy" d="M 33 60 Q 50 78 67 60" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" />
+                            <path id="avatar-mouth-neutral" d="M 33 64 Q 50 64 67 64" fill="none" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round" style="display: none;" />
+                            <path id="avatar-mouth-pain" d="M 33 70 Q 50 50 67 70" fill="none" stroke="#b91c1c" stroke-width="3.5" stroke-linecap="round" style="display: none;" />
+                            <ellipse id="avatar-mouth-scream" cx="50" cy="65" rx="11" ry="15" fill="#450a0a" stroke="#b91c1c" stroke-width="2" style="display: none;" />
+                            
+                            <!-- Tears / Sweat drops -->
+                            <path id="avatar-sweat" d="M 20 48 Q 16 56 16 60 A 2 2 0 0 0 20 62 A 2 2 0 0 0 20 58 Z M 80 48 Q 84 56 84 60 A 2 2 0 0 0 80 62 A 2 2 0 0 0 80 58 Z" fill="#38bdf8" style="display: none;" />
+                        </svg>
+                    </div>
+                    <div class="patient-name">Budi Haryanto</div>
+                    <div class="patient-desc">Pasien Remaja • Usia 16 Tahun</div>
+                </div>
+
+                <div class="stats-board">
+                    <!-- Stat Item: Kebersihan -->
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>Kebersihan Gigi (Hygiene)</span>
+                            <span id="stat-val-hygiene">25%</span>
+                        </div>
+                        <div class="stat-bar-outer">
+                            <div class="stat-bar-inner stat-hygiene" id="stat-bar-hygiene" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Stat Item: Kerapian -->
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>Kerapian Struktur (Alignment)</span>
+                            <span id="stat-val-alignment">40%</span>
+                        </div>
+                        <div class="stat-bar-outer">
+                            <div class="stat-bar-inner stat-alignment" id="stat-bar-alignment" style="width: 40%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stat Item: Kecerahan -->
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>Kecerahan Email (Brightness)</span>
+                            <span id="stat-val-brightness">55%</span>
+                        </div>
+                        <div class="stat-bar-outer">
+                            <div class="stat-bar-inner stat-brightness" id="stat-bar-brightness" style="width: 55%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stat Item: Nyeri -->
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>Tingkat Rasa Sakit (Pain)</span>
+                            <span id="stat-val-pain">0%</span>
+                        </div>
+                        <div class="stat-bar-outer">
+                            <div class="stat-bar-inner stat-pain" id="stat-bar-pain" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Stat Item: Infeksi -->
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>Jaringan Infeksi (Infection)</span>
+                            <span id="stat-val-infection">0%</span>
+                        </div>
+                        <div class="stat-bar-outer">
+                            <div class="stat-bar-inner stat-infection" id="stat-bar-infection" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CENTER PANEL: CLINICAL SIMULATION ARENA (Using User's static images) -->
+            <div id="center-panel">
+                <div id="viewer-area">
+                    <img id="clinical-image" src="base.png" alt="Kondisi Pasien">
+                    
+                    <!-- Animated overlay for blood drops over static images -->
+                    <svg id="blood-drip-overlay" viewBox="0 0 600 600" class="mouth-layer" style="opacity: 0; transition: opacity 1.2s; z-index: 15; pointer-events: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                        <path class="blood-drip-path" d="M 230 220 L 230 255 Q 230 258 232 258 Q 234 258 234 255 Z" fill="#b91c1c" />
+                        <path class="blood-drip-path" d="M 370 230 L 370 260 Q 370 263 372 263 Q 374 263 374 260 Z" fill="#b91c1c" style="animation-delay: 0.7s;" />
+                        <path class="blood-drip-path" d="M 310 400 L 310 365 Q 310 362 312 362 Q 314 362 314 365 Z" fill="#b91c1c" style="animation-delay: 1.4s;" />
+                    </svg>
+
+                    <!-- Interactive Drag Collision Zone Target -->
+                    <div id="drop-zone">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                        </svg>
+                        <span>JATUHKAN ALAT KESEHATAN DI SINI</span>
+                    </div>
+                </div>
+
+                <!-- Patient status bar descriptive text -->
+                <div id="status-panel">
+                    <h4>Pemeriksaan Medis (Diagnosa)</h4>
+                    <div id="status-text">Budi menderita karang gigi parah (plak bakteri mengeras), gigi berjejal, dan kusam kekuningan. Butuh tindakan segera!</div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: SKILLS INVENTORY TRAY (RPG DENTIST vs TUKANG) -->
+            <div id="right-panel">
+                <div class="panel-heading">SKILL INVENTORY (TINDAKAN)</div>
+                
+                <div id="skills-container" class="skills-container">
+                    
+                    <!-- SKILL: Ultrasonic Scaler -->
+                    <div class="skill-card drg-skill" data-tool="scaler" data-color="blue">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">🚿</div>
+                        <div class="skill-info">
+                            <h3>Ultrasonic Scaler</h3>
+                            <p>Membersihkan plak batu karang gigi dengan getaran suara. (Quest 1)</p>
+                            <div class="badge-row">
+                                <span class="actor-badge drg">Dokter Gigi</span>
+                                <span class="effect-badge drg">+Hygiene • Steril</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Kawat Behel Medis -->
+                    <div class="skill-card drg-skill" data-tool="ortho_medis" data-color="blue">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">⚕️</div>
+                        <div class="skill-info">
+                            <h3>Kawat Gigi Medis</h3>
+                            <p>Meratakan susunan gigi secara bertahap. Syarat: Gigi harus bersih. (Quest 2)</p>
+                            <div class="badge-row">
+                                <span class="actor-badge drg">Dokter Gigi</span>
+                                <span class="effect-badge drg">+Alignment • Medis</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Bleaching Klinis -->
+                    <div class="skill-card drg-skill" data-tool="bleaching_medis" data-color="blue">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">✨</div>
+                        <div class="skill-info">
+                            <h3>Bleaching Klinis</h3>
+                            <p>Memutihkan email gigi secara kimiawi medis terkontrol. (Quest 3)</p>
+                            <div class="badge-row">
+                                <span class="actor-badge drg">Dokter Gigi</span>
+                                <span class="effect-badge drg">+Brightness • Estetik</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Veneer Abal-abal -->
+                    <div class="skill-card tukang-skill" data-tool="veneer_ilegal" data-color="red">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">🦷</div>
+                        <div class="skill-info">
+                            <h3>Veneer Instan</h3>
+                            <p>Menempelkan lapisan pemutih dengan lem instan secara paksa.</p>
+                            <div class="badge-row">
+                                <span class="actor-badge tukang">Tukang Gigi</span>
+                                <span class="effect-badge tukang">Bahaya • Saraf Mati</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Behel Murahan -->
+                    <div class="skill-card tukang-skill" data-tool="behel_ilegal" data-color="red">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">⛓️</div>
+                        <div class="skill-info">
+                            <h3>Behel Beledug</h3>
+                            <p>Memasang behel kawat biasa tanpa rontgen/sterilisasi medis.</p>
+                            <div class="badge-row">
+                                <span class="actor-badge tukang">Tukang Gigi</span>
+                                <span class="effect-badge tukang">Bahaya • Tetanus</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Pemutih Kimia Keras -->
+                    <div class="skill-card tukang-skill" data-tool="pemutih_ilegal" data-color="red">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">🧪</div>
+                        <div class="skill-info">
+                            <h3>Pemutih Asam Keras</h3>
+                            <p>Cairan kimia korosif dosis tinggi membakar plak gusi.</p>
+                            <div class="badge-row">
+                                <span class="actor-badge tukang">Tukang Gigi</span>
+                                <span class="effect-badge tukang">Bahaya • Gusi Melepuh</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SKILL: Cabut Gigi Tang -->
+                    <div class="skill-card tukang-skill" data-tool="cabut_ilegal" data-color="red">
+                        <div class="drag-handle">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                            </svg>
+                        </div>
+                        <div class="skill-icon">🔧</div>
+                        <div class="skill-info">
+                            <h3>Cabut Tang Keramat</h3>
+                            <p>Mencabut gigi bermasalah langsung dengan tang besi biasa.</p>
+                            <div class="badge-row">
+                                <span class="actor-badge tukang">Tukang Gigi</span>
+                                <span class="effect-badge tukang">Bahaya • Sepsis Darah</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- BOTTOM PANEL: RPG COMBAT BATTLE LOG -->
+        <div id="bottom-panel">
+            <div class="log-title">
+                <span>💬 BATTLE LOG & DIAGNOSIS MEDIS</span>
+            </div>
+            <div id="log-feed">
+                <!-- Log entries will spawn here via JS -->
+            </div>
+        </div>
+
+        </div> <!-- close shake-wrapper -->
+
+    <!-- SUCCESS VICTORY MODAL OVERLAY -->
+    <div id="modal-success" class="modal-overlay">
+        <div class="modal-content success">
+            <div class="modal-badge" id="success-rank">SSS</div>
+            <div class="modal-title" id="success-title">MISI SELESAI: DENTAL CHAMPION!</div>
+            <div class="modal-desc" id="success-desc">
+                Budi berhasil dirawat dengan standar kedokteran gigi tertinggi secara steril dan presisi!
+            </div>
+            
+            <div class="edu-wrapper">
+                <div class="edu-card">
+                    <h5>Reward & Prestasi Medis</h5>
+                    <ul>
+                        <li><strong>Orthodonti Aman:</strong> Gigi tersusun rapi menggunakan kawat nikel-titanium memori bentuk yang disetujui FDA.</li>
+                        <li><strong>Email Terjaga:</strong> Pencerahan bleaching klinis menjaga kekuatan mineral email tanpa mengikis gigi.</li>
+                        <li><strong>Bebas Bakteri:</strong> Karang gigi dikikis tuntas mencegah periodontitis.</li>
+                    </ul>
+                </div>
+                <div class="edu-card">
+                    <h5>Pelajaran Penting Bagi Remaja</h5>
+                    <p>Selalu prioritaskan perawatan ke <strong>Dokter Gigi Spesialis (Sp.Ort)</strong>. Dokter menempuh pendidikan bertahun-tahun untuk mempelajari pergerakan rahang dan gigi secara biologis agar gigi tidak lepas/mati saraf.</p>
+                </div>
+            </div>
+
+            <button class="btn-restart" onclick="resetSimulasi()">Buka Kasus Pasien Baru</button>
+        </div>
+    </div>
+
+    <!-- FAILURE GAME OVER MODAL OVERLAY -->
+    <div id="modal-failure" class="modal-overlay">
+        <div class="modal-content danger">
+            <div class="modal-badge">F</div>
+            <div class="modal-title" id="failure-title">CRITICAL FAILURE: CACAT PERMANEN!</div>
+            <div class="modal-desc" id="failure-desc">
+                Saraf gigi Budi mati tercekik akibat tindakan ilegal Tukang Gigi!
+            </div>
+            
+            <div class="edu-wrapper">
+                <div class="edu-card">
+                    <h5>Konsekuensi Kerusakan Patologis</h5>
+                    <ul>
+                        <li><strong>Kematian Pulpa Gigi:</strong> Lem perekat non-medis memerangkap bakteri aktif. Asam kuman menyerap ke pulpa hingga saraf mati membusuk.</li>
+                        <li><strong>Resorpsi Akar Gigi:</strong> Tarikan behel ngawur memicu tekanan abnormal, memperpendek akar gigi hingga semua gigi goyang & tanggal.</li>
+                        <li><strong>Nafas Bau Bangkai:</strong> Sisa makanan membusuk di bawah komposit veneer kasar yang tidak rata (sarang bakteri permanen).</li>
+                    </ul>
+                </div>
+                <div class="edu-card">
+                    <h5>Perbandingan Edukasi Kesehatan</h5>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 13.5px; color: var(--text-sub);">
+                        <thead>
+                            <tr style="border-bottom: 2px solid rgba(255,255,255,0.1); color: #fff;">
+                                <th style="padding: 6px 0; text-align: left;">Kategori</th>
+                                <th style="padding: 6px 0; text-align: left; color: var(--drg-color);">Dokter Gigi Resmi</th>
+                                <th style="padding: 6px 0; text-align: left; color: var(--tukang-theme);">Tukang Gigi Abal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                <td style="padding: 6px 0; font-weight: bold; color: #fff;">Lisensi</td>
+                                <td style="padding: 6px 0;">Terdaftar KKI & PDGI resmi.</td>
+                                <td style="padding: 6px 0;">Ilegal (Melanggar UU Medis).</td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.04);">
+                                <td style="padding: 6px 0; font-weight: bold; color: #fff;">Bahan</td>
+                                <td style="padding: 6px 0;">Nitinol Medis & Lem Komposit Steril.</td>
+                                <td style="padding: 6px 0;">Kawat biasa & Lem instan kimia keras.</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 0; font-weight: bold; color: #fff;">Alat</td>
+                                <td style="padding: 6px 0;">Autoclave steril tekanan uap.</td>
+                                <td style="padding: 6px 0;">Dicuci air keran biasa / Tanpa steril.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button class="btn-restart" onclick="resetSimulasi()">Ulangi & Ambil Keputusan Benar</button>
+        </div>
+    </div>
+
+    </div> <!-- close game-container -->
+
+    <!-- SCRIPTS AND SIMULATION RPG LOGIC -->
+    <script>
+        // --- 1. SMART TV RESPONSIVE SCALING SCRIPT ---
+        function scaleLayout() {
+            const container = document.getElementById('game-container');
+            const virtualW = 1920;
+            const virtualH = 1080;
+            
+            const realW = window.innerWidth;
+            const realH = window.innerHeight;
+            
+            const scale = Math.min(realW / virtualW, realH / virtualH);
+            
+            container.style.transform = `scale(${scale})`;
+            container.style.left = `${(realW - (virtualW * scale)) / 2}px`;
+            container.style.top = `${(realH - (virtualH * scale)) / 2}px`;
+        }
+        window.addEventListener('load', scaleLayout);
+        window.addEventListener('resize', scaleLayout);
+
+
+        // --- 2. WEBAUDIO RPG SOUND EFFECTS SYNTHESIZER ---
+        let audioCtx = null;
+
+        function resumeAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSound(freq, type, duration, delay = 0, volume = 0.1) {
+            resumeAudio();
+            setTimeout(() => {
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    
+                    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + duration);
+                } catch(e) {
+                    console.log("Audio play error", e);
+                }
+            }, delay * 1000);
+        }
+
+        // RPG Soft pick click sound
+        function playPickSound() {
+            playSound(480, 'sine', 0.08, 0, 0.08);
+            playSound(600, 'sine', 0.08, 0.04, 0.06);
+        }
+
+        // Action Cancel sound
+        function playCancelSound() {
+            playSound(250, 'sawtooth', 0.12, 0, 0.08);
+        }
+
+        // Scaler ultrasonic buzzing sound effect
+        function playScaleBuzz() {
+            resumeAudio();
+            const now = audioCtx.currentTime;
+            try {
+                // Buzzing scaler tip
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                const lfo = audioCtx.createOscillator();
+                const lfoGain = audioCtx.createGain();
+                
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(1400, now);
+                
+                // Tremolo effect using LFO
+                lfo.frequency.setValueAtTime(35, now);
+                lfoGain.gain.setValueAtTime(400, now);
+                
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.linearRampToValueAtTime(0.001, now + 0.8);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                lfo.start();
+                osc.start();
+                lfo.stop(now + 0.8);
+                osc.stop(now + 0.8);
+            } catch(e) {
+                console.log(e);
+            }
+        }
+
+        // Medical level up/Quest complete chimes
+        function playQuestSuccessSound() {
+            const scale = [523.25, 659.25, 783.99, 1046.50]; // C Major arpeggio
+            scale.forEach((note, index) => {
+                playSound(note, 'sine', 0.3, index * 0.08, 0.08);
+            });
+        }
+
+        // Warning buzz note (for incorrect medial sequences)
+        function playWarningSound() {
+            playSound(180, 'triangle', 0.3, 0, 0.15);
+            playSound(180, 'triangle', 0.3, 0.15, 0.15);
+        }
+
+        // Critical failure horror explosion sound effect
+        function playDeathSound() {
+            resumeAudio();
+            const now = audioCtx.currentTime;
+            try {
+                // Explosive rumble osc
+                const oscLow = audioCtx.createOscillator();
+                const gainLow = audioCtx.createGain();
+                oscLow.type = 'sawtooth';
+                oscLow.frequency.setValueAtTime(80, now);
+                oscLow.frequency.linearRampToValueAtTime(30, now + 1.8);
+                gainLow.gain.setValueAtTime(0.35, now);
+                gainLow.gain.linearRampToValueAtTime(0.001, now + 1.8);
+                oscLow.connect(gainLow);
+                gainLow.connect(audioCtx.destination);
+                oscLow.start();
+                oscLow.stop(now + 1.8);
+
+                // High screaming alarm sweep
+                const oscHigh = audioCtx.createOscillator();
+                const gainHigh = audioCtx.createGain();
+                oscHigh.type = 'triangle';
+                oscHigh.frequency.setValueAtTime(300, now);
+                oscHigh.frequency.linearRampToValueAtTime(900, now + 0.3);
+                oscHigh.frequency.linearRampToValueAtTime(150, now + 0.6);
+                oscHigh.frequency.linearRampToValueAtTime(900, now + 1.0);
+                oscHigh.frequency.linearRampToValueAtTime(50, now + 1.8);
+                gainHigh.gain.setValueAtTime(0.18, now);
+                gainHigh.gain.linearRampToValueAtTime(0.001, now + 1.8);
+                oscHigh.connect(gainHigh);
+                gainHigh.connect(audioCtx.destination);
+                oscHigh.start();
+                oscHigh.stop(now + 1.8);
+            } catch(e) {
+                console.log(e);
+            }
+        }
+
+
+        // --- 3. RPG SYSTEM STATE MACHINE ---
+        let currentHp = 10000;
+        let xp = 0;
+        let lvl = 1;
+        let currentQuest = 1; // 1: Scaling, 2: Braces, 3: Bleaching
+        let pain = 0;
+        let infection = 0;
+        let hygiene = 25;
+        let alignment = 40;
+        let brightness = 55;
+        let gameActive = true;
+
+        const imgElement = document.getElementById('clinical-image');
+        const containerElement = document.getElementById('game-container');
+        const bloodOverlay = document.getElementById('blood-drip-overlay');
+
+        // Initialize display stats
+        function updateStatsBoard() {
+            // HP limits
+            currentHp = Math.max(0, Math.min(10000, currentHp));
+            const hpPercent = (currentHp / 10000) * 100;
+            const hpFill = document.getElementById('hp-fill');
+            hpFill.style.width = `${hpPercent}%`;
+            document.getElementById('hp-text').innerText = `${currentHp.toLocaleString()} / 10,000 HP`;
+            
+            // Dynamic HP color (Green -> Yellow -> Red)
+            const hue = (currentHp / 10000) * 120;
+            hpFill.style.backgroundColor = `hsl(${hue}, 85%, 45%)`;
+            hpFill.style.boxShadow = `0 0 15px hsl(${hue}, 95%, 48%)`;
+
+            // Progress stats
+            document.getElementById('stat-val-hygiene').innerText = `${hygiene}%`;
+            document.getElementById('stat-bar-hygiene').style.width = `${hygiene}%`;
+
+            document.getElementById('stat-val-alignment').innerText = `${alignment}%`;
+            document.getElementById('stat-bar-alignment').style.width = `${alignment}%`;
+
+            document.getElementById('stat-val-brightness').innerText = `${brightness}%`;
+            document.getElementById('stat-bar-brightness').style.width = `${brightness}%`;
+
+            document.getElementById('stat-val-pain').innerText = `${pain}%`;
+            document.getElementById('stat-bar-pain').style.width = `${pain}%`;
+
+            document.getElementById('stat-val-infection').innerText = `${infection}%`;
+            document.getElementById('stat-bar-infection').style.width = `${infection}%`;
+
+            // XP and LV updates
+            document.getElementById('lvl-badge').innerText = `LV ${lvl}`;
+            document.getElementById('xp-fill').style.width = `${(xp / 1000) * 100}%`;
+            document.getElementById('xp-text').innerText = `${xp} / 1000 XP`;
+        }
+
+        // Game logs scroll system
+        const feed = document.getElementById('log-feed');
+        function addLog(text, type = 'info') {
+            const row = document.createElement('div');
+            row.className = `log-row ${type}`;
+            row.innerHTML = `&gt; [${new Date().toLocaleTimeString('id-ID')}] ${text}`;
+            feed.appendChild(row);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        // Float stats up animation
+        function spawnFloatingNumber(text, color, isCritical = false) {
+            const viewer = document.getElementById('viewer-area');
+            const el = document.createElement('div');
+            el.className = `floating-text ${isCritical ? 'critical' : ''}`;
+            el.innerText = text;
+            el.style.color = color;
+            
+            // Center floating location
+            el.style.left = `${300 + Math.random() * 260}px`;
+            el.style.top = `${200 + Math.random() * 120}px`;
+            
+            // Spawning particle style coordinate overrides
+            el.style.setProperty('--dx', `${(Math.random() - 0.5) * 100}px`);
+            el.style.setProperty('--dy', `-150px`);
+
+            viewer.appendChild(el);
+            setTimeout(() => el.remove(), 2000);
+        }
+
+        // Emit sparkling stars on clean teeth
+        function spawnSparkleParticles() {
+            const viewport = document.getElementById('mouth-viewport');
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const spark = document.createElement('div');
+                    spark.className = 'sparkle-particle';
+                    
+                    const x = 200 + Math.random() * 450;
+                    const y = 140 + Math.random() * 260;
+                    
+                    spark.style.left = `${x}px`;
+                    spark.style.top = `${y}px`;
+                    
+                    spark.style.setProperty('--dx', `${(Math.random() - 0.5) * 150}px`);
+                    spark.style.setProperty('--dy', `${(Math.random() - 0.5) * 150}px`);
+
+                    viewport.appendChild(spark);
+                    setTimeout(() => spark.remove(), 1200);
+                }, i * 100);
+            }
+        }
+
+        // Set patient avatar facial expression states
+        function updateAvatarState(state) {
+            const normalHead = document.getElementById('avatar-head');
+            const eyesHappy = document.getElementById('avatar-eyes-happy');
+            const eyesPain = document.getElementById('avatar-eyes-pain');
+            const eyesDead = document.getElementById('avatar-eyes-dead');
+            
+            const mouthHappy = document.getElementById('avatar-mouth-happy');
+            const mouthNeutral = document.getElementById('avatar-mouth-neutral');
+            const mouthPain = document.getElementById('avatar-mouth-pain');
+            const mouthScream = document.getElementById('avatar-mouth-scream');
+            
+            const sweat = document.getElementById('avatar-sweat');
+            const container = document.getElementById('avatar-container');
+
+            // Reset
+            eyesHappy.style.display = 'none';
+            eyesPain.style.display = 'none';
+            eyesDead.style.display = 'none';
+            mouthHappy.style.display = 'none';
+            mouthNeutral.style.display = 'none';
+            mouthPain.style.display = 'none';
+            mouthScream.style.display = 'none';
+            sweat.style.display = 'none';
+            container.classList.remove('damaged');
+            normalHead.setAttribute('fill', '#fed7aa');
+
+            if (state === 'happy') {
+                eyesHappy.style.display = 'block';
+                mouthHappy.style.display = 'block';
+            } else if (state === 'neutral') {
+                eyesHappy.style.display = 'block';
+                mouthNeutral.style.display = 'block';
+            } else if (state === 'pain') {
+                eyesPain.style.display = 'block';
+                mouthPain.style.display = 'block';
+                sweat.style.display = 'block';
+                normalHead.setAttribute('fill', '#fecaca');
+                container.classList.add('damaged');
+            } else if (state === 'scream') {
+                eyesPain.style.display = 'block';
+                mouthScream.style.display = 'block';
+                sweat.style.display = 'block';
+                normalHead.setAttribute('fill', '#fca5a5');
+                container.classList.add('damaged');
+            } else if (state === 'dead') {
+                eyesDead.style.display = 'block';
+                mouthPain.style.display = 'block';
+                normalHead.setAttribute('fill', '#94a3b8');
+            }
+        }
+
+
+        // --- 4. GAME MEDIS DECISION-MAKING ROUTER ---
+        function evaluateTreatment(tool) {
+            if (!gameActive) return;
+
+            const questText = document.getElementById('quest-text');
+
+            if (tool === 'scaler') {
+                // Quest 1: Bersihkan Karang Gigi
+                if (currentQuest === 1) {
+                    playScaleBuzz();
+                    hygiene = 100;
+                    xp += 300;
+                    
+                    // Swap to clean teeth clinical photo
+                    imgElement.src = 'scaling-success.png';
+
+                    addLog("Menggunakan Ultrasonic Scaler: Karang gigi kuning dan plak dikikis tuntas secara steril.", "success");
+                    addLog("Quest 1 Selesai! Karang gigi bersih. +300 XP.", "quest");
+                    
+                    spawnFloatingNumber("-100% KARANG", "#38bdf8");
+                    spawnFloatingNumber("+300 XP", "#c084fc");
+                    spawnFloatingNumber("+75% HYGIENE", "#38bdf8");
+
+                    currentQuest = 2;
+                    questText.innerText = "Quest 2: Rapikan Gigi Berjejal (Kawat Medis)";
+                    addLog("Quest Aktif: Selaraskan susunan gigi dengan Kawat Gigi Medis spesialis ortodonti.", "quest");
+                    updateAvatarState('happy');
+                    updateStatsBoard();
+                } else {
+                    playWarningSound();
+                    addLog("[INFO] Karang gigi sudah bersih. Lanjutkan ke langkah quest aktif!", "info");
+                }
+            }
+            
+            else if (tool === 'ortho_medis') {
+                // Quest 2: Penyelarasan Behel Medis
+                if (hygiene < 80) {
+                    // MALAPRAKTIK SEQUENCE (Behel over karang gigi)
+                    playWarningSound();
+                    currentHp -= 3000;
+                    infection += 35;
+                    pain += 40;
+                    
+                    // Switch to fail photo & enable bleed drip overlay
+                    imgElement.src = 'ortho-fail.png';
+                    bloodOverlay.style.opacity = '1';
+
+                    addLog("KESALAHAN FATAL! Memasang behel di atas karang gigi menimbun koloni kuman jahat!", "warning");
+                    addLog("Bakteri memicu inflamasi akut (radang gusi/Gingivitis). Pasien berdarah dan kesakitan!", "warning");
+                    
+                    spawnFloatingNumber("-3,000 HP", "#ef4444", true);
+                    spawnFloatingNumber("+35% INFEKSI", "#fb923c");
+                    spawnFloatingNumber("+40% NYERI", "#f87171");
+                    
+                    updateAvatarState('pain');
+                    updateStatsBoard();
+
+                    if (currentHp <= 0) {
+                        triggerDefeat("MALAPRAKTIK RADANG: Bakteri karang gigi menyebar ke pembuluh rahang menyebabkan infeksi tulang!", 'ortho-fail.png');
+                    }
+                } else if (currentQuest === 2) {
+                    playQuestSuccessSound();
+                    alignment = 100;
+                    xp += 400;
+                    pain = Math.max(0, pain - 15);
+
+                    // Swap to straight teeth with brackets photo
+                    imgElement.src = 'ortho-success.png';
+
+                    addLog("Menggunakan Kawat Gigi Medis: Penarikan terkontrol meluruskan gigi dengan aman.", "success");
+                    addLog("Quest 2 Selesai! Gigi berhasil diselaraskan. +400 XP.", "quest");
+                    
+                    spawnFloatingNumber("+60% ALIGNMENT", "#c084fc");
+                    spawnFloatingNumber("+400 XP", "#c084fc");
+                    spawnSparkleParticles();
+
+                    currentQuest = 3;
+                    questText.innerText = "Quest 3: Mencerahkan Email Gigi (Bleaching Medis)";
+                    addLog("Quest Aktif: Gunakan Bleaching Klinis dokter gigi untuk mencerahkan gigi kuning.", "quest");
+                    updateAvatarState('happy');
+                    updateStatsBoard();
+                } else {
+                    playWarningSound();
+                    addLog("[INFO] Lakukan pembersihan karang gigi (Quest 1) terlebih dahulu!", "info");
+                }
+            }
+            
+            else if (tool === 'bleaching_medis') {
+                // Quest 3: Bleaching Klinis
+                if (hygiene < 80) {
+                    playWarningSound();
+                    currentHp -= 2000;
+                    pain += 50;
+
+                    // Swap to bleaching fail (chemical burn)
+                    imgElement.src = 'bleach-fail.png';
+                    bloodOverlay.style.opacity = '0.7';
+
+                    addLog("KESALAHAN FATAL! Cairan pemutih menyerap di bawah karang gigi, melukai gusi rentan!", "warning");
+                    addLog("Gusi pasien mengalami iritasi kimiawi parah! HP berkurang.", "warning");
+                    
+                    spawnFloatingNumber("-2,000 HP", "#ef4444", true);
+                    spawnFloatingNumber("+50% NYERI", "#f87171");
+
+                    updateAvatarState('scream');
+                    updateStatsBoard();
+
+                    if (currentHp <= 0) {
+                        triggerDefeat("IRITASI KIMIAWI: Kerusakan jaringan lunak parah akibat pemutihan ilegal.", 'bleach-fail.png');
+                    }
+                } else if (currentQuest === 3) {
+                    playQuestSuccessSound();
+                    brightness = 100;
+                    xp += 300;
+                    lvl = 2;
+
+                    // Swap to white teeth photo
+                    imgElement.src = 'bleach-success.png';
+
+                    addLog("Menggunakan Bleaching Klinis: Gigi diputihkan secara terkontrol dengan pelindung gusi.", "success");
+                    addLog("Quest 3 Selesai! Gigi Budi putih cemerlang! +300 XP.", "quest");
+                    addLog("LEVEL UP! Anda naik pangkat menjadi Dokter Gigi Spesialis!", "quest");
+
+                    spawnFloatingNumber("+45% KECERAHAN", "#e2e8f0");
+                    spawnFloatingNumber("LEVEL UP!", "#a855f7", true);
+                    spawnSparkleParticles();
+                    
+                    updateAvatarState('happy');
+                    updateStatsBoard();
+
+                    setTimeout(triggerVictory, 2000);
+                } else {
+                    playWarningSound();
+                    addLog("[INFO] Gigi harus dibersihkan (Quest 1) dan diratakan (Quest 2) terlebih dahulu!", "info");
+                }
+            }
+
+            // --- TUKANG GIGI PATHWAYS (INSTANT DEFEAT CONSEQUENCES) ---
+            else if (tool === 'veneer_ilegal') {
+                triggerDefeat("GIGI MATI TERCEKIK! Veneer abal-abal menimbun karang gigi aktif tanpa sterilisasi medis. Bakteri terperangkap membakar saraf gigi hingga membusuk permanen, menimbulkan nafas bau bangkai.", 'veneer-fail.png');
+            }
+            else if (tool === 'behel_ilegal') {
+                triggerDefeat("TETANUS AKUT & INFEKSI GUSI! Kawat behel murahan berkarat dipasang ngawur menusuk gusi. Penarikan tak terukur mematikan pembuluh darah akar, melonggarkan tulang rahang, hingga gigi rontok.", 'ortho-fail.png');
+            }
+            else if (tool === 'pemutih_ilegal') {
+                triggerDefeat("LUKA BAKAR KIMIA GUSI! Cairan asam keras Hidrogen Peroksida kadar industri disiram tanpa pembatas gusi. Jaringan gusi melepuh hitam, mati jaringan (necrosis), dan gigi keropos.", 'bleach-fail.png');
+            }
+            else if (tool === 'cabut_ilegal') {
+                triggerDefeat("PENDARAHAN HEBAT & SEPSIS! Gigi dicabut paksa menggunakan tang besi bangunan tidak steril. Soket rahang robek parah, kuman masuk aliran darah menyebabkan infeksi darah fatal.", 'extract-fail.png');
+            }
+        }
+
+        // Trigger defeat sequence
+        function triggerDefeat(reasonText, targetImage) {
+            gameActive = false;
+            currentHp = 0;
+            infection = 100;
+            pain = 100;
+
+            // Trigger screen shake and red glow
+            document.getElementById('shake-wrapper').classList.add('screen-shake');
+            imgElement.classList.add('damage-flash');
+            containerElement.style.boxShadow = "inset 0 0 100px rgba(239, 68, 68, 0.4)";
+            
+            // Swap to specific failure image & bleed overlay
+            imgElement.src = targetImage;
+            bloodOverlay.style.opacity = '1';
+
+            updateAvatarState('dead');
+            updateStatsBoard();
+            playDeathSound();
+
+            spawnFloatingNumber("CRITICAL FAIL", "#ef4444", true);
+            spawnFloatingNumber("-10,000 HP", "#ef4444", true);
+            spawnFloatingNumber("SARAF GIGI MATI", "#fb923c");
+
+            addLog(`BATTLE DEFEAT: Pasien menderita kegagalan klinis total akibat keputusan salah!`, "warning");
+
+            setTimeout(() => {
+                document.getElementById('shake-wrapper').classList.remove('screen-shake');
+                imgElement.classList.remove('damage-flash');
+                document.getElementById('failure-desc').innerHTML = reasonText;
+                document.getElementById('modal-failure').style.display = 'flex';
+            }, 1800);
+        }
+
+        // Trigger victory sequence
+        function triggerVictory() {
+            gameActive = false;
+            let rank = 'SSS';
+            let desc = '';
+
+            if (currentHp >= 10000) {
+                rank = 'SSS';
+                desc = "TINDAKAN MEDIS SEMPURNA! Budi mendapatkan senyum impian secara sehat, steril, dan aman oleh Dokter Gigi Profesional.";
+            } else if (currentHp >= 7000) {
+                rank = 'A';
+                desc = "TINDAKAN MEDIS BERHASIL! Anda merapikan gigi Budi, meskipun sempat melakukan kesalahan penanganan kecil yang melukai gusinya.";
+            } else {
+                rank = 'B';
+                desc = "PERAWATAN SELESAI, TAPI RISIKO TINGGI. Pasien berhasil disembuhkan, namun sempat menderita nyeri hebat akibat urutan penanganan yang kurang tepat.";
+            }
+
+            document.getElementById('success-rank').innerText = rank;
+            document.getElementById('success-desc').innerText = desc;
+            document.getElementById('modal-success').style.display = 'flex';
+        }
+
+        // Randomize the order of the tool/skill cards inside the container
+        function shuffleTools() {
+            const container = document.getElementById('skills-container');
+            if (!container) return;
+            const cards = Array.from(container.querySelectorAll('.skill-card'));
+            
+            // Fisher-Yates Shuffling
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                const temp = cards[i];
+                cards[i] = cards[j];
+                cards[j] = temp;
+            }
+            
+            // Re-append cards to update their DOM positions randomly
+            cards.forEach(card => container.appendChild(card));
+        }
+
+        // Reset game to default settings
+        function resetSimulasi() {
+            // Hide modals
+            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
+
+            // Shuffling tools to mix dentist and illegal actions randomly
+            shuffleTools();
+
+            // Reset states
+            currentHp = 10000;
+            xp = 0;
+            lvl = 1;
+            currentQuest = 1;
+            pain = 0;
+            infection = 0;
+            hygiene = 25;
+            alignment = 40;
+            brightness = 55;
+            gameActive = true;
+
+            // Reset image state
+            imgElement.src = 'base.png';
+            bloodOverlay.style.opacity = '0';
+
+            updateAvatarState('neutral');
+            updateStatsBoard();
+
+            // Reset combat log
+            document.getElementById('log-feed').innerHTML = '';
+            addLog("Game Baru Dimulai: Pasien Budi (16 tahun) masuk ruangan.", "info");
+            addLog("Kondisi Awal: Karang gigi menumpuk, gigi berjejal, kusam kekuningan.", "info");
+            addLog("Misi Aktif: Bersihkan karang gigi Budi dengan Ultrasonic Scaler!", "quest");
+
+            containerElement.style.boxShadow = "0 0 100px rgba(0, 0, 0, 0.95)";
+            document.getElementById('quest-text').innerText = "Quest 1: Bersihkan Karang Gigi";
+
+            // Sound
+            playSound(523.25, 'sine', 0.15, 0, 0.08);
+            playSound(783.99, 'sine', 0.2, 0.1, 0.08);
+        }
+
+
+        // --- 5. TOUCHSCREEN-OPTIMIZED POINTER EVENT DRAG & DROP ---
+        function initDragSystem() {
+            const cards = document.querySelectorAll('.skill-card');
+            const dZone = document.getElementById('drop-zone');
+
+            cards.forEach(card => {
+                const handle = card.querySelector('.drag-handle');
+                handle.addEventListener('pointerdown', (e) => {
+                    if (!gameActive) return;
+                    e.preventDefault();
+                    resumeAudio();
+
+                    const toolId = card.dataset.tool;
+                    const toolTheme = card.dataset.color;
+                    const toolName = card.querySelector('h3').innerText;
+                    const toolIcon = card.querySelector('.skill-icon').innerText;
+
+                    playPickSound();
+
+                    // Spawn drag clone floating element
+                    const clone = document.createElement('div');
+                    clone.className = `drag-clone ${toolTheme === 'red' ? 'red' : 'blue'}`;
+                    clone.innerHTML = `<div class="skill-icon">${toolIcon}</div><h3>${toolName}</h3>`;
+                    containerElement.appendChild(clone);
+
+                    // Read scaled boundaries
+                    const rect = containerElement.getBoundingClientRect();
+                    const scale = rect.width / 1920;
+
+                    const setPos = (clientX, clientY) => {
+                        const localX = (clientX - rect.left) / scale;
+                        const localY = (clientY - rect.top) / scale;
+                        clone.style.left = `${localX}px`;
+                        clone.style.top = `${localY}px`;
+                    };
+
+                    setPos(e.clientX, e.clientY);
+                    card.classList.add('dragging');
+
+                    activeDrag = { clone, toolId, card };
+
+                    const onPointerMove = (moveEvt) => {
+                        if (!activeDrag) return;
+                        setPos(moveEvt.clientX, moveEvt.clientY);
+
+                        const dzRect = dZone.getBoundingClientRect();
+                        const hovered = (
+                            moveEvt.clientX >= dzRect.left &&
+                            moveEvt.clientX <= dzRect.right &&
+                            moveEvt.clientY >= dzRect.top &&
+                            moveEvt.clientY <= dzRect.bottom
+                        );
+
+                        if (hovered) {
+                            dZone.classList.add('hovered');
+                        } else {
+                            dZone.classList.remove('hovered');
+                        }
+                    };
+
+                    const onPointerUp = (upEvt) => {
+                        if (!activeDrag) return;
+
+                        clone.remove();
+                        card.classList.remove('dragging');
+                        dZone.classList.remove('hovered');
+
+                        window.removeEventListener('pointermove', onPointerMove);
+                        window.removeEventListener('pointerup', onPointerUp);
+
+                        const dzRect = dZone.getBoundingClientRect();
+                        const isDropped = (
+                            upEvt.clientX >= dzRect.left &&
+                            upEvt.clientX <= dzRect.right &&
+                            upEvt.clientY >= dzRect.top &&
+                            upEvt.clientY <= dzRect.bottom
+                        );
+
+                        if (isDropped) {
+                            evaluateTreatment(activeDrag.toolId);
+                        } else {
+                            playCancelSound();
+                        }
+                        activeDrag = null;
+                    };
+
+                    window.addEventListener('pointermove', onPointerMove);
+                    window.addEventListener('pointerup', onPointerUp);
+                });
+            });
+        }
+
+        // --- 6. SIMULATION ENTRY POINT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            resetSimulasi();
+            initDragSystem();
+        });
+    </script>
+</body>
+</html>
