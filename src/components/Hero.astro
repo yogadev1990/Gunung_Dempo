@@ -29,7 +29,7 @@
 
       <!-- Text Column -->
       <div class="hero-text-col">
-        <div class="hero-badge-top" aria-label="Program KKNT">
+        <div class="hero-badge-top" aria-label="Program KKNT" style="color:white;">
           <span>🎓</span> Program KKNT 103 Kelompok 25 Universitas Sriwijaya
         </div>
 
@@ -71,7 +71,7 @@
   <div class="hero-stats-bar" role="region" aria-label="Statistik Kelurahan">
     <div class="hero-stats-inner container">
       <div class="hero-stat">
-        <span class="hero-stat-value" id="stat-penduduk">2.428</span>
+        <span class="hero-stat-value" id="stat-penduduk">1.601</span>
         <span class="hero-stat-label">Jiwa Penduduk</span>
       </div>
       <div class="hero-stat">
@@ -129,9 +129,39 @@
     requestAnimationFrame(step);
   }
 
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRuTe7TNeZBYaxnCiNXpdUemq2xmCyTM8j_KLq0r2Me6xUbYQePwFxSmEdWo4XWwCOhBbCPcuiFNKc340dQ8gqbLmCl4vq-7fqx0jh0CHLIItmlWEY-X-7tz9oT3U5PvzXafBfldIcyxqPHJEarfexScMSzLZV-xC9aFeBYqxKtr3w3EzkmZQMypNo9lpdr7Qt6rHc-iwXsc-dsNtanYRkCUau_sP17nBgTSdpKDfGmyatSYJzvdyYvJVQLuo0ciWWcA_AO-g4jfRUmgSY3yJTuO4izFw&lib=MjcZsqpQEZ9CuadBIMwYpJXdi3ZE4dG0b';
+  let liveTotalPop = 1601;
+  let statsAnimated = false;
+
+  function fetchLivePop(url: string, isFallback: boolean = false) {
+    fetch(url)
+      .then(r => r.json())
+      .then(payload => {
+        const pendudukRaw = Array.isArray(payload) ? [] : (payload.JUMLAH_PENDUDUK || []);
+        if (pendudukRaw.length > 0) {
+          let sum = 0;
+          pendudukRaw.forEach((row: any) => {
+            sum += Number(row['Jumlah'] || row.total || row.jumlah || 0);
+          });
+          if (sum > 0) {
+            liveTotalPop = sum;
+            const elPenduduk = document.getElementById('stat-penduduk');
+            if (elPenduduk && statsAnimated) {
+              animateCounter(elPenduduk, 0, liveTotalPop, 1200, '');
+            }
+          }
+        }
+      })
+      .catch(err => {
+        console.warn('Hero live stats error:', err);
+        if (!isFallback) {
+          fetchLivePop('/data-kesehatan-fallback.json', true);
+        }
+      });
+  }
+
   // Observe hero stats
   const heroSection = document.getElementById('hero');
-  let statsAnimated = false;
 
   const statsObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !statsAnimated) {
@@ -140,11 +170,14 @@
       const elStunting = document.getElementById('stat-stunting');
       const elKomoditas = document.getElementById('stat-komoditas');
 
-      if (elPenduduk) setTimeout(() => animateCounter(elPenduduk, 0, 1953, 1800, ''), 100);
+      if (elPenduduk) setTimeout(() => animateCounter(elPenduduk, 0, liveTotalPop, 1800, ''), 100);
       if (elStunting) setTimeout(() => animateCounter(elStunting, 100, 0, 1200, '%'), 300);
       if (elKomoditas) setTimeout(() => animateCounter(elKomoditas, 0, 2, 800, ''), 500);
     }
   }, { threshold: 0.3 });
 
   if (heroSection) statsObserver.observe(heroSection);
+
+  // Trigger live population fetch on load
+  fetchLivePop(API_URL);
 </script>

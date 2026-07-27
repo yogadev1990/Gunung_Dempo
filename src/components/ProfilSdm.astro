@@ -1,0 +1,240 @@
+---
+// ProfilSdm.astro
+---
+
+<section class="section section-sdm" id="sdm" aria-labelledby="sdm-title">
+  <div class="container">
+
+    <header class="section-header">
+      <span class="eyebrow eyebrow-coffee reveal">👥 Sumber Daya Manusia</span>
+      <h2 class="section-title reveal" id="sdm-title">
+        Tim Pelaksana &amp; <span>Kader Kelurahan</span>
+      </h2>
+      <p class="section-desc reveal">
+        Kolaborasi antara Mahasiswa KKNT 103 Universitas Sriwijaya, Bidan Desa, 
+        Kader Kesehatan, serta Perangkat Kelurahan Gunung Dempo.
+      </p>
+    </header>
+
+    <!-- ===== GRID SDM (DYNAMIC) ===== -->
+    <div class="sdm-grid" id="sdm-grid" role="list" aria-label="Profil SDM Kelurahan">
+      <!-- Skeleton placeholders -->
+      <div class="sdm-skeleton"></div>
+      <div class="sdm-skeleton"></div>
+      <div class="sdm-skeleton"></div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .section-sdm {
+    background: var(--clr-mist, #f0fdf4);
+    padding: 5rem 0;
+    border-top: 1px solid rgba(16,163,74,0.1);
+  }
+
+  .sdm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 2rem;
+    justify-content: center;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .sdm-skeleton {
+    height: 280px;
+    border-radius: 1.25rem;
+    background: linear-gradient(90deg, #f0fdf4 25%, #dcfce7 50%, #f0fdf4 75%);
+    background-size: 200% 100%;
+    animation: sdmShimmer 1.5s infinite;
+  }
+
+  @keyframes sdmShimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Card Styles */
+  :global(.sdm-card) {
+    background: #fff;
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    text-align: center;
+    border: 1px solid rgba(16,163,74,0.15);
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 10px 30px -10px rgba(22,163,74,0.05);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  :global(.sdm-card:hover) {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 35px -5px rgba(22,163,74,0.15);
+  }
+
+  :global(.sdm-avatar-wrap) {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    border: 4px solid #f0fdf4;
+    box-shadow: 0 4px 10px rgba(22,163,74,0.15);
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  :global(.sdm-avatar-wrap img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  :global(.sdm-cat-badge) {
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 99px;
+    margin-bottom: 0.75rem;
+    display: inline-block;
+  }
+  :global(.cat-kkn) { background: #dbeafe; color: #1e40af; }
+  :global(.cat-perangkat) { background: #fef3c7; color: #92400e; }
+  :global(.cat-kader) { background: #d1fae5; color: #065f46; }
+
+  :global(.sdm-name) {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--clr-gray-800, #1f2937);
+    margin: 0 0 0.25rem;
+    line-height: 1.3;
+  }
+
+  :global(.sdm-role) {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--clr-gray-500, #6b7280);
+    margin-bottom: 1rem;
+  }
+
+  :global(.sdm-contact-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #16a34a;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 0.35rem 0.85rem;
+    border-radius: 99px;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-top: auto;
+  }
+  :global(.sdm-contact-btn:hover) {
+    background: #16a34a;
+    color: white;
+    border-color: transparent;
+  }
+
+  @media (max-width: 600px) {
+    .sdm-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+  }
+  @media (max-width: 400px) {
+    .sdm-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+(function () {
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRuTe7TNeZBYaxnCiNXpdUemq2xmCyTM8j_KLq0r2Me6xUbYQePwFxSmEdWo4XWwCOhBbCPcuiFNKc340dQ8gqbLmCl4vq-7fqx0jh0CHLIItmlWEY-X-7tz9oT3U5PvzXafBfldIcyxqPHJEarfexScMSzLZV-xC9aFeBYqxKtr3w3EzkmZQMypNo9lpdr7Qt6rHc-iwXsc-dsNtanYRkCUau_sP17nBgTSdpKDfGmyatSYJzvdyYvJVQLuo0ciWWcA_AO-g4jfRUmgSY3yJTuO4izFw&lib=MjcZsqpQEZ9CuadBIMwYpJXdi3ZE4dG0b';
+
+  function driveUrl(raw: string): string {
+    if (!raw) return '';
+    let fileId = '';
+    const ucMatch = raw.match(/[?&]id=([^&]+)/);
+    if (ucMatch) fileId = ucMatch[1];
+    if (!fileId) {
+      const fileMatch = raw.match(/\/d\/([^/?]+)/);
+      if (fileMatch) fileId = fileMatch[1];
+    }
+    if (fileId) {
+      return `https://drive.google.com/thumbnail?id=${fileId}&sz=w300`;
+    }
+    return raw;
+  }
+
+  function renderSdm(data: any[]): void {
+    const grid = document.getElementById('sdm-grid');
+    if (!grid) return;
+
+    const activeData = (data || []).filter(item => {
+      const name = String(item['Nama Lengkap'] || '').trim();
+      const show = String(item['Status Tampil'] || '').trim();
+      return name.length > 0 && show.toUpperCase() === 'YA';
+    });
+
+    if (!activeData.length) {
+      // Hide section if empty
+      const section = document.getElementById('sdm');
+      if (section) section.style.display = 'none';
+      return;
+    }
+
+    grid.innerHTML = activeData.map(item => {
+      const name = item['Nama Lengkap'];
+      const role = item['Jabatan / Peran'] || '-';
+      const cat = item['Kategori SDM'] || 'Umum';
+      const rawPic = item['Tautan Foto (Google Drive)'] || '';
+      const phone = String(item['Nomor Kontak / Keterangan'] || '').trim();
+      
+      const badgeClass = cat.includes('KKN') ? 'cat-kkn' 
+                       : cat.includes('Perangkat') ? 'cat-perangkat' 
+                       : 'cat-kader';
+                       
+      const avatarSrc = rawPic ? driveUrl(rawPic) : 'https://placehold.co/110x110/d1fae5/065f46?text=👤';
+      
+      const contactBtn = phone ? `
+        <a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener noreferrer" class="sdm-contact-btn">
+          💬 Kontak
+        </a>` : '';
+
+      return `
+        <div class="sdm-card" role="listitem">
+          <div class="sdm-avatar-wrap">
+            <img src="${avatarSrc}" alt="Foto ${name}" loading="lazy" onerror="this.src='https://placehold.co/110x110/d1fae5/065f46?text=👤'" />
+          </div>
+          <span class="sdm-cat-badge ${badgeClass}">${cat}</span>
+          <h3 class="sdm-name">${name}</h3>
+          <p class="sdm-role">${role}</p>
+          ${contactBtn}
+        </div>
+      `;
+    }).join('');
+  }
+
+  fetch(API_URL)
+    .then(r => r.json())
+    .then(payload => {
+      const sdmData = payload.PROFIL_SDM ?? [];
+      renderSdm(sdmData);
+    })
+    .catch(err => {
+      console.warn('Gagal memuat profil SDM:', err);
+      const grid = document.getElementById('sdm-grid');
+      if (grid) grid.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;grid-column:1/-1;text-align:center;">Profil tim tidak tersedia secara live.</p>';
+    });
+})();
+</script>

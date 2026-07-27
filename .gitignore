@@ -137,3 +137,4 @@ out
 
 # Astro
 .astro/
+dist/

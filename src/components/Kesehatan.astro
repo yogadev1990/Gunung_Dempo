@@ -207,6 +207,23 @@
       </article>
 
     </div>
+
+    <!-- ===== UNDUHAN MODUL EDUKASI (NEW) ===== -->
+    <div class="edukasi-unduh-wrap reveal" style="margin-top: 3.5rem;">
+      <div class="sub-section-header">
+        <div class="sub-section-text">
+          <span class="sub-eyebrow">📚 Edukasi &amp; Literasi</span>
+          <h3 class="sub-title">Buku Saku &amp; Modul Kesehatan</h3>
+        </div>
+        <p class="sub-note">Materi resmi edukasi dari Mahasiswa KKNT 103</p>
+      </div>
+      <div id="edukasi-list-grid" class="edukasi-list-grid">
+        <!-- Dimuat dinamis via JS -->
+        <div class="kes-stat-skeleton" style="height:80px;"></div>
+        <div class="kes-stat-skeleton" style="height:80px;"></div>
+      </div>
+    </div>
+
   </div>
 </section>
 
@@ -720,6 +737,77 @@
   :global(.kes-lb-cap span)   { font-size: 0.85rem; opacity: 0.75; }
   :global(.kes-lb-cap .lb-rw) { font-size: 0.75rem; opacity: 0.6; }
 
+  /* ===== Unduhan Modul Edukasi ===== */
+  .edukasi-list-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1rem;
+  }
+  :global(.edukasi-card) {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.875rem;
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  :global(.edukasi-card:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(6,78,59,0.06);
+  }
+  :global(.edukasi-icon-wrap) {
+    width: 48px;
+    height: 48px;
+    background: #ecfdf5;
+    color: #10b981;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  :global(.edukasi-info) {
+    flex: 1;
+    min-width: 0;
+  }
+  :global(.edukasi-tag) {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #047857;
+    background: #d1fae5;
+    padding: 0.15rem 0.45rem;
+    border-radius: 99px;
+    margin-bottom: 0.25rem;
+  }
+  :global(.edukasi-name) {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--clr-gray-800);
+    margin: 0 0 0.4rem;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  :global(.edukasi-btn) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #10b981;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  :global(.edukasi-btn:hover) {
+    color: #047857;
+  }
+
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
     .live-survey-grid { grid-template-columns: repeat(2, 1fr); }
@@ -782,7 +870,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* ---------- Live API Fetch (Unified) ---------- */
 (function () {
-  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQjZyOnFpb-cxOFHqzjoPq_m6f733zhOBiy5EW-5XySDs5NMUo4sSXUTgiDdUPyeP6doL9xmREJvuTJ4mD5AVpDqwIq94KT71syJchqgXv45vhYO_LJ3K55uW91vyV5Q5-Okzng24UyXDz-IZcc82WMgVq91t5EXTBepv1bjvlV2jg4Lc3iaTbTAzbbjXFB688ysePGnE8-ncAHUq8ZdqBV8sKiyMqDvFzMP05fIJXsaq9B_XpdTBNknCCMj1_DNoIXBrfO3vRaM7bA79XoW-8Ia08b3A&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRuTe7TNeZBYaxnCiNXpdUemq2xmCyTM8j_KLq0r2Me6xUbYQePwFxSmEdWo4XWwCOhBbCPcuiFNKc340dQ8gqbLmCl4vq-7fqx0jh0CHLIItmlWEY-X-7tz9oT3U5PvzXafBfldIcyxqPHJEarfexScMSzLZV-xC9aFeBYqxKtr3w3EzkmZQMypNo9lpdr7Qt6rHc-iwXsc-dsNtanYRkCUau_sP17nBgTSdpKDfGmyatSYJzvdyYvJVQLuo0ciWWcA_AO-g4jfRUmgSY3yJTuO4izFw&lib=MjcZsqpQEZ9CuadBIMwYpJXdi3ZE4dG0b';
 
   const LOCAL_IMAGES: Record<string, string> = {
     '1zgN7jYjf4TlX87decR1sNdKAifaDSqA9': '/images/galeri/posyandu_kader.jpg',
@@ -829,11 +917,16 @@ document.addEventListener("DOMContentLoaded", () => {
     let totalKK = 0, totalJiwa = 0, jamban = 0, nyeri = 0, dokter = 0, rentan = 0;
     rawData.forEach((kk: any) => {
       totalKK++;
-      totalJiwa += Number(kk.anggota_keluarga) || 0;
-      if (kk.kondisi_jamban === 'Baik/Layak')                    jamban++;
-      if (kk.keluhan_nyeri_gigi === 'Ya')                        nyeri++;
-      if (kk.tindakan_medis_gigi === 'Pernah ke Dokter Gigi')    dokter++;
-      if (kk.kelompok_rentan && kk.kelompok_rentan !== 'Tidak Ada') rentan++;
+      totalJiwa += Number(kk['Anggota Keluarga'] || kk.anggota_keluarga) || 0;
+      const kondisiJamban = kk['Kondisi Fisik Jamban'] || kk.kondisi_jamban;
+      const keluhanGigi = kk['Keluhan Nyeri Gigi'] || kk.keluhan_nyeri_gigi;
+      const tindakanGigi = kk['Tindakan Medis Gigi'] || kk.tindakan_medis_gigi;
+      const rentanGrup = kk['Kelompok Rentan'] || kk.kelompok_rentan;
+
+      if (kondisiJamban === 'Baik/Layak')                    jamban++;
+      if (keluhanGigi === 'Ya')                        nyeri++;
+      if (tindakanGigi === 'Pernah ke Dokter Gigi')    dokter++;
+      if (rentanGrup && rentanGrup !== 'Tidak Ada') rentan++;
     });
 
     const pSanitasi = totalKK ? Math.round(jamban  / totalKK * 100) : 0;
@@ -890,19 +983,24 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const maxKaries  = Math.max(...data.map((d: any) => d.persen_karies  || 0));
-    const maxStunting = Math.max(...data.map((d: any) => d.persen_stunting || 0));
+    const maxKaries  = Math.max(...data.map((d: any) => d['% Karies'] || d.persen_karies  || 0));
+    const maxStunting = Math.max(...data.map((d: any) => d['% Stunting'] || d.persen_stunting || 0));
 
     grid.innerHTML = data.map((d: any) => {
-      const pKaries   = Math.round((d.persen_karies  || 0) * 100);
-      const pStunting = Math.round((d.persen_stunting || 0) * 100);
-      const barK = maxKaries   ? Math.round((d.persen_karies  || 0) / maxKaries   * 100) : 0;
-      const barS = maxStunting ? Math.round((d.persen_stunting || 0) / maxStunting * 100) : 0;
+      const rwName = d.RW || d.rw;
+      const totalBalita = d['Total Balita'] || d.total_balita || 0;
+      const childKaries = d.Karies ?? d.karies ?? 0;
+      const childStunting = d.Stunting ?? d.stunting ?? 0;
+
+      const pKaries   = Math.round((d['% Karies'] || d.persen_karies  || 0) * 100);
+      const pStunting = Math.round((d['% Stunting'] || d.persen_stunting || 0) * 100);
+      const barK = maxKaries   ? Math.round((d['% Karies'] || d.persen_karies  || 0) / maxKaries   * 100) : 0;
+      const barS = maxStunting ? Math.round((d['% Stunting'] || d.persen_stunting || 0) / maxStunting * 100) : 0;
       return `
         <div class="prev-card">
           <div class="prev-card-header">
-            <span class="prev-rw">${d.rw}</span>
-            <span class="prev-total">${d.total_balita} balita</span>
+            <span class="prev-rw">RW ${String(rwName).replace('RW ', '').trim()}</span>
+            <span class="prev-total">${totalBalita} balita</span>
           </div>
           <div class="prev-bar-wrap">
             <div class="prev-bar-label">
@@ -921,7 +1019,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
           </div>
           <div class="prev-card-footer">
-            Karies: ${d.karies ?? 0} anak · Stunting: ${d.stunting ?? 0} anak
+            Karies: ${childKaries} anak · Stunting: ${childStunting} anak
           </div>
         </div>
       `;
@@ -967,7 +1065,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const empty = document.getElementById('galeri-empty') as HTMLElement | null;
     if (!grid) return;
 
-    currentItems = filter === 'all' ? allGaleri : allGaleri.filter((g: any) => g.tipe === filter);
+    currentItems = filter === 'all' ? allGaleri : allGaleri.filter((g: any) => (g.tipe || g['Kategori Kegiatan'] || '').toUpperCase() === filter.toUpperCase());
 
     if (!currentItems.length) {
       grid.innerHTML = '';
@@ -978,27 +1076,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const rwPad = (rw: number) => rw < 10 ? '0' + rw : '' + rw;
 
-    grid.innerHTML = currentItems.map((g: any, i: number) => `
-      <div class="galeri-card" data-idx="${i}" role="button" tabindex="0" aria-label="Lihat foto: ${g.keterangan}">
-        <div class="galeri-thumb">
-          <img
-            src="${driveUrl(g.url_foto)}"
-            alt="${g.keterangan}"
-            loading="lazy"
-            onerror="this.parentElement.innerHTML='<div class=\\'galeri-img-err\\'>📷</div>'"
-          />
-          <span class="galeri-tipe-badge ${g.tipe === 'DS' ? 'badge-ds' : 'badge-toga'}">${g.tipe === 'DS' ? '🏥 Desa Sehat' : '🌿 TOGA'}</span>
-        </div>
-        <div class="galeri-info">
-          <p class="galeri-kegiatan">${g.kegiatan || '-'}</p>
-          <p class="galeri-ket">${g.keterangan || ''}</p>
-          <div class="galeri-meta">
-            <span class="galeri-rw-badge">RW ${rwPad(g.rw)}</span>
-            <span class="galeri-date">${formatDate(g.tanggal)}</span>
+    grid.innerHTML = currentItems.map((g: any, i: number) => {
+      const rwVal = g.rw || g.RW || 0;
+      const gUrl = g.url_foto || g['Tautan Foto (Google Drive)'] || '';
+      const gKeg = g.kegiatan || g['Nama Kegiatan'] || '';
+      const gKet = g.keterangan || g['Keterangan Foto'] || '';
+      const gTipe = String(g.tipe || g['Kategori Kegiatan'] || 'DS').toUpperCase();
+      const gTgl = g.tanggal || g['Tanggal Kegiatan'] || '';
+
+      return `
+        <div class="galeri-card" data-idx="${i}" role="button" tabindex="0" aria-label="Lihat foto: ${gKet}">
+          <div class="galeri-thumb">
+            <img
+              src="${driveUrl(gUrl)}"
+              alt="${gKet}"
+              loading="lazy"
+              onerror="this.parentElement.innerHTML='<div class=\\'galeri-img-err\\'>📷</div>'"
+            />
+            <span class="galeri-tipe-badge ${gTipe === 'DS' ? 'badge-ds' : 'badge-toga'}">${gTipe === 'DS' ? '🏥 Desa Sehat' : '🌿 TOGA'}</span>
+          </div>
+          <div class="galeri-info">
+            <p class="galeri-kegiatan">${gKeg || '-'}</p>
+            <p class="galeri-ket">${gKet || ''}</p>
+            <div class="galeri-meta">
+              <span class="galeri-rw-badge">RW ${rwPad(Number(rwVal))}</span>
+              <span class="galeri-date">${formatDate(gTgl)}</span>
+            </div>
           </div>
         </div>
-      </div>
-    `).join('');
+      `;
+    }).join('');
 
     grid.querySelectorAll('.galeri-card').forEach(card => {
       const open = () => openLightbox(Number((card as HTMLElement).dataset.idx));
@@ -1022,18 +1129,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     survei.forEach((kk: any) => {
       totalKK++;
-      if (kk.perilaku_sikat_gigi === '2x Sehari') {
+      const sikatVal = kk['Perilaku Sikat Gigi'] || kk.perilaku_sikat_gigi;
+      const saniVal = kk['Kondisi Fisik Jamban'] || kk.kondisi_jamban;
+      const sampahVal = kk['Pengelolaan Sampah'] || kk.pengelolaan_sampah;
+      const tindakanVal = kk['Tindakan Medis Gigi'] || kk.tindakan_medis_gigi;
+
+      if (sikatVal === '2x Sehari') {
         sikatGigi2x++;
       }
-      if (kk.kondisi_jamban === 'Baik/Layak') {
+      if (saniVal === 'Baik/Layak') {
         jambanLayak++;
       }
-      if (kk.pengelolaan_sampah === 'Dibuang ke TPS') {
+      if (sampahVal === 'Dibuang ke TPS') {
         sampahTps++;
       }
-      if (kk.tindakan_medis_gigi === 'Pernah ke Dokter Gigi') {
+      if (tindakanVal === 'Pernah ke Dokter Gigi') {
         medisDokter++;
-      } else if (kk.tindakan_medis_gigi === 'Membeli Obat Saja') {
+      } else if (tindakanVal === 'Membeli Obat Saja') {
         medisObat++;
       }
     });
@@ -1142,8 +1254,8 @@ document.addEventListener("DOMContentLoaded", () => {
       let totalBalita = 0;
       let totalStunting = 0;
       prevalensi.forEach((d: any) => {
-        totalBalita += Number(d.total_balita) || 0;
-        totalStunting += Number(d.stunting) || 0;
+        totalBalita += Number(d['Total Balita'] || d.total_balita) || 0;
+        totalStunting += Number(d.Stunting || d.stunting) || 0;
       });
 
       const pBebasStunting = totalBalita ? Math.round(((totalBalita - totalStunting) / totalBalita) * 100) : 100;
@@ -1216,6 +1328,41 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('kes-lb-backdrop')?.addEventListener('click', closeLightbox);
   document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') closeLightbox(); });
 
+  function renderEdukasi(data: any[]): void {
+    const grid = document.getElementById('edukasi-list-grid');
+    if (!grid) return;
+    
+    const cleanActiveData = (data || []).filter(item => {
+      const title = String(item['Judul Modul / Poster'] || '').trim();
+      const status = String(item['Status Publish'] || '').trim();
+      return title.length > 0 && status.toUpperCase() === 'YA';
+    });
+    
+    if (!cleanActiveData.length) {
+      grid.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;grid-column:1/-1;text-align:center;padding:1rem;">Modul edukasi belum tersedia saat ini.</p>';
+      return;
+    }
+    
+    grid.innerHTML = cleanActiveData.map(item => {
+      const title = item['Judul Modul / Poster'];
+      const kat = item['Kategori'] || 'Umum';
+      const link = item['Tautan Unduh (Drive/PDF)'] || '#';
+      const icon = kat.toLowerCase().includes('gigi') ? '🦷' : kat.toLowerCase().includes('toga') ? '🌿' : kat.toLowerCase().includes('sampah') ? '🗑️' : '📚';
+      return `
+        <div class="edukasi-card" role="listitem">
+          <div class="edukasi-icon-wrap" aria-hidden="true">${icon}</div>
+          <div class="edukasi-info">
+            <span class="edukasi-tag">${kat}</span>
+            <h4 class="edukasi-name" title="${title}">${title}</h4>
+            <a href="${link}" target="_blank" rel="noopener noreferrer" class="edukasi-btn">
+              📥 Unduh Modul
+            </a>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
   /* -- Main Fetch -- */
   function loadKesehatanData(url: string, isFallback: boolean = false): void {
     const status = document.getElementById('kes-api-status');
@@ -1225,14 +1372,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return r.json();
       })
       .then((payload: any) => {
-        const survei     = Array.isArray(payload) ? payload : (payload.survei     ?? []);
-        const prevalensi = payload.prevalensi ?? [];
-        const galeri     = payload.galeri     ?? [];
+        const survei     = Array.isArray(payload) ? payload : (payload.DESA_SEHAT_SURVEI ?? payload.survei     ?? []);
+        const prevalensi = payload.DESA_SEHAT_STUNTING ?? payload.prevalensi ?? [];
+        const galeri     = payload.GALERI ?? payload.galeri     ?? [];
+        const edukasi    = payload.KONTEN_EDUKASI ?? [];
 
         renderKesStats(survei);
         renderPrevalensi(prevalensi);
         updateDetailedHealthCards(survei, prevalensi);
         renderGaleri(galeri);
+        renderEdukasi(edukasi);
 
         if (status) {
           status.innerHTML = isFallback ? '🟢 Live · Local Mode' : `🟢 Live · ${survei.length} KK Terdata`;

@@ -64,6 +64,32 @@
     </div>
 
   </div>
+
+  <!-- ===== TOGA DETAILS MODAL ===== -->
+  <div id="toga-modal" class="toga-modal" role="dialog" aria-modal="true" aria-label="Detail Tanaman TOGA" hidden>
+    <div class="toga-modal-backdrop" id="toga-modal-backdrop"></div>
+    <div class="toga-modal-container">
+      <button class="toga-modal-close" id="toga-modal-close" aria-label="Tutup">✕</button>
+      <div class="toga-modal-header">
+        <span class="toga-modal-icon" id="toga-modal-icon">🌿</span>
+        <div>
+          <h3 class="toga-modal-title" id="toga-modal-title">Nama Tanaman</h3>
+          <span class="toga-modal-rw" id="toga-modal-rw">Ditemukan di RW X</span>
+        </div>
+      </div>
+      <div class="toga-modal-body">
+        <div class="toga-modal-section">
+          <h4 class="toga-modal-sec-title">✨ Khasiat Utama</h4>
+          <p class="toga-modal-text" id="toga-modal-khasiat">Khasiat tanaman...</p>
+        </div>
+        <div class="toga-modal-section">
+          <h4 class="toga-modal-sec-title">🍵 Cara Pengolahan Singkat</h4>
+          <p class="toga-modal-text" id="toga-modal-pengolahan">Cara pengolahan...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </section>
 
 <style>
@@ -291,6 +317,79 @@
     width: 0%;
   }
 
+  /* ===== Toga Modal ===== */
+  .toga-modal {
+    position: fixed; inset: 0; z-index: 9500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .toga-modal[hidden] { display: none; }
+  .toga-modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(20,53,45,0.75); backdrop-filter: blur(8px);
+  }
+  .toga-modal-container {
+    position: relative; z-index: 1;
+    max-width: 480px; width: 100%;
+    background: #fff; border-radius: 1.25rem;
+    box-shadow: 0 20px 50px rgba(20,53,45,0.3);
+    border: 1px solid rgba(22,163,74,0.15);
+    overflow: hidden;
+    animation: togaModalFadeIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes togaModalFadeIn {
+    from { opacity: 0; transform: scale(0.9) translateY(10px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .toga-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: #f0fdf4; border: 1px solid #bbf7d0;
+    color: #16a34a; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; display: grid; place-items: center;
+    transition: all 0.2s;
+  }
+  .toga-modal-close:hover {
+    background: #16a34a; color: white; border-color: transparent;
+  }
+  .toga-modal-header {
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-bottom: 1px solid rgba(22,163,74,0.1);
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .toga-modal-icon {
+    font-size: 2.2rem;
+    width: 60px; height: 60px;
+    background: white; border-radius: 1rem;
+    display: grid; place-items: center;
+    box-shadow: 0 4px 10px rgba(22,163,74,0.15);
+  }
+  .toga-modal-title {
+    font-size: 1.2rem; font-weight: 800; color: #14532d; margin: 0;
+  }
+  .toga-modal-rw {
+    font-size: 0.72rem; font-weight: 700; color: #16a34a;
+    background: white; padding: 0.15rem 0.5rem; border-radius: 99px;
+    border: 1px solid #bbf7d0; display: inline-block; margin-top: 0.25rem;
+  }
+  .toga-modal-body {
+    padding: 1.5rem;
+    display: flex; flex-direction: column; gap: 1.25rem;
+  }
+  .toga-modal-section {
+    display: flex; flex-direction: column; gap: 0.4rem;
+  }
+  .toga-modal-sec-title {
+    font-size: 0.75rem; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.06em; color: #6b7280;
+  }
+  .toga-modal-text {
+    font-size: 0.88rem; color: #374151; line-height: 1.6;
+    background: #f9fafb; padding: 0.75rem 1rem; border-radius: 0.75rem;
+    border: 1px solid #e2e8f0; margin: 0;
+  }
+
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
     .toga-summary-grid { grid-template-columns: repeat(3, 1fr); }
@@ -303,9 +402,33 @@
   }
 </style>
 
+<div id="toga-modal" class="toga-modal" hidden>
+  <div id="toga-modal-backdrop" class="toga-modal-backdrop"></div>
+  <div class="toga-modal-container">
+    <button id="toga-modal-close" class="toga-modal-close">✕</button>
+    <div class="toga-modal-header">
+      <div id="toga-modal-icon" class="toga-modal-icon"></div>
+      <div>
+        <h3 id="toga-modal-title" class="toga-modal-title"></h3>
+        <span id="toga-modal-rw" class="toga-modal-rw"></span>
+      </div>
+    </div>
+    <div class="toga-modal-body">
+      <div class="toga-modal-section">
+        <span class="toga-modal-sec-title">Khasiat Utama</span>
+        <p id="toga-modal-khasiat" class="toga-modal-text"></p>
+      </div>
+      <div class="toga-modal-section">
+        <span class="toga-modal-sec-title">Cara Pengolahan</span>
+        <p id="toga-modal-pengolahan" class="toga-modal-text"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (function () {
-  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQjZyOnFpb-cxOFHqzjoPq_m6f733zhOBiy5EW-5XySDs5NMUo4sSXUTgiDdUPyeP6doL9xmREJvuTJ4mD5AVpDqwIq94KT71syJchqgXv45vhYO_LJ3K55uW91vyV5Q5-Okzng24UyXDz-IZcc82WMgVq91t5EXTBepv1bjvlV2jg4Lc3iaTbTAzbbjXFB688ysePGnE8-ncAHUq8ZdqBV8sKiyMqDvFzMP05fIJXsaq9B_XpdTBNknCCMj1_DNoIXBrfO3vRaM7bA79XoW-8Ia08b3A&lib=MDLAdFgRGOJVJ01oTM4DbJHdi3ZE4dG0b';
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRuTe7TNeZBYaxnCiNXpdUemq2xmCyTM8j_KLq0r2Me6xUbYQePwFxSmEdWo4XWwCOhBbCPcuiFNKc340dQ8gqbLmCl4vq-7fqx0jh0CHLIItmlWEY-X-7tz9oT3U5PvzXafBfldIcyxqPHJEarfexScMSzLZV-xC9aFeBYqxKtr3w3EzkmZQMypNo9lpdr7Qt6rHc-iwXsc-dsNtanYRkCUau_sP17nBgTSdpKDfGmyatSYJzvdyYvJVQLuo0ciWWcA_AO-g4jfRUmgSY3yJTuO4izFw&lib=MjcZsqpQEZ9CuadBIMwYpJXdi3ZE4dG0b';
 
   const PLANT_EMOJI: Record<string, string> = {
     'Jahe': '🫚', 'Kunyit': '🟡', 'Lengkuas': '🌱',
@@ -319,6 +442,8 @@
     3: 'Afd. 2 / Talang Beduk', 4: 'Muara Perikan',
     5: 'Muara Abadi',  6: 'Janang',
   };
+
+  let togaGlobalData: any[] = [];
 
   function plantEmoji(name: string): string {
     return PLANT_EMOJI[name] || '🌿';
@@ -335,26 +460,34 @@
       return;
     }
 
+    togaGlobalData = togaData;
+
     /* --- Aggregate: by plant name --- */
     const byPlant: Record<string, number> = {};
     togaData.forEach((t: any) => {
-      byPlant[t.nama_tanaman] = (byPlant[t.nama_tanaman] || 0) + (t.jumlah || 0);
+      const name = t.nama_tanaman || t['Nama Tanaman Obat'] || '';
+      const jumlah = Number(t.jumlah || t['Jumlah Tanaman']) || 0;
+      if (!name) return;
+      byPlant[name] = (byPlant[name] || 0) + jumlah;
     });
 
     /* --- Aggregate: by RW --- */
     const byRW: Record<number, { tanaman: Record<string, number>; total: number }> = {};
     togaData.forEach((t: any) => {
-      const rw = Number(t.rw);
+      const rw = Number(t.rw || t.RW);
+      const name = t.nama_tanaman || t['Nama Tanaman Obat'] || '';
+      const jumlah = Number(t.jumlah || t['Jumlah Tanaman']) || 0;
+      if (!rw || !name) return;
       if (!byRW[rw]) byRW[rw] = { tanaman: {}, total: 0 };
-      byRW[rw].tanaman[t.nama_tanaman] = (byRW[rw].tanaman[t.nama_tanaman] || 0) + (t.jumlah || 0);
-      byRW[rw].total += (t.jumlah || 0);
+      byRW[rw].tanaman[name] = (byRW[rw].tanaman[name] || 0) + jumlah;
+      byRW[rw].total += jumlah;
     });
 
     const totalJenis   = Object.keys(byPlant).length;
     const totalTanaman = Object.values(byPlant).reduce((s, v) => s + v, 0);
     const totalRW      = Object.keys(byRW).length;
-    const maxJumlah    = Math.max(...Object.values(byPlant));
-    const maxRWTotal   = Math.max(...Object.values(byRW).map(r => r.total));
+    const maxJumlah    = Math.max(...Object.values(byPlant), 1);
+    const maxRWTotal   = Math.max(...Object.values(byRW).map(r => r.total), 1);
 
     if (status) status.innerHTML = `🟢 Live · ${totalRW} RW Terdata`;
 
@@ -385,12 +518,12 @@
       chart.innerHTML = sortedPlants.map(([name, jumlah]) => {
         const pct = maxJumlah ? Math.round(jumlah / maxJumlah * 100) : 0;
         return `
-          <div class="toga-bar-row">
+          <div class="toga-bar-row" style="cursor:pointer;" data-plant="${name}" role="button" tabindex="0" title="Klik untuk khasiat &amp; cara pengolahan">
             <span class="toga-bar-name">${plantEmoji(name)} ${name}</span>
             <div class="toga-bar-track">
               <div class="toga-bar-fill" style="width:0%" data-w="${pct}%"></div>
             </div>
-            <span class="toga-bar-count">${jumlah}</span>
+            <span class="toga-bar-count">${jumlah} 🔍</span>
           </div>
         `;
       }).join('');
@@ -422,7 +555,7 @@
         const pct     = maxRWTotal ? Math.round(total / maxRWTotal * 100) : 0;
         const tags    = Object.entries(tanaman)
           .sort((a, b) => b[1] - a[1])
-          .map(([nm]) => `<span class="rw-tag">${plantEmoji(nm)} ${nm}</span>`)
+          .map(([nm]) => `<span class="rw-tag" style="cursor:pointer;" data-plant="${nm}">${plantEmoji(nm)} ${nm}</span>`)
           .join('');
 
         return `
@@ -461,6 +594,56 @@
     }
   }
 
+  // Toga modal logic
+  function showPlantModal(name: string) {
+    const records = togaGlobalData.filter((t: any) => 
+      (t.nama_tanaman || t['Nama Tanaman Obat'] || '').toLowerCase() === name.toLowerCase()
+    );
+    if (!records.length) return;
+    
+    const mainRecord = records.find((t: any) => t['Khasiat Utama'] || t.khasiat) || records[0];
+    const khasiat = mainRecord['Khasiat Utama'] || mainRecord.khasiat || 'Khasiat informasi belum ditambahkan.';
+    const pengolahan = mainRecord['Cara Pengolahan Singkat'] || mainRecord.pengolahan || 'Petunjuk pengolahan belum ditambahkan.';
+    const rwList = [...new Set(records.map((t: any) => 'RW ' + (t.rw || t.RW)))].join(', ');
+
+    const modal = document.getElementById('toga-modal');
+    const mIcon = document.getElementById('toga-modal-icon');
+    const mTitle = document.getElementById('toga-modal-title');
+    const mRw = document.getElementById('toga-modal-rw');
+    const mKhasiat = document.getElementById('toga-modal-khasiat');
+    const mPengolahan = document.getElementById('toga-modal-pengolahan');
+
+    if (!modal || !mIcon || !mTitle || !mRw || !mKhasiat || !mPengolahan) return;
+
+    mIcon.textContent = plantEmoji(name);
+    mTitle.textContent = name;
+    mRw.textContent = `Tersedia di: ${rwList}`;
+    mKhasiat.textContent = khasiat;
+    mPengolahan.textContent = pengolahan;
+
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hidePlantModal() {
+    const modal = document.getElementById('toga-modal');
+    if (modal) modal.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const plantEl = target.closest('[data-plant]');
+    if (plantEl) {
+      const plantName = plantEl.getAttribute('data-plant');
+      if (plantName) showPlantModal(plantName);
+    }
+  });
+
+  document.getElementById('toga-modal-close')?.addEventListener('click', hidePlantModal);
+  document.getElementById('toga-modal-backdrop')?.addEventListener('click', hidePlantModal);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hidePlantModal(); });
+
   /* -- Main Fetch -- */
   function loadTogaData(url: string, isFallback: boolean = false): void {
     const status = document.getElementById('toga-api-status');
@@ -470,7 +653,14 @@
         return r.json();
       })
       .then((payload: any) => {
-        const togaData = payload.toga ?? [];
+        const togaData = payload.TOGA ?? payload.toga ?? [];
+        
+        // Overwrite RW names dynamically if present
+        const rwMetaRaw = payload.RW_GUNUNG_DEMPO ?? [];
+        rwMetaRaw.forEach((item: any) => {
+          RW_NAME[Number(item.RW)] = item['Nama Dusun'] || '';
+        });
+
         renderTogaData(togaData);
         if (status) {
           status.innerHTML = isFallback ? '🟢 Live · Local Mode' : '🟢 Live';
