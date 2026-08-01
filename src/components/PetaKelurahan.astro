@@ -34,7 +34,7 @@
           <span class="peta-info-icon" aria-hidden="true">🎓</span>
           <div>
             <div class="peta-info-label">Sumber Data</div>
-            <div class="peta-info-value">KKNT 103 Kelompok 25 · Survei Door-to-Door & Posyandu</div>
+            <div class="peta-info-value" id="peta-sumber-data-val">KKNT 103 Kelompok 25 · Survei Lapangan Desa Sehat</div>
           </div>
         </div>
         <div class="peta-info-divider" aria-hidden="true"></div>
@@ -211,9 +211,10 @@
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    padding: .875rem 1.25rem;
+    padding: 1rem 1.5rem;
     gap: 0;
-    background: linear-gradient(135deg,#f0fdf4,#ecfdf5);
+    background: linear-gradient(135deg, rgba(240,253,244,0.95), rgba(236,253,245,0.95));
+    backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(5,150,105,.15);
   }
   .peta-info-item {
@@ -246,27 +247,30 @@
   .layer-toggle-group, .basemap-btn-group { display: flex; gap: .25rem; }
 
   .layer-btn, .basemap-btn {
-    padding: .35rem .7rem;
-    font-size: .72rem; font-weight: 600;
-    border: 1.5px solid rgba(5,150,105,.3);
-    border-radius: .5rem;
+    padding: .45rem .85rem;
+    font-size: .75rem; font-weight: 700;
+    border: 1.5px solid rgba(5,150,105,.25);
+    border-radius: 999px;
     background: white; color: #374151;
     cursor: pointer;
-    transition: all .2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   .layer-btn:hover, .basemap-btn:hover {
     border-color: #059669; color: #059669; background: #f0fdf4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(5,150,105,0.1);
   }
   .layer-btn.active {
     background: linear-gradient(135deg,#059669,#10b981);
     color: white; border-color: transparent;
-    box-shadow: 0 2px 8px rgba(5,150,105,.35);
+    box-shadow: 0 4px 12px rgba(5,150,105,0.3);
   }
   .basemap-btn.active {
     background: linear-gradient(135deg,#1e40af,#3b82f6);
     color: white; border-color: transparent;
-    box-shadow: 0 2px 8px rgba(30,64,175,.35);
+    box-shadow: 0 4px 12px rgba(30,64,175,0.3);
   }
 
   /* ===== Live Stats Bar ===== */
@@ -457,28 +461,34 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #fff;
+    background: #ffffff;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #059669 transparent;
+    border-left: 1px solid rgba(0,0,0,0.05);
   }
   .panel-header {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem;
     background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
     border-bottom: 1px solid rgba(5,150,105,.12);
     display: flex;
     align-items: center;
-    gap: 0.875rem;
+    gap: 1rem;
   }
   .panel-icon {
     font-size: 1.8rem;
-    width: 48px;
-    height: 48px;
-    background: white;
-    border-radius: 0.75rem;
+    width: 52px;
+    height: 52px;
+    background: #ffffff;
+    border-radius: 1rem;
     display: grid;
     place-items: center;
-    box-shadow: 0 4px 10px rgba(5,150,105,0.08);
+    box-shadow: 0 8px 16px rgba(5,150,105,0.1);
+    border: 1px solid rgba(5,150,105,0.08);
+    transition: transform 0.3s ease;
+  }
+  .panel-header:hover .panel-icon {
+    transform: scale(1.05) rotate(5deg);
   }
   .panel-header-text {
     flex: 1;
@@ -502,17 +512,22 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   .gender-split-bar {
     display: flex;
-    height: 24px;
-    border-radius: 6px;
+    height: 12px;
+    border-radius: 999px;
     overflow: hidden;
     margin: 0.25rem 0 0.5rem;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
   }
   .gender-bar-male {
-    background: linear-gradient(135deg, #2563eb, #60a5fa);
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
     color: white;
     font-size: .65rem;
     font-weight: 800;
@@ -930,8 +945,10 @@
   let usiaStore: Record<string, Record<string, number>> = {};
   let pendidikanStore: Record<string, Record<string, number>> = {};
   let agamaStore: Record<string, Record<string, number>> = {};
+  let pekerjaanStore: Record<string, Record<string, number>> = {};
   let poiStore: Record<string, any[]> = { sekolah: [], faskes: [], kebun: [], pemukiman: [] };
   let surveyStats: Record<string, any> = {};
+  let currentMode: 'sanitasi' | 'medis' | 'toga' | 'demografi' = 'sanitasi';
 
   /* Warna & identitas tiap RW (statis) */
   const RW_META: Record<string, { color: string; fillBase: string; icon: string; luasHa: string; rwName: string }> = {
@@ -1251,7 +1268,7 @@
       s.persen_dokter      = n ? Math.round((s.ke_dokter / n) * 100)    : 0;
       s.persen_obat_warung = n ? Math.round((s.obat_warung / n) * 100)  : 0;
       s.persen_sampah_bakar= n ? Math.round((s.sampah_bakar / n) * 100) : 0;
-      s.indeks_sehat       = Math.round((s.persen_sanitasi + s.persen_dokter) / 2);
+      s.indeks_sehat       = Math.round((s.persen_sanitasi + s.persen_dokter + (100 - s.persen_sampah_bakar)) / 3);
     }
 
     return rekap as Record<string, RWStats>;
@@ -1319,9 +1336,6 @@
     };
     
     const density = (dp.total / area).toFixed(2);
-    const malePct = dp.total ? Math.round(dp.laki / dp.total * 100) : 50;
-    const femalePct = dp.total ? 100 - malePct : 50;
-    const avgFamilySize = dp.kk ? (dp.total / dp.kk).toFixed(1) : '0';
 
     return `
       <div>
@@ -1331,18 +1345,18 @@
           <div class="popup-data-tag">👥 ${dp.total} Jiwa · ${dp.kk} KK</div>
         </div>
         <div class="popup-body">
-          <div class="popup-stat-grid" style="grid-template-columns: 1fr 1fr;">
+          <div class="popup-stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0.5rem;">
             <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#7c3aed">👥 ${dp.total}</div>
+              <div class="popup-stat-val" style="color:#7c3aed">👥 ${dp.total} jiwa</div>
               <div class="popup-stat-lbl">Populasi Riil</div>
             </div>
             <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#7c3aed">📈 ${density}</div>
-              <div class="popup-stat-lbl">Jiwa / Ha</div>
+              <div class="popup-stat-val" style="color:#7c3aed">🏠 ${dp.kk} KK</div>
+              <div class="popup-stat-lbl">Jumlah Keluarga</div>
             </div>
           </div>
           <p style="font-size:0.7rem;color:#4b5563;margin:0.25rem 0 0;">
-            Lihat grafik demografi terperinci di <strong>Panel Kanan Dasbor</strong>.
+            Detail sebaran usia, agama, dan pekerjaan tersedia di <strong>Panel Kanan Dasbor</strong>.
           </p>
           ${buildGalleryStrip(rwKey, 'DS')}
         </div>
@@ -1418,7 +1432,7 @@
               <div class="popup-stat-lbl">Indeks Sehat</div>
             </div>
             <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#059669">💧 ${stats.persen_sanitasi}%</div>
+              <div class="popup-stat-val" style="color:#059669">💧 ${stats.persen_sanitasi}% (${stats.jamban_layak}/${stats.total_kk} KK)</div>
               <div class="popup-stat-lbl">Sanitasi Layak</div>
             </div>
           </div>
@@ -1458,7 +1472,7 @@
           (window as any).map.closePopup();
         }
         if (selectedLayer) {
-          selectedLayer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
+          selectedLayer.setStyle({ fillOpacity: 0.55, weight: 1.5, color: '#ffffff' });
           selectedLayer = null;
         }
       });
@@ -1476,10 +1490,10 @@
           male += dp.laki;
           female += dp.perempuan;
         });
-        totalPop = totalPop || 4542;
-        totalKK = totalKK || 1240;
-        male = male || 2312;
-        female = female || 2230;
+        totalPop = totalPop || 1591;
+        totalKK = totalKK || 498;
+        male = male || 791;
+        female = female || 800;
       } else {
         const dp = jumlahPendudukStore[rwKey] || { total: 0, kk: 0, laki: 0, perempuan: 0 };
         totalPop = dp.total;
@@ -1488,7 +1502,7 @@
         female = dp.perempuan;
       }
 
-      const areaHa = isAll ? 940 : (meta?.luasHa ? parseInt(meta.luasHa.replace(/[^0-9]/g, '')) || 1 : 1);
+      const areaHa = isAll ? 906 : (meta?.luasHa ? parseInt(meta.luasHa.replace(/[^0-9]/g, '')) || 1 : 1);
       const density = (totalPop / areaHa).toFixed(2);
       const malePct = totalPop ? Math.round(male / totalPop * 100) : 50;
       const femalePct = 100 - malePct;
@@ -1502,7 +1516,7 @@
           prod += (Number(ageData['25-29']) || 0) + (Number(ageData['30-34']) || 0) + (Number(ageData['35-39']) || 0) + (Number(ageData['40-44']) || 0) + (Number(ageData['45-49']) || 0) + (Number(ageData['50-54']) || 0) + (Number(ageData['55-59']) || 0);
           elder += (Number(ageData['60-64']) || 0) + (Number(ageData['65-74']) || 0) + (Number(ageData['75-84']) || 0) + (Number(ageData['>85']) || 0);
         });
-        child = child || 1120; teen = teen || 850; prod = prod || 2130; elder = elder || 442;
+        child = child || 242; teen = teen || 277; prod = prod || 898; elder = elder || 174;
       } else {
         const ageData = usiaStore[rwKey] || {};
         child = (Number(ageData['0-4']) || 0) + (Number(ageData['5-9']) || 0) + (Number(ageData['10-14']) || 0);
@@ -1524,7 +1538,7 @@
           slta += pData.slta || 0;
           higher += (pData.diploma || 0) + (pData.sarjana || 0);
         });
-        sd = sd || 1400; sltp = sltp || 1100; slta = slta || 1500; higher = higher || 320;
+        sd = sd || 140; sltp = sltp || 68; slta = slta || 25; higher = higher || 75;
       } else {
         const pData = pendidikanStore[rwKey] || { sd: 0, sltp: 0, slta: 0, diploma: 0, sarjana: 0 };
         sd = pData.sd;
@@ -1538,15 +1552,90 @@
       const pSLTA = Math.round(slta / totalPend * 100);
       const pHigher = 100 - (pSD + pSLTP + pSLTA);
 
+      let islam = 0, kristen = 0, lain = 0;
+      if (isAll) {
+        Object.values(agamaStore).forEach((ag: any) => {
+          islam += ag.islam || 0;
+          kristen += ag.kristen || 0;
+          lain += ag.lain || 0;
+        });
+        islam = islam || 1581;
+        kristen = kristen || 10;
+        lain = lain || 0;
+      } else {
+        const ag = agamaStore[rwKey] || { islam: 0, kristen: 0, lain: 0 };
+        islam = ag.islam || 0;
+        kristen = ag.kristen || 0;
+        lain = ag.lain || 0;
+      }
+      const totalAgama = islam + kristen + lain || 1;
+      const pIslam = Math.round(islam / totalAgama * 100);
+      const pKristen = Math.round(kristen / totalAgama * 100);
+      const pLain = 100 - (pIslam + pKristen);
+
+      let swasta = 0, pns = 0, tni_polri = 0, wiraswasta = 0, pelajar = 0;
+      let paramedis = 0, petani = 0, pensiunan = 0, buruh = 0, nelayan = 0;
+      let pedagang = 0, peg = 0, dosen = 0;
+
+      if (isAll) {
+        Object.values(pekerjaanStore).forEach((p: any) => {
+          swasta += p.swasta || 0;
+          pns += p.pns || 0;
+          tni_polri += p.tni_polri || 0;
+          wiraswasta += p.wiraswasta || 0;
+          pelajar += p.pelajar || 0;
+          paramedis += p.paramedis || 0;
+          petani += p.petani || 0;
+          pensiunan += p.pensiunan || 0;
+          buruh += p.buruh || 0;
+          nelayan += p.nelayan || 0;
+          pedagang += p.pedagang || 0;
+          peg += p.peg || 0;
+          dosen += p.dosen || 0;
+        });
+      } else {
+        const p = pekerjaanStore[rwKey] || {};
+        swasta = p.swasta || 0;
+        pns = p.pns || 0;
+        tni_polri = p.tni_polri || 0;
+        wiraswasta = p.wiraswasta || 0;
+        pelajar = p.pelajar || 0;
+        paramedis = p.paramedis || 0;
+        petani = p.petani || 0;
+        pensiunan = p.pensiunan || 0;
+        buruh = p.buruh || 0;
+        nelayan = p.nelayan || 0;
+        pedagang = p.pedagang || 0;
+        peg = p.peg || 0;
+        dosen = p.dosen || 0;
+      }
+
+      const jobsList = [
+        { name: 'Petani/Pekebun', count: petani },
+        { name: 'Buruh Harian', count: buruh },
+        { name: 'Pelajar/Mahasiswa', count: pelajar },
+        { name: 'Swasta/Belum Bekerja', count: swasta },
+        { name: 'Pedagang', count: pedagang },
+        { name: 'Pegawai BUMN/PEG', count: peg },
+        { name: 'Wiraswasta', count: wiraswasta },
+        { name: 'PNS', count: pns },
+        { name: 'Pensiunan', count: pensiunan },
+        { name: 'TNI/Polri', count: tni_polri },
+        { name: 'Tenaga Medis', count: paramedis },
+        { name: 'Dosen/Guru', count: dosen }
+      ].filter(j => j.count > 0).sort((a, b) => b.count - a.count);
+      
+      const totalJobs = jobsList.reduce((acc, curr) => acc + curr.count, 0) || 1;
+
       html = `
         <div class="popup-stat-grid" style="grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin-bottom: 0.75rem;">
           <div class="popup-stat" style="padding: 0.5rem;">
-            <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">👥 ${totalPop}</div>
+            <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">👥 ${totalPop} jiwa</div>
             <div class="popup-stat-lbl" style="font-size:0.55rem;">Total Populasi</div>
           </div>
           <div class="popup-stat" style="padding: 0.5rem;">
-            <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">🏠 ${totalKK}</div>
-            <div class="popup-stat-lbl" style="font-size:0.55rem;">Jumlah KK</div>
+            <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">🏠 ${totalKK} KK</div>
+            <div class="popup-stat-lbl" style="font-size:0.55rem;">Jumlah Keluarga</div>
           </div>
           <div class="popup-stat" style="padding: 0.5rem;">
             <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">📈 ${density}</div>
@@ -1554,72 +1643,117 @@
           </div>
           <div class="popup-stat" style="padding: 0.5rem;">
             <div class="popup-stat-val" style="color:#7c3aed; font-size:1.05rem;">👨‍👩‍👧 ${avgFamilySize}</div>
-            <div class="popup-stat-lbl" style="font-size:0.55rem;">Jiwa / KK</div>
+            <div class="popup-stat-lbl" style="font-size:0.55rem;">Rata-rata Jiwa/KK</div>
           </div>
         </div>
 
-        <div style="margin-top:0.4rem;">
-          <span style="font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.15rem;">Rasio Jenis Kelamin</span>
-          <div class="gender-split-bar">
-            <div class="gender-bar-male" style="width:${malePct}%;" title="Laki-laki: ${male} jiwa (${malePct}%)">
-              ♂️ L: ${malePct}%
-            </div>
-            <div class="gender-bar-female" style="width:${femalePct}%;" title="Perempuan: ${female} jiwa (${femalePct}%)">
-              ♀️ P: ${femalePct}%
-            </div>
+        <div style="margin-top:0.4rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.35rem;">Rasio Jenis Kelamin</span>
+          <div style="display:flex; justify-content:space-between; font-size:0.7rem; margin-bottom:0.25rem;">
+            <span style="color:#2563eb;font-weight:700;">♂️ L: ${malePct}% (${male} jiwa)</span>
+            <span style="color:#db2777;font-weight:700;">♀️ P: ${femalePct}% (${female} jiwa)</span>
+          </div>
+          <div class="gender-split-bar" style="height:10px; border-radius:999px;">
+            <div class="gender-bar-male" style="width:${malePct}%; border-radius:999px 0 0 999px; background:linear-gradient(90deg, #2563eb, #3b82f6)"></div>
+            <div class="gender-bar-female" style="width:${femalePct}%; border-radius:0 999px 999px 0; background:linear-gradient(90deg, #db2777, #f472b6)"></div>
           </div>
         </div>
 
-        <div style="margin-top:0.5rem;">
-          <span style="font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.35rem;">Komposisi Usia Penduduk</span>
-          <div style="display:flex;flex-direction:column;gap:0.35rem;">
+        <div style="margin-top:0.5rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.45rem;">Komposisi Usia Penduduk</span>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;">
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.1rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
                 <span>👶 Anak (0-14 th)</span>
-                <strong>${pChild}%</strong>
+                <strong>${pChild}% (${child} jiwa)</strong>
               </div>
               <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pChild}%;background:#3b82f6;"></div></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.1rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
                 <span>🎒 Remaja (15-24 th)</span>
-                <strong>${pTeen}%</strong>
+                <strong>${pTeen}% (${teen} jiwa)</strong>
               </div>
               <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pTeen}%;background:#10b981;"></div></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.1rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
                 <span>💼 Produktif (25-59 th)</span>
-                <strong>${pProd}%</strong>
+                <strong>${pProd}% (${prod} jiwa)</strong>
               </div>
               <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pProd}%;background:#f59e0b;"></div></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.1rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
                 <span>🧓 Lansia (60+ th)</span>
-                <strong>${pElder}%</strong>
+                <strong>${pElder}% (${elder} jiwa)</strong>
               </div>
               <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pElder}%;background:#8b5cf6;"></div></div>
             </div>
           </div>
         </div>
 
-        <div style="margin-top:0.6rem;">
-          <span style="font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.25rem;">Tingkat Pendidikan Terakhir</span>
-          <table style="width:100%;border-collapse:collapse;font-size:0.7rem;text-align:left;line-height:1.4;">
+        <div style="margin-top:0.6rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.25rem;">Tingkat Pendidikan Terakhir</span>
+          <table style="width:100%;border-collapse:collapse;font-size:0.7rem;text-align:left;line-height:1.5;">
             <thead>
               <tr style="border-bottom:1px solid #e5e7eb;color:#6b7280;font-weight:700;font-size:0.6rem;text-transform:uppercase;">
-                <th style="padding:0.2rem 0;">Jenjang Pendidikan</th>
-                <th style="padding:0.2rem 0;text-align:right;">Rasio</th>
+                <th style="padding:0.25rem 0;">Jenjang Pendidikan</th>
+                <th style="padding:0.25rem 0;text-align:right;">Rasio & Jumlah</th>
               </tr>
             </thead>
             <tbody>
-              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.25rem 0;">SD Sederajat</td><td style="padding:0.25rem 0;text-align:right;font-weight:700;">${pSD}%</td></tr>
-              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.25rem 0;">SLTP Sederajat</td><td style="padding:0.25rem 0;text-align:right;font-weight:700;">${pSLTP}%</td></tr>
-              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.25rem 0;">SLTA Sederajat</td><td style="padding:0.25rem 0;text-align:right;font-weight:700;">${pSLTA}%</td></tr>
-              <tr><td style="padding:0.25rem 0;">Diploma / Sarjana</td><td style="padding:0.25rem 0;text-align:right;font-weight:700;">${pHigher}%</td></tr>
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.3rem 0; color:#374151;">SD Sederajat</td><td style="padding:0.3rem 0;text-align:right;font-weight:700; color:#111827;">${pSD}% (${sd} jiwa)</td></tr>
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.3rem 0; color:#374151;">SLTP Sederajat</td><td style="padding:0.3rem 0;text-align:right;font-weight:700; color:#111827;">${pSLTP}% (${sltp} jiwa)</td></tr>
+              <tr style="border-bottom:1px solid #f3f4f6;"><td style="padding:0.3rem 0; color:#374151;">SLTA Sederajat</td><td style="padding:0.3rem 0;text-align:right;font-weight:700; color:#111827;">${pSLTA}% (${slta} jiwa)</td></tr>
+              <tr><td style="padding:0.3rem 0; color:#374151;">Diploma / Sarjana</td><td style="padding:0.3rem 0;text-align:right;font-weight:700; color:#111827;">${pHigher}% (${higher} jiwa)</td></tr>
             </tbody>
           </table>
+        </div>
+
+        <div style="margin-top:0.6rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.45rem;">Sebaran Kepercayaan / Agama</span>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
+                <span>🕌 Islam</span>
+                <strong>${pIslam}% (${islam} jiwa)</strong>
+              </div>
+              <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pIslam}%;background:#10b981;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
+                <span>⛪ Kristen</span>
+                <strong>${pKristen}% (${kristen} jiwa)</strong>
+              </div>
+              <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pKristen}%;background:#3b82f6;"></div></div>
+            </div>
+            ${lain > 0 ? `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
+                <span>☸️ Lainnya</span>
+                <strong>${pLain}% (${lain} jiwa)</strong>
+              </div>
+              <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pLain}%;background:#6b7280;"></div></div>
+            </div>` : ''}
+          </div>
+        </div>
+
+        <div style="margin-top:0.6rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
+          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.45rem;">Mata Pencaharian Utama (Top 5)</span>
+          <div style="display:flex;flex-direction:column;gap:0.45rem;">
+            ${jobsList.slice(0, 5).map(j => {
+              const jPct = Math.round(j.count / totalJobs * 100);
+              return `
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
+                    <span>💼 ${j.name}</span>
+                    <strong>${jPct}% (${j.count} jiwa)</strong>
+                  </div>
+                  <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${jPct}%;background:#8b5cf6;"></div></div>
+                </div>`;
+            }).join('')}
+          </div>
         </div>
       `;
     } else if (mode === 'toga') {
@@ -1682,26 +1816,29 @@
         </div>` : ''}
       `;
     } else {
-      let totalKK = 0, jamban = 0, nyeri = 0, dokter = 0;
+      let totalKK = 0, jamban = 0, nyeri = 0, dokter = 0, sampahBakar = 0;
       if (isAll) {
         Object.values(surveyStats).forEach(s => {
           totalKK += s.total_kk;
           jamban += s.jamban_layak;
           nyeri += s.nyeri_gigi;
           dokter += s.ke_dokter;
+          sampahBakar += s.sampah_bakar || 0;
         });
       } else {
-        const s = surveyStats[rwKey] || { total_kk: 0, jamban_layak: 0, nyeri_gigi: 0, ke_dokter: 0 };
+        const s = surveyStats[rwKey] || { total_kk: 0, jamban_layak: 0, nyeri_gigi: 0, ke_dokter: 0, sampah_bakar: 0 };
         totalKK = s.total_kk;
         jamban = s.jamban_layak;
         nyeri = s.nyeri_gigi;
         dokter = s.ke_dokter;
+        sampahBakar = s.sampah_bakar || 0;
       }
 
-      const pSani = totalKK ? Math.round(jamban / totalKK * 100) : 85;
-      const pNyeri = totalKK ? Math.round(nyeri / totalKK * 100) : 30;
-      const pDokter = totalKK ? Math.round(dokter / totalKK * 100) : 60;
-      const pIndex = Math.round((pSani + pDokter) / 2);
+      const pSani = totalKK ? Math.round(jamban / totalKK * 100) : 0;
+      const pNyeri = totalKK ? Math.round(nyeri / totalKK * 100) : 0;
+      const pDokter = totalKK ? Math.round(dokter / totalKK * 100) : 0;
+      const pSampah = totalKK ? Math.round(sampahBakar / totalKK * 100) : 0;
+      const pIndex = Math.round((pSani + pDokter + (100 - pSampah)) / 3);
 
       const healthColor = choroplethColor(pIndex, 'medis');
 
@@ -1712,7 +1849,7 @@
             <div class="popup-stat-lbl" style="font-size:0.55rem;">Indeks Desa Sehat</div>
           </div>
           <div class="popup-stat" style="padding: 0.5rem;">
-            <div class="popup-stat-val" style="color:#059669; font-size:1.05rem;">🏠 ${totalKK}</div>
+            <div class="popup-stat-val" style="color:#059669; font-size:1.05rem;">🏠 ${totalKK} KK</div>
             <div class="popup-stat-lbl" style="font-size:0.55rem;">KK Tersurvei</div>
           </div>
         </div>
@@ -1723,7 +1860,7 @@
           <div style="margin-bottom:0.45rem;">
             <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
               <span>🚿 Sanitasi Layak (Jamban Sehat)</span>
-              <strong>${pSani}%</strong>
+              <strong>${pSani}% (${jamban} KK)</strong>
             </div>
             <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pSani}%;background:#059669;"></div></div>
           </div>
@@ -1731,22 +1868,30 @@
           <div style="margin-bottom:0.45rem;">
             <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
               <span>🩺 Penanganan Gigi Ke Dokter</span>
-              <strong>${pDokter}%</strong>
+              <strong>${pDokter}% (${dokter} KK)</strong>
             </div>
             <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pDokter}%;background:#3b82f6;"></div></div>
           </div>
 
           <div style="margin-bottom:0.45rem;">
             <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
-              <span>🦷 Keluhan Nyeri Gigi (1 Bln Terakhir)</span>
-              <strong>${pNyeri}%</strong>
+              <span>🔥 Kebiasaan Bakar Sampah</span>
+              <strong>${pSampah}% (${sampahBakar} KK)</strong>
             </div>
-            <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pNyeri}%;background:#ef4444;"></div></div>
+            <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pSampah}%;background:#ef4444;"></div></div>
+          </div>
+
+          <div style="margin-bottom:0.45rem;">
+            <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
+              <span>🦷 Keluhan Nyeri Gigi (1 Bln Terakhir)</span>
+              <strong>${pNyeri}% (${nyeri} KK)</strong>
+            </div>
+            <div style="height:6px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${pNyeri}%;background:#f59e0b;"></div></div>
           </div>
         </div>
 
         <div class="popup-insight" style="background:#fef3c7;border-left-color:#fbbf24;color:#92400e;margin-top:0.5rem;font-size:0.68rem;line-height:1.4;">
-          💡 <strong>Rekomendasi Promkes:</strong> ${pNyeri >= 30 ? 'Edukasi sikat gigi pagi & malam hari, serta minimalisasi penggunaan obat warung tanpa rekomendasi medis.' : 'Tingkat kesehatan gigi warga relatif sangat kondusif.'}
+          💡 <strong>Rekomendasi Promkes:</strong> ${pSampah >= 50 ? 'Sosialisasi pelarangan membakar sampah karena polusi udara. ' : ''}${pNyeri >= 30 ? 'Edukasi sikat gigi pagi & malam hari, serta minimalisasi penggunaan obat warung tanpa rekomendasi medis.' : 'Tingkat kesehatan gigi warga relatif sangat kondusif.'}
         </div>
       `;
     }
@@ -1783,7 +1928,7 @@
     const mapEl      = document.getElementById('leaflet-map');
     if (!mapEl) return;
 
-    let currentMode: 'sanitasi' | 'medis' | 'toga' | 'demografi' = 'sanitasi';
+    currentMode = 'sanitasi';
 
     const map = (window as any).L.map('leaflet-map', {
       center: [-4.038, 103.17], zoom: 12,
@@ -1799,6 +1944,12 @@
 
     /* Reset side panel to kelurahan-wide statistics initially */
     updateSidePanel('ALL', currentMode);
+
+    // Initialize source text dynamically
+    const sourceValEl = document.getElementById('peta-sumber-data-val');
+    if (sourceValEl) {
+      sourceValEl.textContent = 'KKNT 103 Kelompok 25 (Survei Lapangan Desa Sehat)';
+    }
 
     /* ── INGERALISASI LAYER GRUP POI (SARANA) ── */
     const poiGroups: Record<string, any> = {
@@ -1889,6 +2040,36 @@
     let geojsonLayer: any = null;
     let selectedLayer: any = null;
 
+    function getTooltipText(feature: any, mode: 'sanitasi' | 'medis' | 'toga' | 'demografi') {
+      const rwName = feature?.properties?.name || feature?.properties?.Name || '';
+      const rwNum  = rwName.replace('RW ', '').trim();
+      const key    = `RW ${rwNum}`;
+      const stats  = surveyStats[key];
+      const nameDusun = RW_META[key]?.rwName || '';
+      
+      let info = '';
+      if (mode === 'sanitasi') {
+        info = stats ? `🚿 Sanitasi Layak: <strong>${stats.persen_sanitasi}% (${stats.jamban_layak} KK)</strong>` : '⏳ Belum ada data';
+      } else if (mode === 'medis') {
+        info = stats ? `🏥 Indeks Sehat: <strong>${stats.indeks_sehat}%</strong>` : '⏳ Belum ada data';
+      } else if (mode === 'toga') {
+        const tanaman = togaStore[key] ?? [];
+        const totalPlants = tanaman.reduce((s, t) => s + t.jumlah, 0);
+        info = `🌿 TOGA: <strong>${totalPlants} btg</strong> (${tanaman.length} jenis)`;
+      } else if (mode === 'demografi') {
+        const dp = jumlahPendudukStore[key];
+        info = dp ? `👥 Penduduk: <strong>${dp.total} jiwa</strong> (${dp.kk} KK)` : '⏳ Belum ada data';
+      }
+      
+      return `
+        <div style="font-family: 'Inter', sans-serif; font-size: 0.72rem; padding: 0.25rem 0.5rem; line-height: 1.4;">
+          <div style="font-weight: 800; color: #111827; margin-bottom: 2px;">${key}</div>
+          <div style="font-size: 0.62rem; color: #6b7280; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">${nameDusun}</div>
+          <div style="color: #059669; font-weight: 600;">${info}</div>
+        </div>
+      `;
+    }
+
     /* Compute choropleth fill for a feature */
     function featureStyle(feature: any, mode: 'sanitasi' | 'medis' | 'toga' | 'demografi') {
       const rwName = feature?.properties?.name || feature?.properties?.Name || '';
@@ -1934,14 +2115,14 @@
         const pct = mode === 'sanitasi' ? stats.persen_sanitasi : stats.indeks_sehat;
         fill = choroplethColor(pct, mode);
       }
-      return { color: meta.color, weight: 2.5, opacity: 1, fillColor: fill, fillOpacity: 0.65 };
+      return { color: '#ffffff', weight: 1.5, opacity: 0.9, fillColor: fill, fillOpacity: 0.55 };
     }
 
     /* Reset side panel when map click outside polygon */
     map.on('click', (e: any) => {
       if (e.originalEvent.target.id === 'leaflet-map') {
         if (selectedLayer) {
-          selectedLayer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
+          selectedLayer.setStyle({ fillOpacity: 0.55, weight: 1.5, color: '#ffffff' });
           selectedLayer = null;
         }
         updateSidePanel('ALL', currentMode);
@@ -1963,21 +2144,27 @@
               className: 'rw-popup', maxWidth: 300, autoPan: true,
             });
 
+            layer.bindTooltip(() => getTooltipText(feature, currentMode), {
+              sticky: true,
+              direction: 'auto',
+              opacity: 0.95
+            });
+
             layer.on('mouseover', () => {
-              layer.setStyle({ fillOpacity: 0.85, weight: 4 });
+              layer.setStyle({ fillOpacity: 0.75, weight: 2.5, color: '#10b981' });
               layer.bringToFront();
             });
             layer.on('mouseout', () => {
               if (layer !== selectedLayer) {
-                layer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
+                layer.setStyle({ fillOpacity: 0.55, weight: 1.5, color: '#ffffff' });
               }
             });
             layer.on('click', () => {
               if (selectedLayer && selectedLayer !== layer) {
-                selectedLayer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
+                selectedLayer.setStyle({ fillOpacity: 0.55, weight: 1.5, color: '#ffffff' });
               }
               selectedLayer = layer;
-              layer.setStyle({ fillOpacity: 0.85, weight: 4 });
+              layer.setStyle({ fillOpacity: 0.8, weight: 3, color: '#059669' });
               
               // Dynamic Side Panel Update
               updateSidePanel(key, currentMode);
@@ -2001,10 +2188,10 @@
                 
                 // Select layer and trigger panel updates
                 if (selectedLayer && selectedLayer !== layer) {
-                  selectedLayer.setStyle({ fillOpacity: 0.65, weight: 2.5 });
+                  selectedLayer.setStyle({ fillOpacity: 0.55, weight: 1.5, color: '#ffffff' });
                 }
                 selectedLayer = layer;
-                layer.setStyle({ fillOpacity: 0.85, weight: 4 });
+                layer.setStyle({ fillOpacity: 0.8, weight: 3, color: '#059669' });
                 updateSidePanel(key, currentMode);
               }
             });
@@ -2021,7 +2208,19 @@
             geojsonLayer.eachLayer((layer: any) => {
               layer.setStyle(featureStyle(layer.feature, mode));
             });
-            if (selectedLayer) selectedLayer.setStyle({ fillOpacity: 0.85, weight: 4 });
+            if (selectedLayer) selectedLayer.setStyle({ fillOpacity: 0.8, weight: 3, color: '#059669' });
+
+            // Update source text dynamically
+            const sourceValEl = document.getElementById('peta-sumber-data-val');
+            if (sourceValEl) {
+              if (mode === 'demografi') {
+                sourceValEl.textContent = 'Pemerintah Kelurahan Gunung Dempo (Data Lurah)';
+              } else if (mode === 'toga') {
+                sourceValEl.textContent = 'KKNT 103 Kelompok 25 (Survei Lapangan TOGA)';
+              } else {
+                sourceValEl.textContent = 'KKNT 103 Kelompok 25 (Survei Lapangan Desa Sehat)';
+              }
+            }
 
             // Update choropleth legend title & scale
             const title = document.getElementById('choro-title');
@@ -2112,6 +2311,7 @@
           let usiaRaw:     any[] = [];
           let pendidikanRaw: any[] = [];
           let agamaRaw:      any[] = [];
+          let pekerjaanRaw:  any[] = [];
           let tempatUmumRaw: any[] = [];
 
           if (Array.isArray(payload)) {
@@ -2124,6 +2324,7 @@
             usiaRaw       = payload.USIA_PENDUDUK || [];
             pendidikanRaw = payload.PENDIDIKAN_PENDUDUK || [];
             agamaRaw      = payload.AGAMA_PENDUDUK || [];
+            pekerjaanRaw  = payload.PEKERJAAN_PENDUDUK || payload.pekerjaan || [];
             tempatUmumRaw = payload.TEMPAT_UMUM || [];
           }
 
@@ -2134,12 +2335,20 @@
             galeriRaw.forEach(item => {
               const rwStr  = String(item.rw || (item as any).RW || '').trim();
               const key    = `RW ${rwStr.replace('RW ', '').trim()}`;
+              
+              const rawUrl  = item.url_foto || (item as any)['Tautan Foto (Google Drive)'] || '';
+              const rawKet  = item.keterangan || (item as any)['Keterangan Foto'] || '';
+              const rawKeg  = item.kegiatan || (item as any)['Nama Kegiatan'] || '';
+              const rawTgl  = item.tanggal || (item as any)['Tanggal Kegiatan'] || '';
+              const rawTipe = item.tipe || (item as any)['Kategori Kegiatan'] || 'DS';
+
               const cleaned: GaleriItem = {
-                ...item,
                 rw:       rwStr,
-                tipe:     String(item.tipe ?? '').toUpperCase() || 'DS',
-                url_foto: sanitizeDriveUrl(String(item.url_foto ?? (item as any)['Tautan Foto (Google Drive)'] ?? '')),
-                tanggal:  formatTanggal(String(item.tanggal ?? (item as any)['Tanggal Kegiatan'] ?? '')),
+                tipe:     String(rawTipe).includes('Toga') || String(rawTipe).toUpperCase() === 'TOGA' ? 'TOGA' : 'DS',
+                url_foto: sanitizeDriveUrl(String(rawUrl)),
+                keterangan: String(rawKet),
+                kegiatan: String(rawKeg),
+                tanggal:  formatTanggal(String(rawTgl)),
               };
               if (!galeriStore[key]) galeriStore[key] = [];
               galeriStore[key].push(cleaned);
@@ -2194,11 +2403,11 @@
               const rwStr = String(row['RW / Nama Wilayah'] || row.RW || '').trim();
               const key = `RW ${rwStr.replace('RW ', '').trim()}`;
               pendidikanStore[key] = {
-                sd: Number(row['SD / Sederajat'] || row.sd || 0),
-                sltp: Number(row['SLTP / Sederajat'] || row.sltp || 0),
-                slta: Number(row['SLTA / Sederajat'] || row.slta || 0),
-                diploma: Number(row['Diploma (D1-D4)'] || row.diploma || 0),
-                sarjana: Number(row['Sarjana (S1-S3)'] || row.sarjana || 0)
+                sd: Number(row['SD Sederajat (J)'] || row['SD / Sederajat'] || row.sd || 0),
+                sltp: Number(row['SLTP Sederajat (J)'] || row['SLTP / Sederajat'] || row.sltp || 0),
+                slta: Number(row['SLTA Sederajat (J)'] || row['SLTA / Sederajat'] || row.slta || 0),
+                diploma: Number(row['Akademi/Diploma (J)'] || row['Diploma (D1-D4)'] || row.diploma || 0),
+                sarjana: Number(row['Sarjana (J)'] || row['Sarjana (S1-S3)'] || row.sarjana || 0)
               };
             });
           }
@@ -2210,8 +2419,31 @@
               const key = `RW ${rwStr.replace('RW ', '').trim()}`;
               agamaStore[key] = {
                 islam: Number(row['Islam'] || row.islam || 0),
-                kristen: Number(row['Kristen / Katolik'] || row.kristen || 0),
-                lain: Number(row['Lainnya'] || row.lain || 0)
+                kristen: Number(row['Kristen'] || row['Kristen / Katolik'] || row.kristen || 0),
+                lain: Number(row['Agama & Kepercayaan Lainnya'] || row['Lainnya'] || row.lain || 0)
+              };
+            });
+          }
+
+          if (pekerjaanRaw.length > 0) {
+            Object.keys(pekerjaanStore).forEach(k => delete pekerjaanStore[k]);
+            pekerjaanRaw.forEach((row: any) => {
+              const rwStr = String(row.RW || row['RW / Nama Wilayah'] || '').trim();
+              const key = `RW ${rwStr.replace('RW ', '').trim()}`;
+              pekerjaanStore[key] = {
+                swasta: Number(row['Swasta/Belum Bekerja'] || row.swasta || 0),
+                pns: Number(row['PNS'] || row.pns || 0),
+                tni_polri: Number(row['TNI/Polri'] || row.tni_polri || 0),
+                wiraswasta: Number(row['Wiraswasta'] || row.wiraswasta || 0),
+                pelajar: Number(row['Pelajar/Mahasiswa'] || row.pelajar || 0),
+                paramedis: Number(row['Paramedis'] || row.paramedis || 0),
+                petani: Number(row['Petani/Ternak'] || row.petani || 0),
+                pensiunan: Number(row['Pensiunan Purna'] || row.pensiunan || 0),
+                buruh: Number(row['Buruh'] || row.buruh || 0),
+                nelayan: Number(row['Nelayan'] || row.nelayan || 0),
+                pedagang: Number(row['Pedagang'] || row.pedagang || 0),
+                peg: Number(row['PEG'] || row.peg || 0),
+                dosen: Number(row['Dosen'] || row.dosen || 0)
               };
             });
           }
@@ -2236,12 +2468,13 @@
                              : kat.includes('kebun') || kat.includes('toga') || kat.includes('kopi') || kat.includes('teh') || kat.includes('tani') ? 'kebun'
                              : 'pemukiman';
               
+              const rwVal = row['RW'] || row['Lokasi / RW'] || '';
               poiStore[category].push({
                 name: row['Nama Tempat / Produk'] || row.name || 'Tempat Umum',
                 coords: [lat, lng],
                 desc: row['Deskripsi Singkat'] || row.desc || '',
                 logo: row['Icon / Simbol'] || row.logo || (category === 'sekolah' ? '🏫' : category === 'faskes' ? '🏥' : category === 'kebun' ? '🍃' : '🏡'),
-                rw: row['RW'] ? `RW ${String(row['RW']).replace('RW ', '').trim()}` : '',
+                rw: rwVal ? `RW ${String(rwVal).replace('RW ', '').trim()}` : '',
                 url_foto: sanitizeDriveUrl(row['Tautan Foto (Google Drive)'] || row.url_foto || '')
               });
             });
