@@ -91,7 +91,7 @@
       >
         <div class="health-card-icon" style="--icon-bg: #e0f2fe;" aria-hidden="true">🚿</div>
         <p class="health-card-eyebrow">Sanitasi &amp; Lingkungan</p>
-        <h3 class="health-card-title">Fasilitas Jamban &amp; Air</h3>
+        <h3 class="health-card-title">Fasilitas Jamban</h3>
 
         <div class="pct-ring-wrap">
           <svg class="pct-ring" viewBox="0 0 90 90" role="img" aria-label="Persentase jamban sehat">
@@ -207,23 +207,6 @@
       </article>
 
     </div>
-
-    <!-- ===== UNDUHAN MODUL EDUKASI (NEW) ===== -->
-    <div class="edukasi-unduh-wrap reveal" style="margin-top: 3.5rem;">
-      <div class="sub-section-header">
-        <div class="sub-section-text">
-          <span class="sub-eyebrow">📚 Edukasi &amp; Literasi</span>
-          <h3 class="sub-title">Buku Saku &amp; Modul Kesehatan</h3>
-        </div>
-        <p class="sub-note">Materi resmi edukasi dari Mahasiswa KKNT 103</p>
-      </div>
-      <div id="edukasi-list-grid" class="edukasi-list-grid">
-        <!-- Dimuat dinamis via JS -->
-        <div class="kes-stat-skeleton" style="height:80px;"></div>
-        <div class="kes-stat-skeleton" style="height:80px;"></div>
-      </div>
-    </div>
-
   </div>
 </section>
 
@@ -737,76 +720,7 @@
   :global(.kes-lb-cap span)   { font-size: 0.85rem; opacity: 0.75; }
   :global(.kes-lb-cap .lb-rw) { font-size: 0.75rem; opacity: 0.6; }
 
-  /* ===== Unduhan Modul Edukasi ===== */
-  .edukasi-list-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.25rem;
-    margin-top: 1rem;
-  }
-  :global(.edukasi-card) {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 0.875rem;
-    padding: 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  :global(.edukasi-card:hover) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(6,78,59,0.06);
-  }
-  :global(.edukasi-icon-wrap) {
-    width: 48px;
-    height: 48px;
-    background: #ecfdf5;
-    color: #10b981;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    font-size: 1.3rem;
-    flex-shrink: 0;
-  }
-  :global(.edukasi-info) {
-    flex: 1;
-    min-width: 0;
-  }
-  :global(.edukasi-tag) {
-    display: inline-block;
-    font-size: 0.62rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #047857;
-    background: #d1fae5;
-    padding: 0.15rem 0.45rem;
-    border-radius: 99px;
-    margin-bottom: 0.25rem;
-  }
-  :global(.edukasi-name) {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--clr-gray-800);
-    margin: 0 0 0.4rem;
-    line-height: 1.3;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  :global(.edukasi-btn) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #10b981;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
-  :global(.edukasi-btn:hover) {
-    color: #047857;
-  }
+
 
   /* ===== Responsive ===== */
   @media (max-width: 768px) {
@@ -964,7 +878,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <div class="kes-stat-icon">🏥</div>
         <div class="kes-stat-val" style="color:${pDokter >= 30 ? '#059669' : '#dc2626'}">${pDokter}%</div>
         <div class="kes-stat-lbl">Akses ke Dokter</div>
-        <span class="kes-stat-badge ${pDokter >= 30 ? 'ks-green' : 'ks-red'}">${pDokter >= 30 ? '✅ Cukup' : '🆘 Kritis'}</span>
+        <span class="kes-stat-badge ${pDokter >= 40 ? 'ks-green' : 'ks-red'}">${pDokter >= 40 ? '✅ Cukup' : '🆘 Kurang'}</span>
       </div>
       <div class="kes-stat-card">
         <div class="kes-stat-icon">⚠️</div>
@@ -1328,40 +1242,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById('kes-lb-backdrop')?.addEventListener('click', closeLightbox);
   document.addEventListener('keydown', (e: KeyboardEvent) => { if (e.key === 'Escape') closeLightbox(); });
 
-  function renderEdukasi(data: any[]): void {
-    const grid = document.getElementById('edukasi-list-grid');
-    if (!grid) return;
-    
-    const cleanActiveData = (data || []).filter(item => {
-      const title = String(item['Judul Modul / Poster'] || '').trim();
-      const status = String(item['Status Publish'] || '').trim();
-      return title.length > 0 && status.toUpperCase() === 'YA';
-    });
-    
-    if (!cleanActiveData.length) {
-      grid.innerHTML = '<p style="color:#9ca3af;font-size:0.85rem;grid-column:1/-1;text-align:center;padding:1rem;">Modul edukasi belum tersedia saat ini.</p>';
-      return;
-    }
-    
-    grid.innerHTML = cleanActiveData.map(item => {
-      const title = item['Judul Modul / Poster'];
-      const kat = item['Kategori'] || 'Umum';
-      const link = item['Tautan Unduh (Drive/PDF)'] || '#';
-      const icon = kat.toLowerCase().includes('gigi') ? '🦷' : kat.toLowerCase().includes('toga') ? '🌿' : kat.toLowerCase().includes('sampah') ? '🗑️' : '📚';
-      return `
-        <div class="edukasi-card" role="listitem">
-          <div class="edukasi-icon-wrap" aria-hidden="true">${icon}</div>
-          <div class="edukasi-info">
-            <span class="edukasi-tag">${kat}</span>
-            <h4 class="edukasi-name" title="${title}">${title}</h4>
-            <a href="${link}" target="_blank" rel="noopener noreferrer" class="edukasi-btn">
-              📥 Unduh Modul
-            </a>
-          </div>
-        </div>
-      `;
-    }).join('');
-  }
+
 
   /* -- Main Fetch -- */
   function loadKesehatanData(url: string, isFallback: boolean = false): void {
@@ -1375,13 +1256,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const survei     = Array.isArray(payload) ? payload : (payload.DESA_SEHAT_SURVEI ?? payload.survei     ?? []);
         const prevalensi = payload.DESA_SEHAT_STUNTING ?? payload.prevalensi ?? [];
         const galeri     = payload.GALERI ?? payload.galeri     ?? [];
-        const edukasi    = payload.KONTEN_EDUKASI ?? [];
 
         renderKesStats(survei);
         renderPrevalensi(prevalensi);
         updateDetailedHealthCards(survei, prevalensi);
         renderGaleri(galeri);
-        renderEdukasi(edukasi);
 
         if (status) {
           status.innerHTML = isFallback ? '🟢 Live · Local Mode' : `🟢 Live · ${survei.length} KK Terdata`;

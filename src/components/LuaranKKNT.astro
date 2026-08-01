@@ -1,0 +1,258 @@
+---
+// LuaranKKNT.astro — Katalog Luaran / Produk KKNT 103 Kelompok 25
+---
+<section class="section section-luaran" id="luaran" aria-labelledby="luaran-title">
+  <div class="container">
+    <header class="section-header">
+      <span class="eyebrow reveal">🎓 Luaran &amp; Produk KKNT</span>
+      <h2 class="section-title reveal" id="luaran-title">Hasil <span>Karya &amp; Program</span> Kami</h2>
+      <p class="section-desc reveal">Katalog modul edukasi, poster kesehatan, dan produk luaran resmi dari program KKNT 103 Kelompok 25 Universitas Sriwijaya di Kelurahan Gunung Dempo.</p>
+    </header>
+    <div class="luaran-filter-wrap reveal" id="luaran-filter-wrap">
+      <button class="luaran-filter-btn active" data-filter="all">Semua</button>
+    </div>
+    <div class="luaran-grid" id="luaran-grid" role="list">
+      <div class="luaran-skeleton"></div>
+      <div class="luaran-skeleton"></div>
+      <div class="luaran-skeleton"></div>
+      <div class="luaran-skeleton"></div>
+    </div>
+    <div class="luaran-empty" id="luaran-empty" hidden>
+      <span class="luaran-empty-icon">📭</span>
+      <p>Belum ada luaran yang dipublikasikan saat ini.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .section-luaran {
+    background: linear-gradient(180deg, #f8fafc 0%, #ecfdf5 100%);
+    padding: 5rem 0;
+  }
+  .section-header { text-align: center; margin-bottom: 2.5rem; }
+  .eyebrow {
+    display: inline-block; font-size: 0.75rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: #059669; background: #d1fae5;
+    padding: 0.3rem 0.85rem; border-radius: 99px; margin-bottom: 0.85rem;
+  }
+  .section-title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 900; color: #1f2937;
+    margin: 0 0 0.75rem; line-height: 1.15; letter-spacing: -0.02em;
+  }
+  .section-title span { color: #059669; }
+  .section-desc {
+    font-size: 0.95rem; color: #6b7280;
+    max-width: 580px; margin: 0 auto; line-height: 1.7;
+  }
+
+  /* Filter */
+  .luaran-filter-wrap {
+    display: flex; gap: 0.5rem; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 2rem;
+  }
+  .luaran-filter-btn {
+    padding: 0.4rem 1.1rem; font-size: 0.78rem; font-weight: 700;
+    border-radius: 99px; border: 1.5px solid rgba(5,150,105,0.25);
+    background: white; color: #374151;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .luaran-filter-btn:hover { border-color: #059669; color: #059669; background: #f0fdf4; }
+  .luaran-filter-btn.active {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white; border-color: transparent;
+    box-shadow: 0 4px 10px rgba(5,150,105,0.25);
+  }
+
+  /* Grid */
+  .luaran-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* Skeleton */
+  .luaran-skeleton {
+    height: 280px; border-radius: 1.25rem;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%; animation: skelShimmer 1.5s infinite;
+  }
+  @keyframes skelShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Cards (JS-injected) */
+  :global(.luaran-card) {
+    background: white; border: 1px solid #e2e8f0; border-radius: 1.25rem;
+    overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04); position: relative;
+  }
+  :global(.luaran-card:hover) {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px -10px rgba(5,150,105,0.18);
+  }
+  :global(.luaran-card-banner) {
+    height: 130px; display: flex; align-items: center; justify-content: center;
+    font-size: 3.5rem; position: relative; overflow: hidden;
+  }
+  :global(.luaran-card-banner::after) {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.06));
+  }
+  :global(.luaran-card-badge) {
+    position: absolute; top: 0.75rem; left: 0.75rem;
+    font-size: 0.62rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 0.2rem 0.55rem; border-radius: 99px; z-index: 1;
+  }
+  :global(.luaran-card-body) {
+    padding: 1.1rem 1.25rem 1.25rem; display: flex; flex-direction: column;
+    flex: 1; gap: 0.4rem;
+  }
+  :global(.luaran-card-kategori) {
+    font-size: 0.67rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; color: #059669;
+  }
+  :global(.luaran-card-title) {
+    font-size: 0.92rem; font-weight: 800; color: #1f2937;
+    line-height: 1.35; margin: 0; flex: 1;
+  }
+  :global(.luaran-card-desc) {
+    font-size: 0.76rem; color: #6b7280; line-height: 1.5; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  :global(.luaran-card-footer) {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 0.35rem; padding-top: 0.65rem; border-top: 1px solid #f3f4f6;
+  }
+  :global(.luaran-card-meta) { font-size: 0.66rem; color: #9ca3af; font-weight: 600; }
+  :global(.luaran-card-btn) {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.72rem; font-weight: 800; color: white !important;
+    background: linear-gradient(135deg, #059669, #10b981);
+    padding: 0.38rem 0.85rem; border-radius: 99px;
+    text-decoration: none; transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(5,150,105,0.3); white-space: nowrap;
+  }
+  :global(.luaran-card-btn:hover) {
+    transform: translateY(-1px); box-shadow: 0 4px 12px rgba(5,150,105,0.4);
+  }
+
+  /* Empty */
+  .luaran-empty { text-align: center; padding: 4rem 1rem; color: #9ca3af; }
+  .luaran-empty-icon { font-size: 3rem; display: block; margin-bottom: 0.75rem; }
+
+  /* Reveal */
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.55s ease, transform 0.55s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 640px) {
+    .luaran-grid { grid-template-columns: 1fr; }
+    .section-luaran { padding: 3.5rem 0; }
+  }
+</style>
+
+<script>
+(function () {
+  const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnRuTe7TNeZBYaxnCiNXpdUemq2xmCyTM8j_KLq0r2Me6xUbYQePwFxSmEdWo4XWwCOhBbCPcuiFNKc340dQ8gqbLmCl4vq-7fqx0jh0CHLIItmlWEY-X-7tz9oT3U5PvzXafBfldIcyxqPHJEarfexScMSzLZV-xC9aFeBYqxKtr3w3EzkmZQMypNo9lpdr7Qt6rHc-iwXsc-dsNtanYRkCUau_sP17nBgTSdpKDfGmyatSYJzvdyYvJVQLuo0ciWWcA_AO-g4jfRUmgSY3yJTuO4izFw&lib=MjcZsqpQEZ9CuadBIMwYpJXdi3ZE4dG0b';
+
+  /* Scroll reveal */
+  const revealObs = new IntersectionObserver(entries =>
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); } }),
+    { threshold: 0.1 }
+  );
+  document.querySelectorAll('#luaran .reveal').forEach(el => revealObs.observe(el));
+
+  /* Category styles */
+  const CAT = {
+    'gigi':    { bg: '#ecfdf5', badge: '#d1fae5', icon: '🦷', color: '#065f46' },
+    'toga':    { bg: '#fdf4ff', badge: '#f3e8ff', icon: '🌿', color: '#5b21b6' },
+    'sampah':  { bg: '#fff7ed', badge: '#fed7aa', icon: '♻️', color: '#9a3412' },
+    'sanitasi':{ bg: '#eff6ff', badge: '#dbeafe', icon: '🚿', color: '#1e40af' },
+    'posyandu':{ bg: '#fdf2f8', badge: '#fce7f3', icon: '👶', color: '#9d174d' },
+    '_':       { bg: '#f8fafc', badge: '#e2e8f0', icon: '📄', color: '#374151' },
+  };
+  function getStyle(kat) {
+    const k = kat.toLowerCase();
+    for (const key in CAT) { if (key !== '_' && k.includes(key)) return CAT[key]; }
+    return CAT['_'];
+  }
+
+  let allItems = [];
+
+  function renderCards(items) {
+    const grid = document.getElementById('luaran-grid');
+    const empty = document.getElementById('luaran-empty');
+    if (!items.length) { grid.innerHTML = ''; empty.hidden = false; return; }
+    empty.hidden = true;
+    grid.innerHTML = items.map(item => {
+      const title = String(item['Judul Modul / Poster'] || item['Judul'] || '').trim();
+      const kat   = String(item['Kategori'] || 'Umum').trim();
+      const link  = String(item['Tautan Unduh (Drive/PDF)'] || item['Link'] || '#').trim();
+      const desc  = String(item['Deskripsi'] || '').trim();
+      const tipe  = String(item['Tipe'] || 'Modul').trim();
+      const st    = getStyle(kat);
+      return `
+        <div class="luaran-card" role="listitem" data-kat="${kat}">
+          <div class="luaran-card-banner" style="background:${st.bg};">
+            <span style="position:relative;z-index:1;">${st.icon}</span>
+            <span class="luaran-card-badge" style="background:${st.badge};color:${st.color};">${tipe}</span>
+          </div>
+          <div class="luaran-card-body">
+            <span class="luaran-card-kategori">${kat}</span>
+            <h3 class="luaran-card-title">${title}</h3>
+            ${desc ? `<p class="luaran-card-desc">${desc}</p>` : ''}
+            <div class="luaran-card-footer">
+              <span class="luaran-card-meta">KKNT 103 · Klp 25</span>
+              ${link !== '#' ? `<a href="${link}" target="_blank" rel="noopener noreferrer" class="luaran-card-btn">📥 Unduh</a>` : '<span style="font-size:0.7rem;color:#9ca3af;">Segera Hadir</span>'}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildFilters(items) {
+    const wrap = document.getElementById('luaran-filter-wrap');
+    const cats = [...new Set(items.map(i => String(i['Kategori'] || 'Umum').trim()))];
+    if (cats.length <= 1) { wrap.style.display = 'none'; return; }
+    cats.forEach(cat => {
+      const btn = document.createElement('button');
+      btn.className = 'luaran-filter-btn';
+      btn.dataset.filter = cat;
+      btn.textContent = cat;
+      btn.addEventListener('click', () => {
+        wrap.querySelectorAll('.luaran-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderCards(allItems.filter(i => (i['Kategori'] || 'Umum') === cat));
+      });
+      wrap.appendChild(btn);
+    });
+    wrap.querySelector('[data-filter="all"]').addEventListener('click', function() {
+      wrap.querySelectorAll('.luaran-filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      renderCards(allItems);
+    });
+  }
+
+  fetch(API_URL)
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(payload => {
+      const raw = payload.KONTEN_EDUKASI ?? [];
+      allItems = raw.filter(item => {
+        const title  = String(item['Judul Modul / Poster'] || item['Judul'] || '').trim();
+        const status = String(item['Status Publish'] || '').trim().toUpperCase();
+        return title.length > 0 && status === 'YA';
+      });
+      buildFilters(allItems);
+      renderCards(allItems);
+    })
+    .catch(() => {
+      document.getElementById('luaran-grid').innerHTML =
+        '<p style="grid-column:1/-1;text-align:center;padding:3rem;color:#9ca3af;">Data luaran tidak tersedia saat ini.</p>';
+    });
+})();
+</script>
+

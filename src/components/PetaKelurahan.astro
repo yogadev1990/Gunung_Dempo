@@ -49,14 +49,14 @@
         <div class="map-controls-wrap">
           <!-- Layer mode toggle -->
           <div class="layer-toggle-group" role="group" aria-label="Mode tampilan choropleth">
-            <button class="layer-btn active" data-mode="medis" id="btn-mode-sanitasi" aria-pressed="true">
+            <button class="layer-btn active" data-mode="demografi" id="btn-mode-demografi" aria-pressed="true">
+              👥 Demografi
+            </button>
+            <button class="layer-btn" data-mode="medis" id="btn-mode-sanitasi" aria-pressed="false">
               🏥 Desa Sehat
             </button>
             <button class="layer-btn" data-mode="toga" id="btn-mode-medis" aria-pressed="false">
-              🌿 Konservasi TOGA
-            </button>
-            <button class="layer-btn" data-mode="demografi" id="btn-mode-demografi" aria-pressed="false">
-              👥 Demografi
+              🌿 TOGA
             </button>
           </div>
           <!-- Basemap toggle -->
@@ -85,7 +85,23 @@
             </label>
             <label class="poi-checkbox-label">
               <input type="checkbox" id="chk-poi-kebun" checked>
-              <span>🍃 Perkebunan</span>
+              <span>🌿 TOGA</span>
+            </label>
+            <label class="poi-checkbox-label">
+              <input type="checkbox" id="chk-poi-kopi" checked>
+              <span>☕ Kebun Kopi</span>
+            </label>
+            <label class="poi-checkbox-label">
+              <input type="checkbox" id="chk-poi-wisata" checked>
+              <span>🏞️ Wisata Alam</span>
+            </label>
+            <label class="poi-checkbox-label">
+              <input type="checkbox" id="chk-poi-sampah" checked>
+              <span>🗑️ Kelola Sampah</span>
+            </label>
+            <label class="poi-checkbox-label">
+              <input type="checkbox" id="chk-poi-kantor" checked>
+              <span>🏛️ Kantor Lurah</span>
             </label>
             <label class="poi-checkbox-label">
               <input type="checkbox" id="chk-poi-pemukiman" checked>
@@ -120,10 +136,10 @@
       <div class="choropleth-legend" id="choropleth-legend">
         <span class="choro-label">Rendah</span>
         <div class="choro-scale" id="choro-scale">
-          <div class="choro-bar" style="background: linear-gradient(90deg, #10b981, #fbbf24, #ef4444);"></div>
+          <div class="choro-bar" style="background: linear-gradient(90deg, #f3e8ff, #c084fc, #8b5cf6, #4c1d95);"></div>
         </div>
         <span class="choro-label">Tinggi</span>
-        <span class="choro-title" id="choro-title">% Desa Sehat</span>
+        <span class="choro-title" id="choro-title">👥 Kepadatan Penduduk (Jiwa/Ha)</span>
       </div>
 
       <!-- Bottom: Legend + Info -->
@@ -140,7 +156,6 @@
           <div class="peta-tech-badge">
             <span>⚡</span><strong>Leaflet.js</strong>
             <span>+</span><strong>GeoJSON</strong>
-            <span>+</span><strong>Apps Script API</strong>
           </div>
         </div>
       </div>
@@ -348,7 +363,7 @@
   }
   .choro-label { font-size: .65rem; font-weight: 700; color: #6b7280; white-space: nowrap; }
   .choro-scale { flex: 1; }
-  .choro-bar { height: 10px; border-radius: 999px; }
+  :global(.choro-bar) { height: 10px; border-radius: 999px; }
   .choro-title {
     font-size: .65rem; font-weight: 800;
     color: #374151; text-transform: uppercase;
@@ -511,7 +526,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: .25rem;
     animation: fadeIn 0.3s ease;
   }
   @keyframes fadeIn {
@@ -573,121 +588,144 @@
   }
 
   /* ===== LIGHTBOX MODAL ===== */
-  .lb-overlay {
+  :global(.lb-overlay) {
     position: fixed; inset: 0; z-index: 9999;
-    background: rgba(0,0,0,.92);
+    background: rgba(8, 10, 15, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
     display: flex; align-items: center; justify-content: center;
-    padding: 1rem;
-    animation: lbFadeIn .25s ease;
+    padding: 1.5rem;
+    animation: lbFadeIn .3s cubic-bezier(0.16, 1, 0.3, 1);
   }
   @keyframes lbFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  .lb-content {
+  :global(.lb-content) {
     display: flex; flex-direction: column;
-    max-width: 860px; width: 100%; max-height: 92vh;
-    gap: .75rem;
+    max-width: 900px; width: 100%; max-height: 94vh;
+    gap: 1.25rem;
   }
-  .lb-img-wrap {
+  :global(.lb-img-wrap) {
     position: relative;
     flex: 1; min-height: 0;
-    background: #111;
-    border-radius: .875rem;
+    background: #030712;
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
     display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
-  .lb-img {
-    max-width: 100%; max-height: 58vh;
+  :global(.lb-img) {
+    max-width: 100%; max-height: 62vh;
     object-fit: contain;
-    border-radius: .875rem;
-    transition: opacity .3s ease;
+    border-radius: 0.75rem;
+    transition: opacity .3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .lb-img.loading { opacity: 0; }
-  .lb-img-loader {
+  :global(.lb-img.loading) { opacity: 0; }
+  :global(.lb-img-loader) {
     position: absolute; inset: 0;
     display: flex; align-items: center; justify-content: center;
     pointer-events: none;
   }
-  .lb-img-loader.hidden { display: none; }
-  .lb-spinner {
+  :global(.lb-img-loader.hidden) { display: none; }
+  :global(.lb-spinner) {
     width: 36px; height: 36px;
     border: 3px solid rgba(255,255,255,.2);
     border-top-color: #fff;
     border-radius: 50%; animation: spin .7s linear infinite;
   }
 
-  .lb-meta {
-    color: #fff; padding: 0 .25rem;
+  :global(.lb-meta) {
+    color: #fff;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 0.75rem;
+    backdrop-filter: blur(8px);
   }
-  .lb-meta-top {
+  :global(.lb-meta-top) {
     display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
     margin-bottom: .35rem;
   }
-  .lb-rw-badge {
-    font-size: .68rem; font-weight: 800; padding: .2rem .55rem;
-    background: rgba(255,255,255,.15); border-radius: .35rem;
-    backdrop-filter: blur(4px);
+  :global(.lb-rw-badge) {
+    font-size: .65rem; font-weight: 800; padding: .25rem .65rem;
+    background: rgba(255,255,255,0.1); border-radius: .375rem;
+    text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .lb-activity {
-    font-size: .68rem; font-weight: 700; padding: .2rem .55rem;
-    background: rgba(16,185,129,.25); color: #6ee7b7;
-    border-radius: .35rem;
+  :global(.lb-activity) {
+    font-size: .65rem; font-weight: 800; padding: .25rem .65rem;
+    background: rgba(16, 185, 129, 0.15); color: #34d399;
+    border-radius: .375rem;
+    text-transform: uppercase; letter-spacing: 0.05em;
   }
-  .lb-counter {
+  :global(.lb-counter) {
     margin-left: auto;
     font-size: .7rem; color: rgba(255,255,255,.5); font-weight: 600;
   }
-  .lb-caption { font-size: .85rem; font-weight: 600; margin: 0 0 .15rem; line-height: 1.4; }
-  .lb-date { font-size: .7rem; color: rgba(255,255,255,.45); margin: 0; }
+  :global(.lb-caption) { font-size: .85rem; font-weight: 600; margin: 0 0 .15rem; line-height: 1.4; }
+  :global(.lb-date) { font-size: .7rem; color: rgba(255,255,255,.45); margin: 0; }
 
   /* Thumbnail strip */
-  .lb-strip {
-    display: flex; gap: .4rem; overflow-x: auto;
+  :global(.lb-strip) {
+    display: flex; gap: .6rem; overflow-x: auto;
     padding: .35rem 0; scrollbar-width: thin;
-    scrollbar-color: rgba(255,255,255,.2) transparent;
+    scrollbar-color: rgba(255,255,255,.25) transparent;
+    justify-content: center;
   }
-  .lb-thumb {
-    width: 56px; height: 56px; flex-shrink: 0;
+  :global(.lb-thumb) {
+    width: 76px; height: 52px; flex-shrink: 0;
     border-radius: .4rem; overflow: hidden;
-    cursor: pointer; border: 2.5px solid transparent;
-    transition: border-color .2s, transform .2s;
-    background: #222;
+    cursor: pointer; border: 2px solid transparent;
+    transition: all .2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #111827;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
   }
-  .lb-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .lb-thumb.active { border-color: #10b981; transform: scale(1.08); }
-  .lb-thumb:hover { border-color: rgba(255,255,255,.5); }
+  :global(.lb-thumb img) { width: 100%; height: 100%; object-fit: cover; }
+  :global(.lb-thumb.active) { border-color: #10b981; transform: scale(1.05); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+  :global(.lb-thumb:hover) { border-color: rgba(255,255,255,0.4); }
 
   /* Nav buttons */
-  .lb-close {
-    position: fixed; top: 1rem; right: 1rem;
-    width: 40px; height: 40px;
-    background: rgba(255,255,255,.12); backdrop-filter: blur(8px);
-    border: none; border-radius: 50%;
-    color: white; font-size: 1.1rem;
-    cursor: pointer; z-index: 10000;
-    transition: background .2s ease;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .lb-close:hover { background: rgba(255,255,255,.25); }
-  .lb-nav {
-    position: fixed; top: 50%; transform: translateY(-50%);
+  :global(.lb-close) {
+    position: fixed; top: 1.5rem; right: 1.5rem;
     width: 44px; height: 44px;
-    background: rgba(255,255,255,.12); backdrop-filter: blur(8px);
-    border: none; border-radius: 50%;
-    color: white; font-size: 1.6rem;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white; font-size: 1.2rem;
     cursor: pointer; z-index: 10000;
-    transition: background .2s ease;
+    transition: all 0.25s ease;
     display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
-  .lb-nav:hover { background: rgba(255,255,255,.25); }
-  .lb-prev { left: 1rem; }
-  .lb-next { right: 1rem; }
-  .lb-nav:disabled { opacity: .3; cursor: default; }
+  :global(.lb-close:hover) {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    transform: scale(1.1) rotate(90deg);
+  }
+  :global(.lb-nav) {
+    position: fixed; top: 50%; transform: translateY(-50%);
+    width: 50px; height: 50px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: white; font-size: 1.8rem;
+    cursor: pointer; z-index: 10000;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  :global(.lb-nav:hover:not(:disabled)) {
+    background: rgba(16, 185, 129, 0.2);
+    border-color: rgba(16, 185, 129, 0.4);
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.25);
+  }
+  :global(.lb-prev) { left: 1.5rem; }
+  :global(.lb-next) { right: 1.5rem; }
+  :global(.lb-nav:disabled) { opacity: 0.15; cursor: not-allowed; }
 
   /* Popup gallery strip */
   :global(.popup-gallery-wrap) {
-    margin-top: .6rem;
-    border-top: 1px solid #f0f0f0;
-    padding-top: .6rem;
   }
   :global(.popup-gallery-label) {
     font-size: .62rem; font-weight: 700;
@@ -701,12 +739,17 @@
     scrollbar-width: thin; scrollbar-color: #e5e7eb transparent;
   }
   :global(.popup-gallery-thumb) {
-    width: 62px; height: 52px; flex-shrink: 0;
-    border-radius: .4rem; overflow: hidden;
-    cursor: pointer; border: 2px solid #f0f0f0;
-    transition: border-color .2s, transform .15s;
+    width: 80px;
+    height: 68px;
+    flex-shrink: 0;
+    border-radius: .5rem;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #f0fdf4;
+    transition: border-color .2s, transform .15s, box-shadow .2s;
     background: #f3f4f6;
     position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   }
   :global(.popup-gallery-thumb img) {
     width: 100%; height: 100%; object-fit: cover;
@@ -775,7 +818,11 @@
     display: flex;
     flex-direction: column;
     gap: .5rem;
-    width: 160px;
+    width: 175px;
+    max-height: 170px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #059669 transparent;
     transition: all 0.3s ease;
   }
   .poi-panel-title {
@@ -837,12 +884,16 @@
   }
   :global(.custom-poi-marker.color-sekolah) { background: #2563eb; }
   :global(.custom-poi-marker.color-faskes) { background: #dc2626; }
-  :global(.custom-poi-marker.color-kebun) { background: #16a34a; }
-  :global(.custom-poi-marker.color-pemukiman) { background: #d97706; }
+  :global(.custom-poi-marker.color-toga) { background: #16a34a; }
+  :global(.custom-poi-marker.color-kopi) { background: #78350f; }
+  :global(.custom-poi-marker.color-wisata) { background: #0d9488; }
+  :global(.custom-poi-marker.color-sampah) { background: #4b5563; }
+  :global(.custom-poi-marker.color-kantor) { background: #d97706; }
+  :global(.custom-poi-marker.color-pemukiman) { background: #ea580c; }
 
   /* ===== Custom POI Popup ===== */
   :global(.poi-popup) {
-    width: 220px;
+    width: 278px;
   }
   :global(.poi-popup-header) {
     padding: .75rem 1rem;
@@ -854,14 +905,40 @@
   }
   :global(.poi-popup-header.category-sekolah) { background: linear-gradient(135deg, #1e40af, #3b82f6); }
   :global(.poi-popup-header.category-faskes) { background: linear-gradient(135deg, #991b1b, #ef4444); }
-  :global(.poi-popup-header.category-kebun) { background: linear-gradient(135deg, #065f46, #10b981); }
-  :global(.poi-popup-header.category-pemukiman) { background: linear-gradient(135deg, #92400e, #f59e0b); }
+  :global(.poi-popup-header.category-toga) { background: linear-gradient(135deg, #065f46, #10b981); }
+  :global(.poi-popup-header.category-kopi) { background: linear-gradient(135deg, #78350f, #b45309); }
+  :global(.poi-popup-header.category-wisata) { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+  :global(.poi-popup-header.category-sampah) { background: linear-gradient(135deg, #374151, #6b7280); }
+  :global(.poi-popup-header.category-kantor) { background: linear-gradient(135deg, #b45309, #f59e0b); }
+  :global(.poi-popup-header.category-pemukiman) { background: linear-gradient(135deg, #c2410c, #f97316); }
   :global(.poi-popup-logo) { font-size: 1.3rem; }
   :global(.poi-popup-title) { font-size: .8rem; font-weight: 800; line-height: 1.25; color: white; }
   :global(.poi-popup-subtitle) { font-size: .6rem; opacity: 0.85; font-weight: 600; margin-top: .15rem; color: white; }
   :global(.poi-popup-body) { padding: .75rem 1rem; background: white; border-radius: 0 0 .75rem .75rem; border: 1px solid #f0f0f0; border-top: none; }
   :global(.poi-popup-desc) { font-size: .7rem; color: #4b5563; line-height: 1.45; margin: 0 0 .4rem 0; }
-  :global(.poi-popup-coords) { font-size: .55rem; color: #9ca3af; font-family: monospace; }
+  :global(.poi-popup-coords) { font-size: .55rem; color: #9ca3af; font-family: monospace; display: block; }
+  :global(.poi-nav-btn) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    font-size: .68rem;
+    font-weight: 700;
+    color: white !important;
+    text-decoration: none;
+    background: #059669;
+    border-radius: .45rem;
+    padding: .35rem .75rem;
+    margin-top: .6rem;
+    transition: all .2s ease;
+    box-shadow: 0 2px 4px rgba(5,150,105,0.2);
+    text-align: center;
+  }
+  :global(.poi-nav-btn:hover) {
+    background: #047857;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(5,150,105,0.3);
+  }
 
   /* ===== Split Gender Bar ===== */
   :global(.gender-split-bar) {
@@ -892,8 +969,25 @@
   }
 
   @media (max-width: 600px) {
-    .lb-img { max-height: 45vh; }
-    .lb-prev { left: .25rem; } .lb-next { right: .25rem; }
+    .lb-overlay { padding: 0.5rem; }
+    .lb-content { gap: .5rem; max-height: 98vh; }
+    .lb-img { max-height: 42vh; }
+    .lb-img-wrap { border-radius: .75rem; }
+    .lb-meta { padding: 0.5rem .75rem; border-radius: .5rem; }
+    .lb-thumb { width: 60px; height: 40px; }
+    .lb-nav {
+      width: 36px; height: 36px;
+      font-size: 1.2rem;
+      background: rgba(0,0,0,0.5);
+    }
+    .lb-close {
+      top: 0.5rem; right: 0.5rem;
+      width: 36px; height: 36px;
+      font-size: 0.9rem;
+      background: rgba(0,0,0,0.5);
+    }
+    .lb-prev { left: .5rem; }
+    .lb-next { right: .5rem; }
     .map-overlay-pois { top: auto; bottom: 10px; right: 10px; padding: .5rem .75rem; width: 140px; }
   }
 </style>
@@ -946,9 +1040,9 @@
   let pendidikanStore: Record<string, Record<string, number>> = {};
   let agamaStore: Record<string, Record<string, number>> = {};
   let pekerjaanStore: Record<string, Record<string, number>> = {};
-  let poiStore: Record<string, any[]> = { sekolah: [], faskes: [], kebun: [], pemukiman: [] };
+  let poiStore: Record<string, any[]> = { sekolah: [], faskes: [], toga: [], kopi: [], wisata: [], sampah: [], kantor: [], pemukiman: [] };
   let surveyStats: Record<string, any> = {};
-  let currentMode: 'sanitasi' | 'medis' | 'toga' | 'demografi' = 'sanitasi';
+  let currentMode: 'sanitasi' | 'medis' | 'toga' | 'demografi' = 'demografi';
 
   /* Warna & identitas tiap RW (statis) */
   const RW_META: Record<string, { color: string; fillBase: string; icon: string; luasHa: string; rwName: string }> = {
@@ -991,11 +1085,24 @@
       { name: 'Posyandu Mawar (RW 1)', coords: [-4.0245, 103.1932], desc: 'Pelayanan posyandu bulanan untuk RW 1.', logo: '🩺', rw: 'RW 1' },
       { name: 'Posyandu Cempaka (RW 5)', coords: [-4.0355, 103.1552], desc: 'Pelayanan kesehatan balita & lansia RW 5.', logo: '🩺', rw: 'RW 5' }
     ],
-    kebun: [
-      { name: 'Perkebunan Teh Lereng Dempo', coords: [-4.0315, 103.1450], desc: 'Hamparan perkebunan teh Pagar Alam yang asri, luas, dan sejuk.', logo: '🍃', rw: 'RW 4 / 5' },
-      { name: 'Sentra Kopi Robusta Beduk', coords: [-4.0265, 103.1610], desc: 'Kawasan budidaya kopi robusta rakyat Gunung Dempo.', logo: '☕', rw: 'RW 4' },
-      { name: 'Kebun Sayur & Holtikultura Janang', coords: [-4.0595, 103.1480], desc: 'Sentra sayuran segar dataran tinggi di RW 6.', logo: '🥦', rw: 'RW 6' },
+    toga: [
       { name: 'Kebun TOGA Percontohan', coords: [-4.0375, 103.1858], desc: 'Kebun Tanaman Obat Keluarga percontohan warga RW 3.', logo: '🌿', rw: 'RW 3' }
+    ],
+    kopi: [
+      { name: 'Sentra Kopi Robusta Beduk', coords: [-4.0265, 103.1610], desc: 'Kawasan budidaya kopi robusta rakyat Gunung Dempo.', logo: '☕', rw: 'RW 4' },
+      { name: 'Kebun Kopi Rakyat Janang', coords: [-4.0584, 103.1634], desc: 'Perkebunan kopi komoditas utama warga Janang.', logo: '☕', rw: 'RW 6' }
+    ],
+    wisata: [
+      { name: 'Perkebunan Teh Lereng Dempo', coords: [-4.0315, 103.1450], desc: 'Hamparan perkebunan teh Pagar Alam yang asri, luas, dan sejuk.', logo: '🏞️', rw: 'RW 4 / 5' },
+      { name: 'Bukit Tungguan', coords: [-4.0328, 103.1699], desc: 'Wisata alam perbukitan yang asri.', logo: '🏞️', rw: 'RW 4' },
+      { name: 'Tugu Rimau', coords: [-4.0248, 103.1543], desc: 'Destinasi wisata alam populer dengan pemandangan indah.', logo: '🏞️', rw: 'RW 5' },
+      { name: 'Tangga 2001', coords: [-4.0378, 103.1901], desc: 'Destinasi wisata alam ikonik Tangga 2001.', logo: '🏞️', rw: 'RW 3' }
+    ],
+    sampah: [
+      { name: 'Insenerator Gunung Gare', coords: [-4.0401, 103.1920], desc: 'Fasilitas pengelolaan dan pembuangan sampah.', logo: '🗑️', rw: 'RW 3' }
+    ],
+    kantor: [
+      { name: 'Kantor Lurah Gunung Dempo', coords: [-4.0250, 103.1910], desc: 'Pusat pelayanan administrasi Kelurahan Gunung Dempo.', logo: '🏛️', rw: 'RW 1' }
     ],
     pemukiman: [
       { name: 'Dusun Afd. Pabrik (RW 1)', coords: [-4.0252, 103.1955], desc: 'Kawasan pemukiman warga Afdeling Pabrik Teh Gunung Dempo.', logo: '🏡', rw: 'RW 1' },
@@ -1049,27 +1156,22 @@
     } catch { return raw; }
   }
 
-  function buildGalleryStrip(rwKey: string, tipe: 'DS' | 'TOGA' = 'DS'): string {
-    const allItems  = galeriStore[rwKey] ?? [];
-    // Filter berdasarkan tipe mode yang aktif
-    const items = allItems.filter(g => !g.tipe || g.tipe === tipe);
-    const label = tipe === 'TOGA' ? '🌿 Dokumentasi TOGA' : '📸 Dokumentasi Desa Sehat';
+  function buildGalleryStrip(rwKey: string): string {
+    const items  = galeriStore[rwKey] ?? [];
+    const label = '📸 Dokumentasi Kegiatan';
 
     if (items.length === 0) {
-      const msg = tipe === 'TOGA'
-        ? `Belum ada foto kegiatan TOGA di ${rwKey}.`
-        : `Belum ada foto. Tim KKNT sedang mendokumentasikan kegiatan di ${rwKey}.`;
       return `
         <div class="popup-gallery-wrap">
           <div class="popup-gallery-label">${label}</div>
-          <p class="popup-gallery-empty">${msg}</p>
+          <p class="popup-gallery-empty">Belum ada foto kegiatan di ${rwKey}.</p>
         </div>`;
     }
 
     const preview = items.slice(0, 2);
     const more    = items.length > 2 ? items.length - 2 : 0;
     const thumbsHtml = preview.map((item, i) => `
-      <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" data-galeri-tipe="${tipe}" title="${item.keterangan}" role="button" tabindex="0">
+      <div class="popup-gallery-thumb" data-galeri-rw="${rwKey}" data-galeri-idx="${i}" title="${item.keterangan}" role="button" tabindex="0">
         <div class="thumb-img-wrap">
           <div class="thumb-shimmer">📷</div>
           <img src="${item.url_foto}" alt="${item.keterangan}" loading="lazy"
@@ -1089,7 +1191,7 @@
         </div>
         <div class="popup-gallery-strip">
           ${thumbsHtml}
-          ${more > 0 ? `<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${rwKey}" data-galeri-idx="2" data-galeri-tipe="${tipe}">+${more}</div>` : ''}
+          ${more > 0 ? `<div class="popup-gallery-thumb popup-gallery-more" data-galeri-rw="${rwKey}" data-galeri-idx="2">+${more}</div>` : ''}
         </div>
       </div>`;
   }
@@ -1185,10 +1287,7 @@
     if (!el) return;
     const rw   = el.getAttribute('data-galeri-rw') ?? '';
     const idx  = Number(el.getAttribute('data-galeri-idx') ?? 0);
-    const tipe = (el.getAttribute('data-galeri-tipe') || '').toUpperCase();
-    // Filter by tipe if specified (DS or TOGA), else show all
-    const allItems  = galeriStore[rw] ?? [];
-    const items = tipe ? allItems.filter(g => !g.tipe || g.tipe === tipe) : allItems;
+    const items  = galeriStore[rw] ?? [];
     if (items.length > 0) lbShow(items, Math.min(idx, items.length - 1));
   });
 
@@ -1237,6 +1336,7 @@
           total_kk: 0, total_jiwa: 0, jamban_layak: 0,
           nyeri_gigi: 0, ke_dokter: 0, obat_warung: 0,
           sampah_bakar: 0, balita_lansia: 0,
+          indeks_sum: 0, indeks_count: 0,
         };
       }
       const s = rekap[rw];
@@ -1254,6 +1354,13 @@
       if (tindakanVal === 'Pernah ke Dokter Gigi')             s.ke_dokter += 1;
       if (tindakanVal === 'Membeli Obat Saja')                 s.obat_warung += 1;
       if (sampahVal === 'Dibakar')                             s.sampah_bakar += 1;
+
+      // Akumulasi nilai Indeks langsung dari API
+      const indeksVal = Number(kk['Indeks'] ?? (kk as any).indeks ?? NaN);
+      if (!isNaN(indeksVal)) {
+        s.indeks_sum += indeksVal;
+        s.indeks_count += 1;
+      }
       
       if (rentanVal === 'Bayi/Balita' || rentanVal === 'Lansia' || rentanVal === 'Balita & Lansia') {
         s.balita_lansia += 1;
@@ -1268,7 +1375,8 @@
       s.persen_dokter      = n ? Math.round((s.ke_dokter / n) * 100)    : 0;
       s.persen_obat_warung = n ? Math.round((s.obat_warung / n) * 100)  : 0;
       s.persen_sampah_bakar= n ? Math.round((s.sampah_bakar / n) * 100) : 0;
-      s.indeks_sehat       = Math.round((s.persen_sanitasi + s.persen_dokter + (100 - s.persen_sampah_bakar)) / 3);
+      // Rata-rata Indeks langsung dari nilai per-KK yang diberikan API
+      s.indeks_sehat = s.indeks_count > 0 ? Math.round(s.indeks_sum / s.indeks_count) : 0;
     }
 
     return rekap as Record<string, RWStats>;
@@ -1345,20 +1453,7 @@
           <div class="popup-data-tag">👥 ${dp.total} Jiwa · ${dp.kk} KK</div>
         </div>
         <div class="popup-body">
-          <div class="popup-stat-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 0.5rem;">
-            <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#7c3aed">👥 ${dp.total} jiwa</div>
-              <div class="popup-stat-lbl">Populasi Riil</div>
-            </div>
-            <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#7c3aed">🏠 ${dp.kk} KK</div>
-              <div class="popup-stat-lbl">Jumlah Keluarga</div>
-            </div>
-          </div>
-          <p style="font-size:0.7rem;color:#4b5563;margin:0.25rem 0 0;">
-            Detail sebaran usia, agama, dan pekerjaan tersedia di <strong>Panel Kanan Dasbor</strong>.
-          </p>
-          ${buildGalleryStrip(rwKey, 'DS')}
+          ${buildGalleryStrip(rwKey)}
         </div>
       </div>`;
   }
@@ -1379,13 +1474,7 @@
           <div class="popup-data-tag">🌿 ${tanaman.length} Jenis · ${totalJumlah} Tanaman</div>
         </div>
         <div class="popup-body">
-          <p style="font-size:0.72rem;color:#374151;margin:0;">
-            Kekayaan TOGA: <strong>${totalJumlah} batang</strong> dari <strong>${tanaman.length} varietas</strong>.
-          </p>
-          <p style="font-size:0.7rem;color:#4b5563;margin:0.25rem 0 0;">
-            Daftar tanaman lengkap dapat dilihat di <strong>Panel Kanan Dasbor</strong>.
-          </p>
-          ${buildGalleryStrip(rwKey, 'TOGA')}
+          ${buildGalleryStrip(rwKey)}
         </div>
       </div>`;
   }
@@ -1426,20 +1515,7 @@
           <div class="popup-data-tag">🏥 Indeks Sehat: ${stats.indeks_sehat}%</div>
         </div>
         <div class="popup-body">
-          <div class="popup-stat-grid" style="grid-template-columns: 1fr 1fr;">
-            <div class="popup-stat">
-              <div class="popup-stat-val" style="color:${healthColor}">🏥 ${stats.indeks_sehat}%</div>
-              <div class="popup-stat-lbl">Indeks Sehat</div>
-            </div>
-            <div class="popup-stat">
-              <div class="popup-stat-val" style="color:#059669">💧 ${stats.persen_sanitasi}% (${stats.jamban_layak}/${stats.total_kk} KK)</div>
-              <div class="popup-stat-lbl">Sanitasi Layak</div>
-            </div>
-          </div>
-          <p style="font-size:0.7rem;color:#4b5563;margin:0.25rem 0 0;">
-            Detail indikator kesehatan lengkap tersedia di <strong>Panel Kanan Dasbor</strong>.
-          </p>
-          ${buildGalleryStrip(rwKey, 'DS')}
+          ${buildGalleryStrip(rwKey)}
         </div>
       </div>`;
   }
@@ -1738,23 +1814,6 @@
             </div>` : ''}
           </div>
         </div>
-
-        <div style="margin-top:0.6rem; padding: 0.75rem; border-radius: 0.75rem; background: #fdfeff; border: 1px solid rgba(0,0,0,0.03);">
-          <span style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.45rem;">Mata Pencaharian Utama (Top 5)</span>
-          <div style="display:flex;flex-direction:column;gap:0.45rem;">
-            ${jobsList.slice(0, 5).map(j => {
-              const jPct = Math.round(j.count / totalJobs * 100);
-              return `
-                <div>
-                  <div style="display:flex;justify-content:space-between;font-size:0.68rem;color:#374151;margin-bottom:0.12rem;">
-                    <span>💼 ${j.name}</span>
-                    <strong>${jPct}% (${j.count} jiwa)</strong>
-                  </div>
-                  <div style="height:5px;background:#f3f4f6;border-radius:99px;overflow:hidden;"><div style="height:100%;width:${jPct}%;background:#8b5cf6;"></div></div>
-                </div>`;
-            }).join('')}
-          </div>
-        </div>
       `;
     } else if (mode === 'toga') {
       let list: any[] = [];
@@ -1817,28 +1876,32 @@
       `;
     } else {
       let totalKK = 0, jamban = 0, nyeri = 0, dokter = 0, sampahBakar = 0;
+      let pIndex = 0;
       if (isAll) {
+        let indeksSum = 0, indeksCount = 0;
         Object.values(surveyStats).forEach(s => {
           totalKK += s.total_kk;
           jamban += s.jamban_layak;
           nyeri += s.nyeri_gigi;
           dokter += s.ke_dokter;
           sampahBakar += s.sampah_bakar || 0;
+          if (s.indeks_sehat > 0) { indeksSum += s.indeks_sehat; indeksCount += 1; }
         });
+        pIndex = indeksCount > 0 ? Math.round(indeksSum / indeksCount) : 0;
       } else {
-        const s = surveyStats[rwKey] || { total_kk: 0, jamban_layak: 0, nyeri_gigi: 0, ke_dokter: 0, sampah_bakar: 0 };
+        const s = surveyStats[rwKey] || { total_kk: 0, jamban_layak: 0, nyeri_gigi: 0, ke_dokter: 0, sampah_bakar: 0, indeks_sehat: 0 };
         totalKK = s.total_kk;
         jamban = s.jamban_layak;
         nyeri = s.nyeri_gigi;
         dokter = s.ke_dokter;
         sampahBakar = s.sampah_bakar || 0;
+        pIndex = s.indeks_sehat || 0;
       }
 
       const pSani = totalKK ? Math.round(jamban / totalKK * 100) : 0;
       const pNyeri = totalKK ? Math.round(nyeri / totalKK * 100) : 0;
       const pDokter = totalKK ? Math.round(dokter / totalKK * 100) : 0;
       const pSampah = totalKK ? Math.round(sampahBakar / totalKK * 100) : 0;
-      const pIndex = Math.round((pSani + pDokter + (100 - pSampah)) / 3);
 
       const healthColor = choroplethColor(pIndex, 'medis');
 
@@ -1891,7 +1954,31 @@
         </div>
 
         <div class="popup-insight" style="background:#fef3c7;border-left-color:#fbbf24;color:#92400e;margin-top:0.5rem;font-size:0.68rem;line-height:1.4;">
-          💡 <strong>Rekomendasi Promkes:</strong> ${pSampah >= 50 ? 'Sosialisasi pelarangan membakar sampah karena polusi udara. ' : ''}${pNyeri >= 30 ? 'Edukasi sikat gigi pagi & malam hari, serta minimalisasi penggunaan obat warung tanpa rekomendasi medis.' : 'Tingkat kesehatan gigi warga relatif sangat kondusif.'}
+          💡 <strong>Rekomendasi Promkes:</strong> ${pSampah >= 50 ? 'Sosialisasi penggunaan teknologi yang lebih ramah lingkungan dalam mengurangi sampah. ' : ''}${pNyeri >= 30 ? 'Edukasi sikat gigi pagi & malam hari, serta minimalisasi penggunaan obat warung tanpa rekomendasi medis.' : 'Tingkat kesehatan gigi warga relatif sangat kondusif.'}
+        </div>
+
+        <div style="margin-top:0.6rem; padding: 0.7rem; border-radius: 0.75rem; background: #f8fafc; border: 1px solid #e2e8f0; font-size:0.68rem; line-height:1.5;">
+          <span style="font-size:0.62rem;font-weight:800;text-transform:uppercase;letter-spacing:0.04em;color:#6b7280;display:block;margin-bottom:0.4rem;">📊 Bagaimana Indeks Dihitung?</span>
+          <p style="margin:0 0 0.4rem;color:#4b5563;">Indeks Komposit Kesehatan Lingkungan &amp; Perilaku Mulut dihitung dari <strong>8 variabel biner</strong> (skor 0 atau 1 per variabel) yang dikombinasikan menjadi nilai persentase per keluarga:</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25rem 0.5rem;margin:0.35rem 0;">
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#0284c7;flex-shrink:0;"></span><span>Fasilitas Jamban/WC</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#0284c7;flex-shrink:0;"></span><span>Kondisi Fisik Jamban</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#10b981;flex-shrink:0;"></span><span>Pengelolaan Sampah</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span><span>Kepemilikan Sikat Gigi</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;flex-shrink:0;"></span><span>Perilaku Sikat Gigi</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></span><span>Keluhan Nyeri Gigi</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#3b82f6;flex-shrink:0;"></span><span>Tindakan Medis Gigi</span></div>
+            <div style="display:flex;align-items:center;gap:0.3rem;"><span style="width:6px;height:6px;border-radius:50%;background:#059669;flex-shrink:0;"></span><span>Tingkat Pengetahuan</span></div>
+          </div>
+          <div style="background:#e0f2fe;border-radius:0.4rem;padding:0.35rem 0.6rem;margin:0.4rem 0;color:#0369a1;font-family:monospace;font-size:0.67rem;font-weight:700;">
+            Indeks = (∑ Skor Variabel / 8) × 100
+          </div>
+          <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.3rem;">
+            <span style="background:#d1fae5;color:#065f46;font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:3px;">Baik: 80–100</span>
+            <span style="background:#fef3c7;color:#92400e;font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:3px;">Transisi: 60–79</span>
+            <span style="background:#fee2e2;color:#991b1b;font-size:0.62rem;font-weight:700;padding:0.15rem 0.45rem;border-radius:3px;">Berisiko: &lt;60</span>
+          </div>
+          <p style="margin:0.4rem 0 0;color:#9ca3af;font-style:italic;font-size:0.65rem;">Indeks yang ditampilkan merupakan rata-rata dari nilai per-KK yang dihitung berdasarkan instrumen kuesioner survei lapangan KKNT 103 Kelompok 25.</p>
         </div>
       `;
     }
@@ -1928,7 +2015,7 @@
     const mapEl      = document.getElementById('leaflet-map');
     if (!mapEl) return;
 
-    currentMode = 'sanitasi';
+    currentMode = 'demografi';
 
     const map = (window as any).L.map('leaflet-map', {
       center: [-4.038, 103.17], zoom: 12,
@@ -1945,17 +2032,21 @@
     /* Reset side panel to kelurahan-wide statistics initially */
     updateSidePanel('ALL', currentMode);
 
-    // Initialize source text dynamically
+    // Initialize source text dynamically to demographics
     const sourceValEl = document.getElementById('peta-sumber-data-val');
     if (sourceValEl) {
-      sourceValEl.textContent = 'KKNT 103 Kelompok 25 (Survei Lapangan Desa Sehat)';
+      sourceValEl.textContent = 'Pemerintah Kelurahan Gunung Dempo (Data Lurah)';
     }
 
     /* ── INGERALISASI LAYER GRUP POI (SARANA) ── */
     const poiGroups: Record<string, any> = {
       sekolah: (window as any).L.layerGroup().addTo(map),
       faskes: (window as any).L.layerGroup().addTo(map),
-      kebun: (window as any).L.layerGroup().addTo(map),
+      toga: (window as any).L.layerGroup().addTo(map),
+      kopi: (window as any).L.layerGroup().addTo(map),
+      wisata: (window as any).L.layerGroup().addTo(map),
+      sampah: (window as any).L.layerGroup().addTo(map),
+      kantor: (window as any).L.layerGroup().addTo(map),
       pemukiman: (window as any).L.layerGroup().addTo(map)
     };
 
@@ -1986,15 +2077,25 @@
           <div class="poi-popup-body">
             ${imageHtml}
             <p class="poi-popup-desc">${poi.desc}</p>
-            <div class="poi-popup-coords">📍 Lat: ${poi.coords[0].toFixed(5)}, Lng: ${poi.coords[1].toFixed(5)}</div>
+            <div class="poi-popup-coords" style="margin-bottom:0.4rem;">📍 Lat: ${poi.coords[0].toFixed(5)}, Lng: ${poi.coords[1].toFixed(5)}</div>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${poi.coords[0]},${poi.coords[1]}" target="_blank" rel="noopener noreferrer" class="poi-nav-btn">
+              🚗 Petunjuk Rute (Google Maps)
+            </a>
           </div>
         </div>
       `;
     }
 
-    const activePoiData = (poiStore.sekolah.length || poiStore.faskes.length || poiStore.kebun.length || poiStore.pemukiman.length)
-      ? poiStore
-      : POI_DATA;
+    const activePoiData = (
+      poiStore.sekolah.length || 
+      poiStore.faskes.length || 
+      poiStore.toga.length || 
+      poiStore.kopi.length || 
+      poiStore.wisata.length || 
+      poiStore.sampah.length || 
+      poiStore.kantor.length || 
+      poiStore.pemukiman.length
+    ) ? poiStore : POI_DATA;
 
     Object.entries(activePoiData).forEach(([category, list]) => {
       const group = poiGroups[category];
@@ -2014,6 +2115,10 @@
     const chkSekolah = document.getElementById('chk-poi-sekolah') as HTMLInputElement;
     const chkFaskes = document.getElementById('chk-poi-faskes') as HTMLInputElement;
     const chkKebun = document.getElementById('chk-poi-kebun') as HTMLInputElement;
+    const chkKopi = document.getElementById('chk-poi-kopi') as HTMLInputElement;
+    const chkWisata = document.getElementById('chk-poi-wisata') as HTMLInputElement;
+    const chkSampah = document.getElementById('chk-poi-sampah') as HTMLInputElement;
+    const chkKantor = document.getElementById('chk-poi-kantor') as HTMLInputElement;
     const chkPemukiman = document.getElementById('chk-poi-pemukiman') as HTMLInputElement;
 
     function handlePoiCheckbox(chk: HTMLInputElement | null, group: any) {
@@ -2034,7 +2139,11 @@
 
     handlePoiCheckbox(chkSekolah, poiGroups.sekolah);
     handlePoiCheckbox(chkFaskes, poiGroups.faskes);
-    handlePoiCheckbox(chkKebun, poiGroups.kebun);
+    handlePoiCheckbox(chkKebun, poiGroups.toga);
+    handlePoiCheckbox(chkKopi, poiGroups.kopi);
+    handlePoiCheckbox(chkWisata, poiGroups.wisata);
+    handlePoiCheckbox(chkSampah, poiGroups.sampah);
+    handlePoiCheckbox(chkKantor, poiGroups.kantor);
     handlePoiCheckbox(chkPemukiman, poiGroups.pemukiman);
 
     let geojsonLayer: any = null;
@@ -2451,7 +2560,8 @@
           // Populate POI store dynamically
           if (tempatUmumRaw.length > 0) {
             Object.keys(poiStore).forEach(k => delete poiStore[k]);
-            poiStore.sekolah = []; poiStore.faskes = []; poiStore.kebun = []; poiStore.pemukiman = [];
+            poiStore.sekolah = []; poiStore.faskes = []; poiStore.toga = []; poiStore.kopi = [];
+            poiStore.wisata = []; poiStore.sampah = []; poiStore.kantor = []; poiStore.pemukiman = [];
             
             tempatUmumRaw.forEach((row: any) => {
               const kat = String(row['Kategori'] || row.kategori || '').toLowerCase();
@@ -2463,17 +2573,41 @@
               const lng = parseFloat(parts[1].trim());
               if (isNaN(lat) || isNaN(lng)) return;
               
-              const category = kat.includes('sekolah') || kat.includes('pendidikan') ? 'sekolah'
-                             : kat.includes('faskes') || kat.includes('sehat') || kat.includes('posyandu') || kat.includes('puskesmas') ? 'faskes'
-                             : kat.includes('kebun') || kat.includes('toga') || kat.includes('kopi') || kat.includes('teh') || kat.includes('tani') ? 'kebun'
-                             : 'pemukiman';
+              let category = 'pemukiman';
+              if (kat.includes('sekolah') || kat.includes('pendidikan')) {
+                category = 'sekolah';
+              } else if (kat.includes('faskes') || kat.includes('kesehatan') || kat.includes('posyandu') || kat.includes('puskesmas') || kat.includes('klinik')) {
+                category = 'faskes';
+              } else if (kat.includes('toga') || kat.includes('obat')) {
+                category = 'toga';
+              } else if (kat.includes('kopi') || kat.includes('teh') || kat.includes('kebun') || kat.includes('tani')) {
+                category = 'kopi';
+              } else if (kat.includes('wisata') || kat.includes('alam') || kat.includes('tugu') || kat.includes('tangga')) {
+                category = 'wisata';
+              } else if (kat.includes('sampah') || kat.includes('pembuangan') || kat.includes('insenerator') || kat.includes('tps')) {
+                category = 'sampah';
+              } else if (kat.includes('kantor') || kat.includes('lurah') || kat.includes('balai') || kat.includes('pemerintah')) {
+                category = 'kantor';
+              } else {
+                category = 'pemukiman';
+              }
               
+              const logo = row['Icon / Simbol'] || row.logo || (
+                category === 'sekolah' ? '🏫' :
+                category === 'faskes' ? '🏥' :
+                category === 'toga' ? '🌿' :
+                category === 'kopi' ? '☕' :
+                category === 'wisata' ? '🏞️' :
+                category === 'sampah' ? '🗑️' :
+                category === 'kantor' ? '🏛️' : '🏡'
+              );
+
               const rwVal = row['RW'] || row['Lokasi / RW'] || '';
               poiStore[category].push({
                 name: row['Nama Tempat / Produk'] || row.name || 'Tempat Umum',
                 coords: [lat, lng],
                 desc: row['Deskripsi Singkat'] || row.desc || '',
-                logo: row['Icon / Simbol'] || row.logo || (category === 'sekolah' ? '🏫' : category === 'faskes' ? '🏥' : category === 'kebun' ? '🍃' : '🏡'),
+                logo: logo,
                 rw: rwVal ? `RW ${String(rwVal).replace('RW ', '').trim()}` : '',
                 url_foto: sanitizeDriveUrl(row['Tautan Foto (Google Drive)'] || row.url_foto || '')
               });
