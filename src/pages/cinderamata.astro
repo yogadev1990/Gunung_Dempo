@@ -1,0 +1,847 @@
+---
+// src/pages/cinderamata.astro
+import Layout from '../layouts/Layout.astro';
+---
+
+<script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<Layout
+  title="Generator Cinderamata & Piagam — Kelurahan Gunung Dempo"
+  description="Generator Cinderamata dan Piagam Penghargaan Landscape resmi dari Program KKNT 103 Kelompok 25 Universitas Sriwijaya untuk Kelurahan Gunung Dempo."
+>
+  <!-- TOP CONTROL TOOLBAR (Hidden when printing) -->
+  <header class="toolbar" id="toolbar">
+    <div class="toolbar-inner">
+      <div class="toolbar-left">
+        <a href="/" class="btn-back">
+          <span>←</span> Kembali ke Beranda
+        </a>
+        <span class="toolbar-title">🎁 Generator Cinderamata Landscape</span>
+      </div>
+
+      <div class="toolbar-actions">
+        <button id="btn-toggle-panel" class="btn-tool btn-secondary">
+          ⚙️ Edit Teks
+        </button>
+        <button id="btn-download-pdf" class="btn-tool btn-primary" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+          📥 Unduh PDF
+        </button>
+        <button id="btn-print" class="btn-tool btn-secondary">
+          🖨️ Cetak
+        </button>
+      </div>
+    </div>
+
+    <!-- Live Edit Drawer / Panel -->
+    <div class="edit-panel" id="edit-panel" hidden>
+      <div class="panel-grid">
+        <div class="form-group">
+          <label for="inp-penerima">Nama Penerima / Jabatan</label>
+          <input type="text" id="inp-penerima" value="Bapak Lurah Kelurahan Gunung Dempo" />
+        </div>
+        <div class="form-group">
+          <label for="inp-sub-penerima">Instansi / Wilayah</label>
+          <input type="text" id="inp-sub-penerima" value="Pemerintah Kelurahan Gunung Dempo, Kota Pagar Alam" />
+        </div>
+        <div class="form-group form-full">
+          <label for="inp-pesan">Pesan / Kalimat Apresiasi</label>
+          <textarea id="inp-pesan" rows="2">Sebagai bentuk apresiasi dan terima kasih yang mendalam atas bimbingan, penerimaan yang hangat, serta sinergi yang terjalin selama pelaksanaan Program Kuliah Kerja Nyata Tematik (KKNT) 103 Kelompok 25 Universitas Sriwijaya di Kelurahan Gunung Dempo.</textarea>
+        </div>
+        <div class="form-group">
+          <label for="inp-tanggal">Tempat & Tanggal</label>
+          <input type="text" id="inp-tanggal" value="Pagar Alam, Agustus 2026" />
+        </div>
+        <div class="form-group">
+          <label for="inp-dpl">Dosen Pembimbing Lapangan (DPL)</label>
+          <input type="text" id="inp-dpl" value="Dosen Pembimbing Lapangan KKNT 103" />
+        </div>
+        <div class="form-group">
+          <label for="inp-ketua">Ketua Kelompok KKNT 103</label>
+          <input type="text" id="inp-ketua" value="Ketua Kelompok 25 KKNT 103" />
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER FOR LANDSCAPE CANVAS -->
+  <main class="page-container">
+    <div class="canvas-wrapper">
+      
+      <!-- LANDSCAPE CINDERAMATA CARD (A4 Landscape aspect ratio: 297mm x 210mm) -->
+      <article class="cinderamata-card" id="cinderamata-card">
+        
+        <!-- Background Overlay Image & Shimmer -->
+        <div class="card-bg">
+          <img src="/images/hero_bg.png" alt="" aria-hidden="true" />
+        </div>
+        <div class="card-overlay"></div>
+        <div class="card-particles" aria-hidden="true">
+          <div class="p-dot" style="top:12%;left:8%;"></div>
+          <div class="p-dot" style="top:75%;left:88%;"></div>
+          <div class="p-dot" style="top:25%;left:85%;"></div>
+          <div class="p-dot" style="top:80%;left:12%;"></div>
+        </div>
+
+        <!-- Frame Borders (Ornate Triple Gold Lines) -->
+        <div class="frame-outer">
+          <div class="frame-inner">
+
+            <!-- Corner Ornaments -->
+            <div class="corner corner-tl">
+              <svg viewBox="0 0 40 40"><path d="M0,0 L40,0 L40,4 L4,4 L4,40 L0,40 Z M10,10 L30,10 L30,12 L12,12 L12,30 L10,30 Z" fill="#eab308"/></svg>
+            </div>
+            <div class="corner corner-tr">
+              <svg viewBox="0 0 40 40"><path d="M40,0 L0,0 L0,4 L36,4 L36,40 L40,40 Z M30,10 L10,10 L10,12 L28,12 L28,30 L30,30 Z" fill="#eab308"/></svg>
+            </div>
+            <div class="corner corner-bl">
+              <svg viewBox="0 0 40 40"><path d="M0,40 L40,40 L40,36 L4,36 L4,0 L0,0 Z M10,30 L30,30 L30,28 L12,28 L12,10 L10,10 Z" fill="#eab308"/></svg>
+            </div>
+            <div class="corner corner-br">
+              <svg viewBox="0 0 40 40"><path d="M40,40 L0,40 L0,36 L36,36 L36,0 L40,0 Z M30,30 L10,30 L10,28 L28,28 L28,10 L30,10 Z" fill="#eab308"/></svg>
+            </div>
+
+            <!-- CARD CONTENT -->
+            <div class="card-content">
+
+              <!-- HEADER LOGOS & BADGES -->
+              <header class="cert-header">
+                <div class="header-logo-left">
+                  <div class="unsri-emblem">
+                    <img src="/images/logo_unsri.png" alt="Logo Universitas Sriwijaya" class="logo-header-img" />
+                    <div class="emblem-text">
+                      <strong>UNIVERSITAS SRIWIJAYA</strong>
+                      <small>KULIAH KERJA NYATA TEMATIK</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="header-badge-center">
+                  <img src="/images/logo_kelompok.PNG" alt="Logo KKNT 103 Kelompok 25" class="logo-center-img" />
+                  <span class="badge-kkn">PROGRAM KKNT 103 · KELOMPOK 25</span>
+                </div>
+
+                <div class="header-logo-right">
+                  <div class="kelurahan-emblem">
+                    <div class="emblem-text" style="text-align: right;">
+                      <strong>GUNUNG DEMPO</strong>
+                      <small>KOTA PAGAR ALAM</small>
+                    </div>
+                    <img src="/images/logo_pagaralam.PNG" alt="Logo Kota Pagar Alam" class="logo-header-img" />
+                  </div>
+                </div>
+              </header>
+
+              <!-- CERTIFICATE TITLE -->
+              <div class="cert-title-block">
+                <span class="cert-subtitle-top">PIAGAM PENGHARGAAN & CINDERAMATA</span>
+                <h1 class="cert-main-title">KENANG-KENANGAN</h1>
+                <div class="title-divider">
+                  <span class="div-line"></span>
+                  <span class="div-star">🌿 🏔️ ☕</span>
+                  <span class="div-line"></span>
+                </div>
+              </div>
+
+              <!-- RECIPIENT SECTION -->
+              <div class="recipient-block">
+                <span class="recipient-label">Dipersembahkan dengan Rasa Hormat dan Apresiasi Kepada:</span>
+                <h2 class="recipient-name" id="disp-penerima">Bapak Lurah Kelurahan Gunung Dempo</h2>
+                <p class="recipient-sub" id="disp-sub-penerima">Pemerintah Kelurahan Gunung Dempo, Kota Pagar Alam</p>
+              </div>
+
+              <!-- APPRECIATION BODY TEXT -->
+              <div class="body-text-block">
+                <p class="cert-body-p" id="disp-pesan">
+                  Sebagai bentuk apresiasi dan terima kasih yang mendalam atas bimbingan, penerimaan yang hangat, serta sinergi yang terjalin selama pelaksanaan Program Kuliah Kerja Nyata Tematik (KKNT) 103 Kelompok 25 Universitas Sriwijaya di Kelurahan Gunung Dempo.
+                </p>
+              </div>
+
+              <!-- MIDDLE QR CODE & PORTAL INTEGRATION (ENLARGED QR) -->
+              <div class="qr-portal-card">
+                <div class="qr-img-frame">
+                  <img src="/images/qr_code_web.png" alt="QR Code Portal Web Kelurahan Gunung Dempo" />
+                </div>
+                <div class="qr-text-info">
+                  <span class="qr-tag">🌐 INTEGRASI WEB PORTAL RESMI</span>
+                  <p class="qr-desc">Pindai Kode QR ini untuk membuka Website Profil &amp; Potensi Kelurahan Gunung Dempo</p>
+                  <span class="qr-subdesc">Dapat dipindai langsung menggunakan kamera smartphone</span>
+                </div>
+              </div>
+
+              <!-- SIGNATURES & FOOTER SECTION -->
+              <footer class="cert-footer">
+                <div class="date-location" id="disp-tanggal">
+                  Pagar Alam, Agustus 2026
+                </div>
+
+                <div class="signatures-row">
+                  <!-- DPL Signature -->
+                  <div class="sig-box">
+                    <span class="sig-role">Mengetahui,</span>
+                    <p class="sig-title">Dosen Pembimbing Lapangan</p>
+                    <div class="sig-line"></div>
+                    <p class="sig-name" id="disp-dpl">Dosen Pembimbing Lapangan KKNT 103</p>
+                    <span class="sig-nip">KKNT 103 Universitas Sriwijaya</span>
+                  </div>
+
+                  <!-- Ketua Kelompok Signature -->
+                  <div class="sig-box">
+                    <span class="sig-role">Hormat Kami,</span>
+                    <p class="sig-title">Ketua Kelompok 25 KKNT 103</p>
+                    <div class="sig-line"></div>
+                    <p class="sig-name" id="disp-ketua">Ketua Kelompok 25 KKNT 103</p>
+                    <span class="sig-nip">Mahasiswa KKNT 103 UNSRI</span>
+                  </div>
+                </div>
+
+                <div class="cert-bottom-motto">
+                  <span>🍃 Harmoni Alam, Kopi, dan Teh di Kaki Gunung Dempo 🏔️</span>
+                </div>
+              </footer>
+
+            </div><!-- /.card-content -->
+          </div><!-- /.frame-inner -->
+        </div><!-- /.frame-outer -->
+
+      </article>
+
+    </div>
+  </main>
+</Layout>
+
+<style>
+  /* ============================================================
+     CINDERAMATA GENERATOR STYLES
+     ============================================================ */
+
+  .page-container {
+    min-height: 100vh;
+    background: #091e13;
+    background-image: 
+      radial-gradient(circle at 15% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(234, 179, 8, 0.1) 0%, transparent 40%);
+    padding: 6rem 1.5rem 4rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+  }
+
+  /* Toolbar Styling */
+  .toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(6, 30, 19, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  .toolbar-inner {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #34d399;
+    background: rgba(16, 185, 129, 0.12);
+    padding: 0.4rem 0.9rem;
+    border-radius: 99px;
+    border: 1.5px solid rgba(52, 211, 153, 0.3);
+    transition: all 0.2s ease;
+  }
+  .btn-back:hover {
+    background: rgba(16, 185, 129, 0.25);
+    color: white;
+  }
+  .toolbar-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #ecfdf5;
+    letter-spacing: 0.02em;
+  }
+  .toolbar-actions {
+    display: flex;
+    gap: 0.75rem;
+  }
+  .btn-tool {
+    padding: 0.5rem 1.2rem;
+    border-radius: 99px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.5);
+  }
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Edit Panel Drawer */
+  .edit-panel {
+    background: #064e3b;
+    border-top: 1px solid rgba(52, 211, 153, 0.3);
+    padding: 1.25rem 1.5rem;
+    box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .panel-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .form-full {
+    grid-column: 1 / -1;
+  }
+  .form-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #a7f3d0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .form-group input, .form-group textarea {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    color: white;
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #34d399;
+    box-shadow: 0 0 0 2px rgba(52, 211, 153, 0.3);
+  }
+
+  /* ============================================================
+     CINDERAMATA LANDSCAPE CANVAS (A4 Landscape ~ 297mm x 210mm)
+     Ratio: ~ 1.414 : 1
+     Width: 1120px, Height: 792px
+     ============================================================ */
+  .canvas-wrapper {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+
+  .cinderamata-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1.414 / 1;
+    background: #042f1a;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 25px 60px -10px rgba(0,0,0,0.7), 0 0 40px rgba(16, 185, 129, 0.2);
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+  }
+
+  /* Backgrounds */
+  .card-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .card-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%;
+    filter: brightness(0.4) contrast(1.15) saturate(1.2);
+  }
+  .card-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: 
+      radial-gradient(ellipse at center, rgba(4, 47, 26, 0.75) 0%, rgba(2, 22, 12, 0.94) 100%),
+      linear-gradient(135deg, rgba(6, 78, 59, 0.4) 0%, rgba(234, 179, 8, 0.08) 100%);
+  }
+  .card-particles .p-dot {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(234, 179, 8, 0.4);
+    box-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
+    z-index: 1;
+  }
+
+  /* Frame Borders */
+  .frame-outer {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    padding: 18px;
+    box-sizing: border-box;
+  }
+  .frame-inner {
+    position: relative;
+    height: 100%;
+    border: 2px solid rgba(234, 179, 8, 0.65);
+    border-radius: 0.75rem;
+    padding: 22px 32px;
+    box-sizing: border-box;
+    background: rgba(5, 46, 22, 0.35);
+    backdrop-filter: blur(4px);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 0 4px rgba(6, 78, 59, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Corners */
+  .corner {
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    z-index: 10;
+  }
+  .corner-tl { top: -2px; left: -2px; }
+  .corner-tr { top: -2px; right: -2px; }
+  .corner-bl { bottom: -2px; left: -2px; }
+  .corner-br { bottom: -2px; right: -2px; }
+
+  /* Card Content Layout */
+  .card-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Header Row */
+  .cert-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px dashed rgba(234, 179, 8, 0.3);
+  }
+  .unsri-emblem, .kelurahan-emblem {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  .logo-header-img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5));
+    flex-shrink: 0;
+  }
+  .header-badge-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .logo-center-img {
+    height: 42px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+  }
+  .emblem-text strong {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #fef08a;
+    letter-spacing: 0.05em;
+  }
+  .emblem-text small {
+    display: block;
+    font-size: 0.62rem;
+    color: #a7f3d0;
+    letter-spacing: 0.08em;
+  }
+  .badge-kkn {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: #fef08a;
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(234, 179, 8, 0.4);
+    padding: 0.25rem 0.85rem;
+    border-radius: 99px;
+    letter-spacing: 0.08em;
+  }
+
+  /* Certificate Title Block */
+  .cert-title-block {
+    text-align: center;
+    margin-top: 0.4rem;
+  }
+  .cert-subtitle-top {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    color: #34d399;
+    text-transform: uppercase;
+    margin-bottom: 0.2rem;
+  }
+  .cert-main-title {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin: 0;
+    background: linear-gradient(135deg, #ffffff 0%, #fef08a 50%, #eab308 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+    line-height: 1.15;
+  }
+  .title-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 0.3rem;
+  }
+  .div-line {
+    height: 1px;
+    width: 90px;
+    background: linear-gradient(90deg, transparent, rgba(234, 179, 8, 0.7), transparent);
+  }
+  .div-star {
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+  }
+
+  /* Recipient Block */
+  .recipient-block {
+    text-align: center;
+    margin: 0.5rem 0;
+  }
+  .recipient-label {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-style: italic;
+    font-family: 'Lora', serif;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .recipient-name {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1.3rem, 2.3vw, 1.85rem);
+    font-weight: 700;
+    color: #fef08a;
+    margin: 0;
+    line-height: 1.25;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    letter-spacing: 0.01em;
+  }
+  .recipient-sub {
+    font-size: 0.78rem;
+    color: #a7f3d0;
+    margin: 0.2rem 0 0;
+    font-weight: 600;
+  }
+
+  /* Body Text */
+  .body-text-block {
+    text-align: center;
+    max-width: 840px;
+    margin: 0.2rem auto;
+  }
+  .cert-body-p {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.75rem, 1.25vw, 0.9rem);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.92);
+    margin: 0;
+    font-style: italic;
+  }
+
+  /* QR Code Glass Box (ENLARGED) */
+  .qr-portal-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    background: rgba(6, 78, 59, 0.55);
+    border: 1.5px solid rgba(234, 179, 8, 0.45);
+    border-radius: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    max-width: 600px;
+    margin: 0.4rem auto;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .qr-img-frame {
+    width: 96px;
+    height: 96px;
+    background: white;
+    padding: 6px;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+  }
+  .qr-img-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .qr-text-info {
+    text-align: left;
+  }
+  .qr-tag {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #fef08a;
+    letter-spacing: 0.08em;
+  }
+  .qr-desc {
+    font-size: 0.75rem;
+    color: #ecfdf5;
+    margin: 0.2rem 0 0.15rem;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+  .qr-subdesc {
+    display: block;
+    font-size: 0.65rem;
+    color: #a7f3d0;
+    font-style: italic;
+  }
+
+  /* Signatures Footer */
+  .cert-footer {
+    margin-top: 0.3rem;
+  }
+  .date-location {
+    text-align: center;
+    font-size: 0.75rem;
+    color: #a7f3d0;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .signatures-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+  }
+  .sig-box {
+    text-align: center;
+    width: 220px;
+  }
+  .sig-role {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.7);
+    display: block;
+  }
+  .sig-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #ecfdf5;
+    margin: 0.1rem 0 2.2rem;
+  }
+  .sig-line {
+    height: 1px;
+    background: rgba(234, 179, 8, 0.6);
+    margin-bottom: 0.25rem;
+  }
+  .sig-name {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fef08a;
+    margin: 0;
+  }
+  .sig-nip {
+    font-size: 0.64rem;
+    color: rgba(255,255,255,0.65);
+    display: block;
+  }
+
+  /* Central Stamp */
+  .stamp-seal {
+    width: 62px;
+    height: 62px;
+    border: 2px dashed rgba(234, 179, 8, 0.7);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    padding: 3px;
+    background: rgba(234, 179, 8, 0.08);
+    flex-shrink: 0;
+  }
+  .stamp-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(5, 46, 22, 0.8);
+    border: 1px solid rgba(234, 179, 8, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    line-height: 1;
+  }
+  .stamp-icon { font-size: 0.9rem; }
+  .stamp-txt {
+    font-size: 0.48rem;
+    font-weight: 800;
+    color: #fef08a;
+    margin-top: 2px;
+  }
+  .stamp-inner small {
+    font-size: 0.42rem;
+    color: #a7f3d0;
+  }
+
+  .cert-bottom-motto {
+    text-align: center;
+    margin-top: 0.5rem;
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.06em;
+  }
+
+  /* ============================================================
+     PRINT & HIGH-FIDELITY PDF EXPORT STYLES
+     ============================================================ */
+  @media print {
+    @page {
+      size: 297mm 210mm; /* Exact A4 Landscape */
+      margin: 0;
+    }
+    html, body {
+      width: 297mm !important;
+      height: 210mm !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #042f1a !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      overflow: hidden !important;
+    }
+    .toolbar, .edit-panel {
+      display: none !important;
+    }
+    .page-container {
+      padding: 0 !important;
+      margin: 0 !important;
+      background: #042f1a !important;
+      width: 297mm !important;
+      height: 210mm !important;
+      min-height: 210mm !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+    }
+    .canvas-wrapper {
+      width: 297mm !important;
+      height: 210mm !important;
+      max-width: 297mm !important;
+      box-sizing: border-box !important;
+    }
+    .cinderamata-card {
+      width: 297mm !important;
+      height: 210mm !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      aspect-ratio: auto !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    .cert-main-title {
+      color: #fef08a !important;
+      -webkit-text-fill-color: initial !important;
+      background: none !important;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8) !important;
+    }
+  }
+
+  /* Responsive Scaling for Mobile Screens */
+  @media (max-width: 900px) {
+    .page-container { padding-inline: 0.5rem; }
+    .cinderamata-card {
+      font-size: 85%;
+    }
+    .frame-inner { padding: 14px 18px; }
+    .signatures-row { padding: 0 0.5rem; }
+    .sig-box { width: 150px; }
+  }
+</style>
+
+<script>
+  // Live Editable Inputs Binding
+  const inpPenerima = document.getElementById('inp-penerima') as HTMLInputElement;
+  const inpSubPenerima = document.getElementById('inp-sub-penerima') as HTMLInputElement;
+  const inpPesan = document.getElementById('inp-pesan') as HTMLTextAreaElement;
+  const inpTanggal = document.getElementById('inp-tanggal') as HTMLInputElement;
+  const inpDpl = document.getElementById('inp-dpl') as HTMLInputElement;
+  const inpKetua = document.getElementById('inp-ketua') as HTMLInputElement;
+
+  const dispPenerima = document.getElementById('disp-penerima')!;
+  const dispSubPenerima = document.getElementById('disp-sub-penerima')!;
+  const dispPesan = document.getElementById('disp-pesan')!;
+  const dispTanggal = document.getElementById('disp-tanggal')!;
+  const dispDpl = document.getElementById('disp-dpl')!;
+  const dispKetua = document.getElementById('disp-ketua')!;
+
+  inpPenerima?.addEventListener('input', () => { dispPenerima.textContent = inpPenerima.value || '...'; });
+  inpSubPenerima?.addEventListener('input', () => { dispSubPenerima.textContent = inpSubPenerima.value || '...'; });
+  inpPesan?.addEventListener('input', () => { dispPesan.textContent = inpPesan.value || '...'; });
+  inpTanggal?.addEventListener('input', () => { dispTanggal.textContent = inpTanggal.value || '...'; });
+  inpDpl?.addEventListener('input', () => { dispDpl.textContent = inpDpl.value || '...'; });
+  inpKetua?.addEventListener('input', () => { dispKetua.textContent = inpKetua.value || '...'; });
+
+  // Toggle Edit Panel
+  const btnTogglePanel = document.getElementById('btn-toggle-panel');
+  const editPanel = document.getElementById('edit-panel');
+  btnTogglePanel?.addEventListener('click', () => {
+    if (editPanel) {
+      editPanel.hidden = !editPanel.hidden;
+      btnTogglePanel.textContent = editPanel.hidden ? '⚙️ Edit Teks' : '✖️ Tutup Edit';
+    }
+  });
+
+  // Native Pixel-Perfect PDF Export Handler
+  function triggerNativePrint() {
+    window.print();
+  }
+
+  document.getElementById('btn-download-pdf')?.addEventListener('click', triggerNativePrint);
+  document.getElementById('btn-print')?.addEventListener('click', triggerNativePrint);
+</script>
